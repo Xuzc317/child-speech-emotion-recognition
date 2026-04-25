@@ -11,7 +11,11 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from src.data.dataset import npyDataset, collate_fn
-from src.models.models import CNNModel, DrseCNN, CNNBiLSTMModel
+from src.models.models import (
+    CNNModel, DrseCNN, CNNBiLSTMModel,
+    CRNNModel, Transformer, TDNNModel,
+    DenseModel, LSTMModel, OptimizedBiLSTM
+)
 
 
 # 设置设备
@@ -110,7 +114,7 @@ def plot_training_curves(train_accs, val_accs, train_losses, val_losses):
     plt.legend()
     
     plt.tight_layout()
-    plt.savefig('training_curves_CNN.png')  # 保存图片
+    plt.savefig(f'training_curves_{args.model}.png')
     plt.close()
 
 def main():
@@ -124,7 +128,9 @@ def main():
     parser.add_argument('--test_label', type=str, default='test_labels.npy',
                         help='Path to testing label file')
     parser.add_argument('--model', type=str, default='DrseCNN',
-                        choices=['CNNModel', 'DrseCNN', 'CNNBiLSTMModel'],
+                        choices=['CNNModel', 'DrseCNN', 'CNNBiLSTMModel',
+                                 'CRNNModel', 'Transformer', 'TDNNModel',
+                                 'DenseModel', 'LSTMModel', 'OptimizedBiLSTM'],
                         help='Model architecture to use')
     parser.add_argument('--lr', type=float, default=DEFAULT_LR,
                         help=f'Learning rate (default: {DEFAULT_LR})')
@@ -165,14 +171,18 @@ def main():
     )
 
     # Initialize model
-    if args.model == 'CNNModel':
-        model = CNNModel(num_classes=6).to(device)
-    elif args.model == 'DrseCNN':
-        model = DrseCNN(num_classes=6).to(device)
-    elif args.model == 'CNNBiLSTMModel':
-        model = CNNBiLSTMModel(num_classes=6).to(device)
-    else:
-        raise ValueError(f"Unknown model: {args.model}")
+    model_cls = {
+        'CNNModel': CNNModel,
+        'DrseCNN': DrseCNN,
+        'CNNBiLSTMModel': CNNBiLSTMModel,
+        'CRNNModel': CRNNModel,
+        'Transformer': Transformer,
+        'TDNNModel': TDNNModel,
+        'DenseModel': DenseModel,
+        'LSTMModel': LSTMModel,
+        'OptimizedBiLSTM': OptimizedBiLSTM,
+    }[args.model]
+    model = model_cls(num_classes=6).to(device)
 
     print(f"Model architecture:\n{model}")
     print(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")

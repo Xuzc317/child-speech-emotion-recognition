@@ -1,14 +1,44 @@
 import torch
 import torch.nn as nn
-import math
 
 import torch.nn.functional as F
+
+
+class _ONNXAdaptiveAvgPool1d(nn.Module):
+    """ONNX-compatible equivalent of nn.AdaptiveAvgPool1d.
+
+    Reproduces PyTorch's adaptive pooling exactly: for each output position i,
+    pools over [floor(i*L/S), ceil((i+1)*L/S)). Uses only Slice + ReduceMean
+    ops (standard ONNX) — the loop unrolls at trace time.
+    """
+    def __init__(self, output_size):
+        super().__init__()
+        self.output_size = output_size
+
+    def forward(self, x):
+        L = x.shape[-1]
+        segments = []
+        for i in range(self.output_size):
+            start = i * L // self.output_size
+            end = ((i + 1) * L + self.output_size - 1) // self.output_size
+            segments.append(x[:, :, start:end].mean(dim=-1, keepdim=True))
+        return torch.cat(segments, dim=-1)
+
+
+class _GlobalAvgPool1d(nn.Module):
+    """ONNX-compatible global average pooling over the last dimension.
+
+    Equivalent to nn.AdaptiveAvgPool1d(1) but uses mean() which maps to
+    the standard ONNX ReduceMean op.
+    """
+    def forward(self, x):
+        return x.mean(dim=-1, keepdim=True)
 
 # 主流模型1
 class CRNNModel(nn.Module):
     def __init__(self, num_classes=6):
         super().__init__()
-        # 输入 (B, 1, feat_dim) e.g. feat_dim=163
+        # 输入 (B, 1, feat_dim) feat_dim=162
         self.cnn = nn.Sequential(
             nn.Conv1d(1, 64, kernel_size=5, padding=2),
             nn.BatchNorm1d(64), nn.ReLU(),
@@ -106,7 +136,7 @@ class CRNNModel(nn.Module):
 #Total parameters: 486,534
 #Best validation accuracy: 69.48%
 class Transformer(nn.Module):
-    def __init__(self, input_dim, num_classes, num_heads=16, num_layers=6, hidden_dim=1024, dropout=0.3):
+    def __init__(self, input_dim=162, num_classes=6, num_heads=16, num_layers=6, hidden_dim=1024, dropout=0.3):
         super(Transformer, self).__init__()
         self.embedding = nn.Linear(input_dim, hidden_dim)
 
@@ -144,7 +174,7 @@ class TDNNModel(nn.Module):
             nn.ReLU(),
             nn.Conv1d(128, 256, kernel_size=3, dilation=3, padding=3),
             nn.ReLU(),
-            nn.AdaptiveAvgPool1d(1)
+            _GlobalAvgPool1d()
         )
         self.classifier = nn.Sequential(
             nn.Linear(256, 64), nn.ReLU(), nn.Dropout(0.3),
@@ -190,7 +220,8 @@ class CNNModel(nn.Module):
             nn.Dropout(0.4),
         )
 
-        # Derive classifier input dimension from a dummy forward pass
+        # ONNX-compatible: compute flat_dim dynamically instead of hardcoding
+        # so the model adapts to any feat_dim without manual recalculation.
         with torch.no_grad():
             dummy = torch.zeros(1, 1, feat_dim)
             dummy_out = self.feature_extractor(dummy)
@@ -205,20 +236,16 @@ class CNNModel(nn.Module):
             nn.Linear(64, num_classes)
         )
 
-        self.softmax = nn.Softmax(dim=-1)
-
     def forward(self, x):
         x = self.feature_extractor(x)
         x = x.view(x.size(0), -1)  # Flatten
-        x = self.classifier(x)
-        x = self.softmax(x)
-        return x
+        return self.classifier(x)
 
 class SEBlock(nn.Module):
-    """Squeeze-and-Excitation注意力模块"""
+    """Squeeze-and-Excitation attention module (ONNX-compatible)."""
     def __init__(self, channel, reduction=16):
         super().__init__()
-        self.avg_pool = nn.AdaptiveAvgPool1d(1)
+        self.gap = _GlobalAvgPool1d()
         self.fc = nn.Sequential(
             nn.Linear(channel, channel // reduction),
             nn.ReLU(),
@@ -228,7 +255,7 @@ class SEBlock(nn.Module):
 
     def forward(self, x):
         b, c, _ = x.shape
-        y = self.avg_pool(x).view(b, c)
+        y = self.gap(x).view(b, c)
         y = self.fc(y).view(b, c, 1)
         return x * y
 
@@ -265,7 +292,7 @@ class DrseCNN(nn.Module):
             nn.BatchNorm1d(128),    #归一化
             nn.LeakyReLU(0.2),      #激活
             ResSEBlock(128, 128, kernel_size=5, stride=1, padding=2),
-            nn.MaxPool1d(4, 2),  # 输出长度: (163-4)//2 +1 = 80
+            nn.MaxPool1d(4, 2),  # 输出长度: (162-4)//2 +1 = 80
             nn.Dropout(0.3)
         )
         
@@ -280,7 +307,7 @@ class DrseCNN(nn.Module):
         # Stage 3: 精细特征捕获
         self.stage3 = nn.Sequential(
             ResSEBlock(256, 512, kernel_size=3, stride=1, padding=1),
-            nn.AdaptiveAvgPool1d(16),  # 统一输出长度为16
+            _ONNXAdaptiveAvgPool1d(16),  # 统一输出长度为16
             nn.Dropout(0.5)
         )
         
@@ -303,32 +330,25 @@ class DrseCNN(nn.Module):
     
 
 class DenseModel(nn.Module):
-    def __init__(self, num_classes=5):
+    def __init__(self, num_classes=6):
         super().__init__()
-        
-        # 輸入展平後的維度: 1 * 25 * 11 = 275
+
         self.feature_extractor = nn.Sequential(
-            # 替代Stage 1
             nn.Linear(162, 512),
             nn.ReLU(),
             nn.Dropout(0.5),
-            
-            # 替代Stage 2
+
             nn.Linear(512, 768),
             nn.ReLU(),
             nn.Linear(768, 768),
             nn.ReLU(),
             nn.Dropout(0.5),
-            
-            # 替代Stage 3
+
             nn.Linear(768, 1536),
             nn.ReLU(),
             nn.Dropout(0.5)
-
-
         )
-        
-        # 保持原分類器結構不變（輸入維度需匹配1536）
+
         self.classifier = nn.Sequential(
             nn.Linear(1536, 512),
             nn.ReLU(),
@@ -336,12 +356,11 @@ class DenseModel(nn.Module):
             nn.Linear(512, 256),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(256, num_classes),
-            nn.Softmax()
+            nn.Linear(256, num_classes)
         )
 
     def forward(self, x):
-        x = x.view(x.size(0), -1)  # 展平輸入 (batch, 1, 25, 11) -> (batch, 275)
+        x = x.view(x.size(0), -1)  # (B, 1, 162) -> (B, 162)
         x = self.feature_extractor(x)
         x = self.classifier(x)
         return x
@@ -365,9 +384,9 @@ class LSTMModel(nn.Module):
         )
 
     def forward(self, x):
-        # Input shape: (B, 1, 163) -> (B, 163, 1)
+        # Input shape: (B, 1, 162) -> (B, 162, 1)
         x = x.permute(0, 2, 1)
-        output, _ = self.rnn(x)  # output shape: (B, 163, 512)
+        output, _ = self.rnn(x)  # output shape: (B, 162, 512)
         last_output = output[:, -1, :]  # 取最后时刻的输出
         return self.classifier(last_output)  
 
@@ -429,10 +448,10 @@ class OptimizedBiLSTM(nn.Module):
                         nn.init.constant_(param, 0)
 
     def forward(self, x):
-        # 输入形状: [B, 1, 163]
-        x = self.pre_net(x)  # [B, 64, 54]
-        x = x.permute(0, 2, 1)  # [B, 54, 64]
-        outputs, _ = self.lstm(x)  # [B, 54, 256]
+        # 输入形状: [B, 1, 162]
+        x = self.pre_net(x)  # [B, 64, 80]
+        x = x.permute(0, 2, 1)  # [B, 80, 64]
+        outputs, _ = self.lstm(x)  # [B, 80, 256]
         attn_weights = self.attention(outputs)
         context = torch.sum(attn_weights * outputs, dim=1)
         return self.classifier(context)
@@ -441,25 +460,25 @@ class OptimizedBiLSTM(nn.Module):
 
 
 class CNNBiLSTMModel(nn.Module):
-    def __init__(self, num_classes=6, input_dim=94, hidden_size=128, num_layers=2):
+    def __init__(self, num_classes=6, input_dim=162, hidden_size=128, num_layers=2):
         super().__init__()
-        
+
         # CNN特征提取层
         self.cnn = nn.Sequential(
-            nn.Conv1d(1, 64, kernel_size=5, padding=2),  # 输入形状 [B,1,94]
+            nn.Conv1d(1, 64, kernel_size=5, padding=2),  # [B,1,input_dim] -> [B,64,input_dim]
             nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.MaxPool1d(2),  # [B,64,47]
-            
-            nn.Conv1d(64, 128, kernel_size=3, padding=1),  # [B,128,47]
+            nn.MaxPool1d(2),  # [B,64,input_dim//2]
+
+            nn.Conv1d(64, 128, kernel_size=3, padding=1),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.MaxPool1d(2),  # [B,128,23]
-            
-            nn.Conv1d(128, 256, kernel_size=3, padding=1),  # [B,256,23]
+            nn.MaxPool1d(2),  # [B,128,input_dim//4]
+
+            nn.Conv1d(128, 256, kernel_size=3, padding=1),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.AdaptiveAvgPool1d(16),  # [B,256,16]
+            _ONNXAdaptiveAvgPool1d(16),  # [B,256,16]
             nn.Dropout(0.5)
         )
         

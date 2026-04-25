@@ -22,6 +22,7 @@ from src.data.dataset import npyDataset, collate_fn
 
 # ---- Config ----
 CKPT_PATH = None  # Set to your new checkpoint path after re-training, e.g. "checkpoints/best_model.pth"
+MODEL_NAME = "DrseCNN"  # Must match the model class used during training
 TEST_DATA = "test_data.npy"
 TEST_LABEL = "test_labels.npy"
 BATCH_SIZE = 128
@@ -53,13 +54,33 @@ print(f"Test set: {len(test_dataset)} samples (original features, no augmentatio
 print(f"Label distribution: {np.bincount(np.load(TEST_LABEL))}")
 
 # ---- Step 2: Load model ----
-from src.models.models import DrseCNN
+from src.models.models import (
+    CNNModel, DrseCNN, CNNBiLSTMModel,
+    CRNNModel, Transformer, TDNNModel,
+    DenseModel, LSTMModel, OptimizedBiLSTM
+)
 
-model = DrseCNN(num_classes=NUM_CLASSES).to(DEVICE)
+_model_registry = {
+    'CNNModel': CNNModel,
+    'DrseCNN': DrseCNN,
+    'CNNBiLSTMModel': CNNBiLSTMModel,
+    'CRNNModel': CRNNModel,
+    'Transformer': Transformer,
+    'TDNNModel': TDNNModel,
+    'DenseModel': DenseModel,
+    'LSTMModel': LSTMModel,
+    'OptimizedBiLSTM': OptimizedBiLSTM,
+}
+
+if MODEL_NAME not in _model_registry:
+    print(f"ERROR: Unknown model '{MODEL_NAME}'. Valid options: {list(_model_registry.keys())}")
+    sys.exit(1)
+
+model = _model_registry[MODEL_NAME](num_classes=NUM_CLASSES).to(DEVICE)
 state_dict = torch.load(CKPT_PATH, map_location=DEVICE, weights_only=False)
 model.load_state_dict(state_dict)
 model.eval()
-print(f"Model loaded: {CKPT_PATH}")
+print(f"Model {MODEL_NAME} loaded from: {CKPT_PATH}")
 
 # ---- Step 3: Evaluate ----
 all_preds = []
@@ -95,7 +116,7 @@ cm = confusion_matrix(all_labels, all_preds)
 
 # ---- Step 4: Report ----
 print("\n" + "=" * 70)
-print(f"DrseCNN Model Evaluation ({CKPT_PATH})")
+print(f"{MODEL_NAME} Model Evaluation ({CKPT_PATH})")
 print("CLEAN evaluation — no data leakage")
 print("=" * 70)
 
