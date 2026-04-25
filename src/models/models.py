@@ -158,10 +158,11 @@ class TDNNModel(nn.Module):
 
 
 class CNNModel(nn.Module):
-    def __init__(self, num_classes=6):
+    def __init__(self, num_classes=6, feat_dim=162):
         super().__init__()
-        
-        # 输入形状: (batch, 1, 163)
+
+        self.feat_dim = feat_dim
+
         self.feature_extractor = nn.Sequential(
             # Stage 1
             nn.Conv1d(1, 256, kernel_size=5, padding=1),
@@ -173,8 +174,8 @@ class CNNModel(nn.Module):
             nn.Conv1d(256, 256, kernel_size=5, padding=1),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.MaxPool1d(5,2),
-            
+            nn.MaxPool1d(5, 2),
+
             # Stage 2
             nn.Conv1d(256, 128, kernel_size=3, padding=1),
             nn.BatchNorm1d(128),
@@ -185,13 +186,18 @@ class CNNModel(nn.Module):
             nn.Conv1d(128, 128, kernel_size=3, padding=1),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.MaxPool1d(5,2),
+            nn.MaxPool1d(5, 2),
             nn.Dropout(0.4),
-            
         )
-        
+
+        # Derive classifier input dimension from a dummy forward pass
+        with torch.no_grad():
+            dummy = torch.zeros(1, 1, feat_dim)
+            dummy_out = self.feature_extractor(dummy)
+            flat_dim = dummy_out.view(1, -1).shape[1]
+
         self.classifier = nn.Sequential(
-            nn.Linear(4608, 128),
+            nn.Linear(flat_dim, 128),
             nn.ReLU(),
             nn.Linear(128, 64),
             nn.ReLU(),

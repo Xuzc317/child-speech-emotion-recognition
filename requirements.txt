@@ -1,3 +1,5 @@
+parselmouth
+scipy
 torch
 torchaudio
 librosa

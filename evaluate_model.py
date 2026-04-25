@@ -1,20 +1,27 @@
 """Evaluate DrseCNN checkpoint on BESD dataset — clean (no data leakage).
 
-Uses pre-split test data from preprocess.py. Test set contains only original
-(non-augmented) features from WAV files NOT seen during training.
+Uses pre-split test data from preprocess.py. Both train and test sets receive
+3x processing (original + noise + stretch+pitch) per WAV with zero speaker overlap.
+
+IMPORTANT: Old checkpoints in checkpoints/legacy/ were trained on leaked data.
+They MUST NOT be used for evaluation. Re-train a model first:
+    python src/training/train.py
+Then update CKPT_PATH below to point to the new checkpoint.
 """
 import os
 import sys
 import torch
 import numpy as np
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from sklearn.metrics import (
     accuracy_score, precision_recall_fscore_support,
     confusion_matrix
 )
 
+from src.data.dataset import npyDataset, collate_fn
+
 # ---- Config ----
-CKPT_PATH = "checkpoints/best_Drsecnn_model_0.8599.pth"
+CKPT_PATH = None  # Set to your new checkpoint path after re-training, e.g. "checkpoints/best_model.pth"
 TEST_DATA = "test_data.npy"
 TEST_LABEL = "test_labels.npy"
 BATCH_SIZE = 128
@@ -32,26 +39,15 @@ if not os.path.exists(TEST_DATA) or not os.path.exists(TEST_LABEL):
     print("Then re-train the model with: python src/training/train.py")
     sys.exit(1)
 
-class NpyDataset(Dataset):
-    def __init__(self, data_path, label_path):
-        self.data = np.load(data_path)
-        self.labels = np.load(label_path)
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        return torch.tensor(self.data[idx], dtype=torch.float32), torch.tensor(self.labels[idx], dtype=torch.int64)
+if CKPT_PATH is None:
+    print("ERROR: No checkpoint specified.")
+    print("Old checkpoints in checkpoints/legacy/ were trained on LEAKED data and cannot be used.")
+    print("Please re-train a model: python src/training/train.py")
+    print("Then set CKPT_PATH in evaluate_model.py to the new checkpoint path.")
+    sys.exit(1)
 
 
-def collate_fn(batch):
-    inputs = torch.stack([item[0] for item in batch])
-    inputs = inputs.view(inputs.shape[0], 1, -1)
-    labels = torch.stack([item[1] for item in batch])
-    return inputs, labels
-
-
-test_dataset = NpyDataset(TEST_DATA, TEST_LABEL)
+test_dataset = npyDataset(TEST_DATA, TEST_LABEL)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
 print(f"Test set: {len(test_dataset)} samples (original features, no augmentation)")
 print(f"Label distribution: {np.bincount(np.load(TEST_LABEL))}")
@@ -99,7 +95,7 @@ cm = confusion_matrix(all_labels, all_preds)
 
 # ---- Step 4: Report ----
 print("\n" + "=" * 70)
-print("DrseCNN Model Evaluation (best_Drsecnn_model_0.8599.pth)")
+print(f"DrseCNN Model Evaluation ({CKPT_PATH})")
 print("CLEAN evaluation — no data leakage")
 print("=" * 70)
 
