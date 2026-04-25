@@ -1,6 +1,6 @@
 import argparse
 import torch
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torch import optim
 import matplotlib.pyplot as plt
@@ -24,35 +24,27 @@ DEFAULT_EPOCHS = 128
 DEFAULT_BATCH_SIZE = 128
 DEFAULT_SAVE_PATH = "best_model.pth"
 
-def get_dataloader(wav_dir, label_file, batch_size, scale=0.7):
-    dataset = npyDataset(wav_dir, label_file)
+def get_dataloaders(train_data_path, train_label_path, test_data_path, test_label_path, batch_size):
+    """Load pre-split (no leakage) train/test data and create dataloaders."""
 
-    total_size = len(dataset)
-    train_size = int(total_size * scale)
-    test_size = total_size - train_size
+    train_dataset = npyDataset(train_data_path, train_label_path)
+    test_dataset = npyDataset(test_data_path, test_label_path)
 
-    generator = torch.Generator()
-    train_dataset, test_dataset = random_split(
-        dataset,
-        [train_size, test_size],
-        generator=generator
-    )
-
-    train_dataloader = DataLoader(
+    train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
         collate_fn=collate_fn
     )
 
-    test_dataloader = DataLoader(
+    test_loader = DataLoader(
         test_dataset,
         batch_size=batch_size,
         shuffle=False,
         collate_fn=collate_fn
     )
 
-    return train_dataloader, test_dataloader
+    return train_loader, test_loader
 
 def train(model, criterion, optimizer, dataloader):
     model.train()
@@ -123,10 +115,14 @@ def plot_training_curves(train_accs, val_accs, train_losses, val_losses):
 
 def main():
     parser = argparse.ArgumentParser(description='Train emotion recognition model')
-    parser.add_argument('--data_path', type=str, required=True,
-                        help='Path to the feature data file (data_all.npy)')
-    parser.add_argument('--label_path', type=str, required=True,
-                        help='Path to the label data file (label_all.npy)')
+    parser.add_argument('--train_data', type=str, default='train_data.npy',
+                        help='Path to training feature file')
+    parser.add_argument('--train_label', type=str, default='train_labels.npy',
+                        help='Path to training label file')
+    parser.add_argument('--test_data', type=str, default='test_data.npy',
+                        help='Path to testing feature file')
+    parser.add_argument('--test_label', type=str, default='test_labels.npy',
+                        help='Path to testing label file')
     parser.add_argument('--model', type=str, default='DrseCNN',
                         choices=['CNNModel', 'DrseCNN', 'CNNBiLSTMModel'],
                         help='Model architecture to use')
@@ -140,33 +136,32 @@ def main():
                         help=f'Batch size (default: {DEFAULT_BATCH_SIZE})')
     parser.add_argument('--save_path', type=str, default=DEFAULT_SAVE_PATH,
                         help=f'Path to save the best model (default: {DEFAULT_SAVE_PATH})')
-    parser.add_argument('--train_ratio', type=float, default=0.7,
-                        help='Train dataset ratio (default: 0.7)')
 
     args = parser.parse_args()
 
     # Check if data files exist
-    if not os.path.exists(args.data_path):
-        print(f"Error: Data file not found at {args.data_path}")
-        print("Please prepare the dataset and generated feature files first.")
-        print("Refer to src/data/dataset.py for feature extraction instructions.")
-        return
+    for path, name in [(args.train_data, 'train_data'),
+                        (args.train_label, 'train_label'),
+                        (args.test_data, 'test_data'),
+                        (args.test_label, 'test_label')]:
+        if not os.path.exists(path):
+            print(f"Error: {name} file not found at {path}")
+            print("Please run src/data/preprocess.py first to generate clean data files.")
+            return
 
-    if not os.path.exists(args.label_path):
-        print(f"Error: Label file not found at {args.label_path}")
-        print("Please prepare the dataset and generated feature files first.")
-        print("Refer to src/data/dataset.py for feature extraction instructions.")
-        return
-
-    print(f"Using data: {args.data_path}")
-    print(f"Using labels: {args.label_path}")
+    print(f"Train data: {args.train_data}")
+    print(f"Train labels: {args.train_label}")
+    print(f"Test data: {args.test_data}")
+    print(f"Test labels: {args.test_label}")
     print(f"Training model: {args.model}")
     print(f"Hyperparameters: lr={args.lr}, wd={args.weight_decay}, "
           f"epochs={args.epochs}, batch_size={args.batch_size}")
 
-    # Get data loaders
-    train_loader, test_loader = get_dataloader(
-        args.data_path, args.label_path, args.batch_size, scale=args.train_ratio
+    # Get data loaders (no random_split — data already split correctly)
+    train_loader, test_loader = get_dataloaders(
+        args.train_data, args.train_label,
+        args.test_data, args.test_label,
+        args.batch_size
     )
 
     # Initialize model

@@ -1,6 +1,6 @@
 # Data files
-data/
-datasets/
+/data/
+/datasets/
 *.wav
 *.mp3
 *.flac
