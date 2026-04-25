@@ -1,0 +1,33 @@
+环境准备：
+1. Python 3.8+，pytorch 2.1。
+2. 在项目根目录下执行：
+   pip install torch torchaudio librosa numpy tqdm matplotlib
+3.主要项目源代码：预处理-训练+网络代码。englishdata.py/train_2.py/nets.py
+   其他代码：用于测试/训练/计算数据/弃用方法。
+4.C-BESD数据集：https://www.kaggle.com/datasets/pranuthi19/bilingual-emotion-speech-datasetbesd
+	*在本项目，下载后需将两个语言的数据集成为一个数据集（扩大训练样本）。
+
+数据预处理：
+1. 准备原始 WAV 文件，将 6 类情绪子文件夹（文件夹名必须与 class_dict 中键一致：ANGER、DISGUST、FEAR、HAPPY、NEUTRAL、SAD）放在同一父目录下，例如：
+2. 修改 englishdata.py 顶部的 wav_dirs 为 WAV 文件父目录路径。
+3. 运行/:python englishdata.py
+   -该脚本会遍历子目录，提取每条语音的增强特征（原始、加噪、变速+变调），并生成 data_all.npy 和 label_all.npy。
+	* 确保 data_all.npy 中每行特征维度与所选模型输入一致。
+
+训练模型：
+1. 将生成的 data_all.npy 和 label_all.npy 放到项目根目录或 data/ 文件夹下。
+2. 打开 train_2.py，修改：
+   wav_dir = r'.../data_all.npy '
+   label_file = r'.../label_all.npy '
+3. 根据需要在 train_2.py 中选择模型：
+   model = XXModel(num\_classes=6).to(device)
+	* 若要切换模型，确保修改 train_2.py 中对应行并调整输入维度。
+4. 调整超参数：lr、weight_decay、epochs、batch_size。
+·batch_size建议不要太小（64 128 256）。
+	* 如果显存/内存不足，可适当调小 batch_size 或只保留原始特征（在 englishdata.py 中注释掉增强部分）。
+5. 运行/：python train_2.py
+   会自动划分 70% 训练，30% 验证，并保存验证集上最优模型。
+
+
+Tips：
+为保证可复现性，可在 get_dataloader 中为 random_split 固定 generator.manual_seed(<seed>)。训练中使用的优化器与学习率、随机种子等过大变动会影响结果。建议在后续实验删除随机种子。
