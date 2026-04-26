@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.data.dataset import npyDataset, collate_fn
+from src.data.dataset import npyDataset, collate_fn, compute_normalizer, load_normalizer
 from src.data.augmentation import mixup_features, feature_noise
 from src.utils.tracker import ExperimentTracker
 from src.models.models import (
@@ -81,9 +81,20 @@ def set_seed(seed):
 # ── data loaders ───────────────────────────────────────────────────────
 def get_dataloaders(train_data_path, train_label_path,
                     test_data_path, test_label_path,
-                    batch_size, num_workers=4):
-    train_dataset = npyDataset(train_data_path, train_label_path)
-    test_dataset  = npyDataset(test_data_path, test_label_path)
+                    batch_size, num_workers=4, normalizer_path=None):
+    # Load or compute per-dimension normalization stats
+    if normalizer_path and os.path.exists(normalizer_path):
+        normalizer = load_normalizer(normalizer_path)
+        print(f"Loaded normalizer from {normalizer_path}")
+    else:
+        print("Computing per-dimension normalizer from training data...")
+        normalizer = compute_normalizer(train_data_path, normalizer_path)
+        rng = [f'{normalizer["mean"].min():.2f}/{normalizer["mean"].max():.2f}',
+               f'{normalizer["std"].min():.4f}/{normalizer["std"].max():.2f}']
+        print(f"  dim mean range: {rng[0]}, std range: {rng[1]}")
+
+    train_dataset = npyDataset(train_data_path, train_label_path, normalizer)
+    test_dataset  = npyDataset(test_data_path, test_label_path, normalizer)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True, collate_fn=collate_fn,
@@ -334,11 +345,12 @@ def main():
             print("Run src/data/preprocess.py first.")
             return
 
-    # Dataloaders
+    # Dataloaders (with feature normalization)
+    normalizer_path = 'feature_normalizer.npz'
     train_loader, test_loader = get_dataloaders(
         args.train_data, args.train_label,
         args.test_data, args.test_label,
-        args.batch_size, args.num_workers
+        args.batch_size, args.num_workers, normalizer_path
     )
 
     # Model

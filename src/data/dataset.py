@@ -50,19 +50,42 @@ class EnglishDataset(Dataset):
         return mfcc, label
     
 class npyDataset(Dataset):
-    def __init__(self, data_path, label_path):
-        self.datas = np.load(data_path)
+    def __init__(self, data_path, label_path, normalizer=None):
+        self.datas = np.load(data_path).astype(np.float32)
         self.labels = np.load(label_path)
+        self.normalizer = normalizer
 
     def __len__(self):
         return self.datas.shape[0]
-    
+
     def __getitem__(self, idx):
-        return torch.tensor(self.datas[idx], dtype=torch.float32), torch.tensor(self.labels[idx], dtype=torch.int64)
+        x = self.datas[idx]
+        if self.normalizer is not None:
+            x = (x - self.normalizer['mean']) / (self.normalizer['std'] + 1e-8)
+        return torch.tensor(x, dtype=torch.float32), torch.tensor(self.labels[idx], dtype=torch.int64)
+
+
+def compute_normalizer(data_path, save_path=None):
+    """Compute per-dim mean/std from training data and optionally save to .npz.
+
+    Feature groups have vastly different scales: ZCR ~0.15, Chroma ~0.5,
+    MFCC ~-12, Mel ~0.01. Without normalization, Conv1d kernels are
+    dominated by large-scale dimensions, making small-scale features
+    (ZCR, Chroma, Mel) invisible to the model — causing severe overfitting.
+    """
+    data = np.load(data_path).astype(np.float32)
+    stats = {'mean': data.mean(axis=0), 'std': data.std(axis=0)}
+    if save_path:
+        np.savez(save_path, **stats)
+    return stats
+
+
+def load_normalizer(path):
+    d = np.load(path)
+    return {'mean': d['mean'], 'std': d['std']}
     
 def collate_fn(batch):
-    """处理固定长度的MFCC特征"""
-    inputs = torch.stack([item[0] for item in batch])  # (batch_size, 1, 25, max_length)
+    inputs = torch.stack([item[0] for item in batch])
     inputs = inputs.view(inputs.shape[0], 1, inputs.shape[1])
     labels = torch.stack([item[1] for item in batch])
     return inputs, labels

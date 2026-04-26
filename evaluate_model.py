@@ -22,7 +22,7 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
-from src.data.dataset import npyDataset, collate_fn
+from src.data.dataset import npyDataset, collate_fn, load_normalizer
 from src.models.models import (
     CNNModel, DrseCNN, DrseNNet_new, CNNBiLSTMModel,
     CRNNModel, Transformer, TDNNModel,
@@ -168,7 +168,14 @@ def main():
         print("ERROR: Test data not found. Run: python src/data/preprocess.py")
         sys.exit(1)
 
-    test_dataset = npyDataset(args.test_data, args.test_label)
+    # Load normalizer (same one used during training)
+    normalizer = None
+    normalizer_path = 'feature_normalizer.npz'
+    if os.path.exists(normalizer_path):
+        normalizer = load_normalizer(normalizer_path)
+        print(f"Loaded normalizer from {normalizer_path}")
+
+    test_dataset = npyDataset(args.test_data, args.test_label, normalizer)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size,
                              shuffle=False, collate_fn=collate_fn)
     print(f"Test set: {len(test_dataset)} samples")
