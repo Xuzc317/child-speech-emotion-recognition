@@ -311,7 +311,11 @@ def main():
     print(f"Mixup a: {args.mixup_alpha}  |  Noise s: {args.noise_std}  |  Label smooth: {args.label_smoothing}")
     print(f"EMA: {not args.no_ema}  |  Seed: {args.seed}  |  Workers: {args.num_workers}")
     if device.type == 'cuda':
-        print(f"GPU: {torch.cuda.get_device_name(0)}  |  Memory: {torch.cuda.get_device_properties(0).total_mem/1e9:.1f} GB")
+        try:
+            mem_gb = torch.cuda.get_device_properties(0).total_mem / 1e9
+            print(f"GPU: {torch.cuda.get_device_name(0)}  |  Memory: {mem_gb:.0f} GB")
+        except Exception:
+            print(f"GPU: {torch.cuda.get_device_name(0)}")
     print("=" * 60)
 
     if args.dry_run:
