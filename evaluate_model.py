@@ -1,17 +1,21 @@
-"""Evaluate DrseCNN checkpoint on BESD dataset — clean (no data leakage).
+"""Evaluate model checkpoint on BESD dataset — clean (no data leakage).
 
-Uses pre-split test data from preprocess.py. Both train and test sets receive
-3x processing (original + noise + stretch+pitch) per WAV with zero speaker overlap.
+Usage:
+    # One-shot evaluation
+    python evaluate_model.py --ckpt checkpoints/best_DrseCNN.pth --model DrseCNN
+
+    # Watch mode: re-evaluate every 60s during training
+    python evaluate_model.py --ckpt checkpoints/best_DrseCNN.pth --model DrseCNN --watch
 
 IMPORTANT: Old checkpoints in checkpoints/legacy/ were trained on leaked data.
-They MUST NOT be used for evaluation. Re-train a model first:
-    python src/training/train.py
-Then update CKPT_PATH below to point to the new checkpoint.
 """
+import argparse
 import os
 import sys
-import torch
+import time
+
 import numpy as np
+import torch
 from torch.utils.data import DataLoader
 from sklearn.metrics import (
     accuracy_score, precision_recall_fscore_support,
@@ -19,50 +23,16 @@ from sklearn.metrics import (
 )
 
 from src.data.dataset import npyDataset, collate_fn
-
-# ---- Config ----
-CKPT_PATH = None  # Set to your new checkpoint path after re-training, e.g. "checkpoints/best_model.pth"
-MODEL_NAME = "DrseCNN"  # Must match the model class used during training
-TEST_DATA = "test_data.npy"
-TEST_LABEL = "test_labels.npy"
-BATCH_SIZE = 128
-NUM_CLASSES = 6
-CLASS_NAMES = ['ANGER', 'DISGUST', 'FEAR', 'HAPPY', 'NEUTRAL', 'SAD']
-
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Device: {DEVICE}")
-
-
-# ---- Step 1: Load pre-split test data ----
-if not os.path.exists(TEST_DATA) or not os.path.exists(TEST_LABEL):
-    print("ERROR: Clean test data not found.")
-    print("Please run: python src/data/preprocess.py")
-    print("Then re-train the model with: python src/training/train.py")
-    sys.exit(1)
-
-if CKPT_PATH is None:
-    print("ERROR: No checkpoint specified.")
-    print("Old checkpoints in checkpoints/legacy/ were trained on LEAKED data and cannot be used.")
-    print("Please re-train a model: python src/training/train.py")
-    print("Then set CKPT_PATH in evaluate_model.py to the new checkpoint path.")
-    sys.exit(1)
-
-
-test_dataset = npyDataset(TEST_DATA, TEST_LABEL)
-test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
-print(f"Test set: {len(test_dataset)} samples (original features, no augmentation)")
-print(f"Label distribution: {np.bincount(np.load(TEST_LABEL))}")
-
-# ---- Step 2: Load model ----
 from src.models.models import (
-    CNNModel, DrseCNN, CNNBiLSTMModel,
+    CNNModel, DrseCNN, DrseNNet_new, CNNBiLSTMModel,
     CRNNModel, Transformer, TDNNModel,
     DenseModel, LSTMModel, OptimizedBiLSTM
 )
 
-_model_registry = {
+MODEL_REGISTRY = {
     'CNNModel': CNNModel,
     'DrseCNN': DrseCNN,
+    'DrseNNet_new': DrseNNet_new,
     'CNNBiLSTMModel': CNNBiLSTMModel,
     'CRNNModel': CRNNModel,
     'Transformer': Transformer,
@@ -72,78 +42,189 @@ _model_registry = {
     'OptimizedBiLSTM': OptimizedBiLSTM,
 }
 
-if MODEL_NAME not in _model_registry:
-    print(f"ERROR: Unknown model '{MODEL_NAME}'. Valid options: {list(_model_registry.keys())}")
-    sys.exit(1)
+CLASS_NAMES = ['ANGER', 'DISGUST', 'FEAR', 'HAPPY', 'NEUTRAL', 'SAD']
 
-model = _model_registry[MODEL_NAME](num_classes=NUM_CLASSES).to(DEVICE)
-state_dict = torch.load(CKPT_PATH, map_location=DEVICE, weights_only=False)
-model.load_state_dict(state_dict)
-model.eval()
-print(f"Model {MODEL_NAME} loaded from: {CKPT_PATH}")
+# ── helpers ───────────────────────────────────────────────────────────
+def load_checkpoint(path, device):
+    """Load checkpoint, handling both old (plain state_dict) and new formats."""
+    ckpt = torch.load(path, map_location=device, weights_only=False)
+    extra = {}
+    if isinstance(ckpt, dict) and 'model_state_dict' in ckpt:
+        state_dict = ckpt['model_state_dict']
+        extra['epoch'] = ckpt.get('epoch', None)
+        extra['best_acc'] = ckpt.get('best_acc', None)
+        extra['model_version'] = ckpt.get('model_version', None)
+        info_parts = []
+        if extra['epoch'] is not None:
+            info_parts.append(f"epoch {extra['epoch']}")
+        if extra['best_acc'] is not None:
+            info_parts.append(f"best_acc={extra['best_acc']:.2%}")
+        if extra['model_version'] is not None:
+            info_parts.append(f"version={extra['model_version']}")
+        print(f"  Checkpoint: {', '.join(info_parts)}")
+    else:
+        state_dict = ckpt
+    return state_dict, extra
 
-# ---- Step 3: Evaluate ----
-all_preds = []
-all_labels = []
-total_correct = 0
-total_samples = 0
 
-with torch.no_grad():
-    for inputs, labels in test_loader:
-        inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
-        outputs = model(inputs)
-        _, preds = torch.max(outputs, 1)
+def evaluate_model(model, dataloader, device, num_classes=6):
+    """Run full evaluation: accuracy, per-class metrics, confusion matrix."""
+    all_preds, all_labels = [], []
 
-        all_preds.extend(preds.cpu().numpy())
-        all_labels.extend(labels.cpu().numpy())
-        total_correct += (preds == labels).sum().item()
-        total_samples += labels.size(0)
+    model.eval()
+    with torch.no_grad():
+        for inputs, labels in dataloader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
 
-all_preds = np.array(all_preds)
-all_labels = np.array(all_labels)
+    all_preds = np.array(all_preds)
+    all_labels = np.array(all_labels)
 
-accuracy = total_correct / total_samples
-precision, recall, f1, _ = precision_recall_fscore_support(
-    all_labels, all_preds, average=None, labels=list(range(NUM_CLASSES)), zero_division=0
-)
-macro_precision, macro_recall, macro_f1, _ = precision_recall_fscore_support(
-    all_labels, all_preds, average='macro', zero_division=0
-)
-weighted_precision, weighted_recall, weighted_f1, _ = precision_recall_fscore_support(
-    all_labels, all_preds, average='weighted', zero_division=0
-)
-cm = confusion_matrix(all_labels, all_preds)
+    total = len(all_labels)
+    correct = int((all_preds == all_labels).sum())
+    acc = correct / total
 
-# ---- Step 4: Report ----
-print("\n" + "=" * 70)
-print(f"{MODEL_NAME} Model Evaluation ({CKPT_PATH})")
-print("CLEAN evaluation — no data leakage")
-print("=" * 70)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        all_labels, all_preds, average=None,
+        labels=list(range(num_classes)), zero_division=0
+    )
+    macro_p, macro_r, macro_f1, _ = precision_recall_fscore_support(
+        all_labels, all_preds, average='macro', zero_division=0
+    )
+    cm = confusion_matrix(all_labels, all_preds, labels=list(range(num_classes)))
 
-print(f"\nTotal samples: {total_samples}")
-print(f"Correct predictions: {total_correct}")
-print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+    return {
+        'accuracy': acc,
+        'correct': correct,
+        'total': total,
+        'per_class': {
+            'precision': precision,
+            'recall': recall,
+            'f1': f1,
+        },
+        'macro': {'precision': macro_p, 'recall': macro_r, 'f1': macro_f1},
+        'confusion_matrix': cm,
+    }
 
-print(f"\n--- Macro Average ---")
-print(f"Macro Precision: {macro_precision:.4f}")
-print(f"Macro Recall:    {macro_recall:.4f}")
-print(f"Macro F1:        {macro_f1:.4f}")
 
-print(f"\n--- Weighted Average ---")
-print(f"Weighted Precision: {weighted_precision:.4f}")
-print(f"Weighted Recall:    {weighted_recall:.4f}")
-print(f"Weighted F1:        {weighted_f1:.4f}")
+def print_report(results, model_name, ckpt_path):
+    """Pretty-print evaluation results."""
+    print("\n" + "=" * 70)
+    print(f"{model_name} Evaluation ({ckpt_path}) — CLEAN, no data leakage")
+    print("=" * 70)
 
-print(f"\n--- Per-class ---")
-print(f"{'Class':<12} {'Precision':<10} {'Recall':<10} {'F1':<10} {'Support':<8}")
-print("-" * 55)
-for i, name in enumerate(CLASS_NAMES):
-    count = np.sum(all_labels == i)
-    print(f"{name:<12} {precision[i]:<10.4f} {recall[i]:<10.4f} {f1[i]:<10.4f} {count:<8}")
+    print(f"\nSamples: {results['total']}")
+    print(f"Correct: {results['correct']}")
+    print(f"Accuracy: {results['accuracy']:.4f} ({results['accuracy']*100:.2f}%)")
 
-print(f"\n--- Confusion Matrix ---")
-header = "        " + " ".join(f"{n[:6]:>7}" for n in CLASS_NAMES)
-print(header)
-for i, name in enumerate(CLASS_NAMES):
-    row = f"{name:<8}" + " ".join(f"{cm[i][j]:>7d}" for j in range(NUM_CLASSES))
-    print(row)
+    print(f"\n--- Macro ---")
+    print(f"Precision: {results['macro']['precision']:.4f}")
+    print(f"Recall:    {results['macro']['recall']:.4f}")
+    print(f"F1:        {results['macro']['f1']:.4f}")
+
+    print(f"\n--- Per-class ---")
+    print(f"{'Class':<12} {'Precision':<10} {'Recall':<10} {'F1':<10}")
+    print("-" * 45)
+    pc = results['per_class']
+    for i, name in enumerate(CLASS_NAMES):
+        print(f"{name:<12} {pc['precision'][i]:<10.4f} {pc['recall'][i]:<10.4f} {pc['f1'][i]:<10.4f}")
+
+    print(f"\n--- Confusion Matrix ---")
+    cm = results['confusion_matrix']
+    header = "        " + " ".join(f"{n[:6]:>7}" for n in CLASS_NAMES)
+    print(header)
+    for i, name in enumerate(CLASS_NAMES):
+        row = f"{name:<8}" + " ".join(f"{cm[i][j]:>7d}" for j in range(len(CLASS_NAMES)))
+        print(row)
+
+    print("-" * 70)
+    return results['accuracy']
+
+
+# ── main ──────────────────────────────────────────────────────────────
+def main():
+    parser = argparse.ArgumentParser(description='Evaluate emotion recognition model')
+    parser.add_argument('--ckpt', type=str, required=True,
+                        help='Path to checkpoint (.pth)')
+    parser.add_argument('--model', type=str, default='DrseCNN',
+                        choices=list(MODEL_REGISTRY.keys()))
+    parser.add_argument('--test_data', default='test_data.npy')
+    parser.add_argument('--test_label', default='test_labels.npy')
+    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--watch', action='store_true',
+                        help='Watch mode: re-evaluate every 60s (for monitoring active training)')
+    parser.add_argument('--watch_interval', type=int, default=60,
+                        help='Seconds between watch evaluations')
+    args = parser.parse_args()
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Device: {device}")
+
+    # Data checks
+    if not os.path.exists(args.test_data) or not os.path.exists(args.test_label):
+        print("ERROR: Test data not found. Run: python src/data/preprocess.py")
+        sys.exit(1)
+
+    test_dataset = npyDataset(args.test_data, args.test_label)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size,
+                             shuffle=False, collate_fn=collate_fn)
+    print(f"Test set: {len(test_dataset)} samples")
+
+    if args.watch:
+        print(f"\nWatch mode: checking '{args.ckpt}' every {args.watch_interval}s...")
+        print("Press Ctrl+C to stop.\n")
+
+        last_mtime = 0
+        best_watch_acc = 0.0
+
+        try:
+            while True:
+                try:
+                    current_mtime = os.path.getmtime(args.ckpt)
+                except OSError:
+                    print(f"[{time.strftime('%H:%M:%S')}] Waiting for checkpoint...")
+                    time.sleep(args.watch_interval)
+                    continue
+
+                if current_mtime > last_mtime:
+                    last_mtime = current_mtime
+                    model = MODEL_REGISTRY[args.model](num_classes=6).to(device)
+                    try:
+                        state_dict, _ = load_checkpoint(args.ckpt, device)
+                        model.load_state_dict(state_dict)
+                    except Exception as e:
+                        print(f"[{time.strftime('%H:%M:%S')}] Failed to load: {e}")
+                        time.sleep(args.watch_interval)
+                        continue
+
+                    results = evaluate_model(model, test_loader, device)
+                    acc = print_report(results, args.model, args.ckpt)
+                    if acc > best_watch_acc:
+                        best_watch_acc = acc
+                        print(f"  >>> New best: {acc:.2%}")
+
+                time.sleep(args.watch_interval)
+
+        except KeyboardInterrupt:
+            print(f"\nWatch stopped. Best observed accuracy: {best_watch_acc:.2%}")
+
+    else:
+        # One-shot evaluation
+        if not os.path.exists(args.ckpt):
+            print(f"ERROR: Checkpoint not found: {args.ckpt}")
+            print("Old checkpoints in checkpoints/legacy/ have data leakage — do NOT use them.")
+            sys.exit(1)
+
+        model = MODEL_REGISTRY[args.model](num_classes=6).to(device)
+        state_dict, _ = load_checkpoint(args.ckpt, device)
+        model.load_state_dict(state_dict)
+
+        results = evaluate_model(model, test_loader, device)
+        print_report(results, args.model, args.ckpt)
+
+
+if __name__ == "__main__":
+    main()

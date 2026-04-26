@@ -13,6 +13,8 @@
 wandb/
 runs/
 logs/
+experiments/logs/
+*.pid
 
 # Python
 __pycache__/
