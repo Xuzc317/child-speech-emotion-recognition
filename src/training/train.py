@@ -41,16 +41,16 @@ MODEL_REGISTRY = {
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ── defaults ──────────────────────────────────────────────────────────
-DEFAULT_LR          = 5e-4
-DEFAULT_WD          = 5e-5
-DEFAULT_EPOCHS      = 150
-DEFAULT_BATCH_SIZE  = 128
-DEFAULT_PATIENCE    = 30
+DEFAULT_LR          = 3e-4
+DEFAULT_WD          = 1e-3
+DEFAULT_EPOCHS      = 200
+DEFAULT_BATCH_SIZE  = 256
+DEFAULT_PATIENCE    = 50
 DEFAULT_SEED        = 42
-DEFAULT_WARMUP      = 5
-DEFAULT_MIXUP_ALPHA = 0.2
+DEFAULT_WARMUP      = 10
+DEFAULT_MIXUP_ALPHA = 0.3
 DEFAULT_LABEL_SMOOTH = 0.1
-DEFAULT_NOISE_STD   = 0.005
+DEFAULT_NOISE_STD   = 0.01
 MAX_GRAD_NORM       = 1.0
 EMA_DECAY           = 0.999
 

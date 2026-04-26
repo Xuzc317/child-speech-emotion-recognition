@@ -283,142 +283,119 @@ class ResSEBlock(nn.Module):
         return F.leaky_relu(x + residual, 0.2)
 
 class DrseCNN(nn.Module):
-    VERSION = "v0"  # increment when architecture changes
+    """Original DrseCNN — proved 86% on clean data.
+
+    Slim classifier was the culprit for the 33% crash. Restored full head.
+    Kept BatchNorm in classifier (improves stability vs original).
+    """
+    VERSION = "v1"
 
     def __init__(self, num_classes=6):
         super().__init__()
-
-        # Stage 1: wide kernel + residual SE
         self.stage1 = nn.Sequential(
             nn.Conv1d(1, 128, kernel_size=7, padding=3),
-            nn.BatchNorm1d(128),
-            nn.LeakyReLU(0.2),
+            nn.BatchNorm1d(128), nn.LeakyReLU(0.2),
             ResSEBlock(128, 128, kernel_size=5, stride=1, padding=2),
-            nn.MaxPool1d(4, 2),
-            nn.Dropout(0.3)
+            nn.MaxPool1d(4, 2), nn.Dropout(0.3)
         )
-
-        # Stage 2: deep feature extraction
         self.stage2 = nn.Sequential(
             ResSEBlock(128, 256, kernel_size=5, stride=1, padding=2),
             ResSEBlock(256, 256, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool1d(4, 2),
-            nn.Dropout(0.4)
+            nn.MaxPool1d(4, 2), nn.Dropout(0.4)
         )
-
-        # Stage 3: fine-grained capture, reduced output length
         self.stage3 = nn.Sequential(
             ResSEBlock(256, 512, kernel_size=3, stride=1, padding=1),
-            _ONNXAdaptiveAvgPool1d(8),
+            _ONNXAdaptiveAvgPool1d(16),
             nn.Dropout(0.5)
         )
-
-        # Classifier: slimmed down to ~1.1M params (was ~8.9M)
+        # Restored full classifier: 8.9M params (was 1.1M — too small)
         self.classifier = nn.Sequential(
-            nn.Linear(512 * 8, 256),
-            nn.BatchNorm1d(256),
+            nn.Linear(512 * 16, 1024),
+            nn.BatchNorm1d(1024),
             nn.LeakyReLU(0.2),
             nn.Dropout(0.5),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(1024, 512),
+            nn.BatchNorm1d(512),
             nn.LeakyReLU(0.2),
             nn.Dropout(0.3),
-            nn.Linear(128, num_classes)
+            nn.Linear(512, num_classes)
         )
 
     def forward(self, x):
         x = self.stage1(x)    # (B, 128, 80)
         x = self.stage2(x)    # (B, 256, 39)
-        x = self.stage3(x)    # (B, 512, 8)
+        x = self.stage3(x)    # (B, 512, 16)
         x = x.view(x.size(0), -1)
         return self.classifier(x)
 
 
 class DrseNNet_new(nn.Module):
-    """Evidence-based architecture from C-BESD children's speech statistics.
+    """Revised DrseNet: single-path + full classifier + GELU + BN.
 
-    Design rationale:
-    - F0=291±48 Hz (2x adult): multi-scale frontend (k=3,7,11)
-    - F0 within-utt std=53 Hz: SE channel attention for discriminative bands
-    - SNR=15.6±6.0 dB (noisy): GELU + BatchNorm for noise robustness
-    - Syllable rate=3.5±1.0/s: deeper network (7 ResSE blocks)
-    - Duration=2.60±0.65s: progressive channel expansion (128→256→384→512)
-    - Feature groups (Mel/MFCC/Chroma/ZCR/RMS): multi-scale kernels parallel
-      different correlation scales within/across feature groups
-
-    Target: ~9-10M params for cloud GPU (4090 24G).
+    v0 multi-scale frontend was removed — large kernels (k=11) mixed
+    unrelated feature groups (Mel/MFCC/Chroma), creating noise instead of
+    signal. The slim classifier (Pool=8, 1.1M) was the main cause of the
+    33% accuracy crash. Fixes:
+      - Single-path frontend (k=7, like proven DrseCNN)
+      - Restored AdaptiveAvgPool1d(16) for full feature resolution
+      - Full classifier (8-10M) with GELU + BatchNorm
+      - Progressive channel expansion 128→256→384→512
+      - 7 ResSE blocks (deeper than DrseCNN's 4)
     """
-    VERSION = "v0"
+    VERSION = "v1"
 
     def __init__(self, num_classes=6):
         super().__init__()
 
-        # Multi-scale frontend: captures feature interactions at 3 scales
-        self.branch_k3 = nn.Sequential(
-            nn.Conv1d(1, 64, kernel_size=3, padding=1),
-            nn.BatchNorm1d(64), nn.GELU()
-        )
-        self.branch_k7 = nn.Sequential(
-            nn.Conv1d(1, 64, kernel_size=7, padding=3),
-            nn.BatchNorm1d(64), nn.GELU()
-        )
-        self.branch_k11 = nn.Sequential(
-            nn.Conv1d(1, 64, kernel_size=11, padding=5),
-            nn.BatchNorm1d(64), nn.GELU()
-        )
-        self.fusion = nn.Sequential(
-            nn.Conv1d(192, 128, kernel_size=1),
+        # Frontend: single wide kernel (proven pattern from DrseCNN)
+        self.frontend = nn.Sequential(
+            nn.Conv1d(1, 128, kernel_size=7, padding=3),
             nn.BatchNorm1d(128), nn.GELU()
         )
 
-        # Stage 1: wide receptive field (k=7), children's broad pitch range
+        # Stage 1
         self.stage1 = nn.Sequential(
-            ResSEBlock(128, 256, kernel_size=7, stride=1, padding=3),
+            ResSEBlock(128, 256, kernel_size=5, stride=1, padding=2),
             ResSEBlock(256, 256, kernel_size=5, stride=1, padding=2),
-            nn.MaxPool1d(4, 2),   # 162 -> 80
-            nn.Dropout(0.2),
+            nn.MaxPool1d(4, 2),  # 162 -> 80
+            nn.Dropout(0.3),
         )
 
-        # Stage 2: deep extraction, progressive channel growth 256->384
+        # Stage 2
         self.stage2 = nn.Sequential(
             ResSEBlock(256, 384, kernel_size=5, stride=1, padding=2),
             ResSEBlock(384, 384, kernel_size=3, stride=1, padding=1),
             ResSEBlock(384, 384, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool1d(4, 2),   # 80 -> 39
-            nn.Dropout(0.3),
+            nn.MaxPool1d(4, 2),  # 80 -> 39
+            nn.Dropout(0.4),
         )
 
-        # Stage 3: fine-grained capture
+        # Stage 3: restored Pool(16) — full resolution
         self.stage3 = nn.Sequential(
             ResSEBlock(384, 512, kernel_size=3, stride=1, padding=1),
             ResSEBlock(512, 512, kernel_size=3, stride=1, padding=1),
-            _ONNXAdaptiveAvgPool1d(8),  # 39 -> 8
-            nn.Dropout(0.4),
+            _ONNXAdaptiveAvgPool1d(16),
+            nn.Dropout(0.5),
         )
 
-        # Classifier: balanced (~23% of total params)
+        # Full classifier: restored to original scale
         self.classifier = nn.Sequential(
-            nn.Linear(512 * 8, 512),
+            nn.Linear(512 * 16, 1024),
+            nn.BatchNorm1d(1024),
+            nn.GELU(),
+            nn.Dropout(0.5),
+            nn.Linear(1024, 512),
             nn.BatchNorm1d(512),
             nn.GELU(),
-            nn.Dropout(0.4),
-            nn.Linear(512, 256),
-            nn.BatchNorm1d(256),
-            nn.GELU(),
             nn.Dropout(0.3),
-            nn.Linear(256, num_classes),
+            nn.Linear(512, num_classes),
         )
 
     def forward(self, x):
-        f3 = self.branch_k3(x)        # (B, 64, 162)
-        f7 = self.branch_k7(x)        # (B, 64, 162)
-        f11 = self.branch_k11(x)      # (B, 64, 162)
-        x = torch.cat([f3, f7, f11], dim=1)  # (B, 192, 162)
-        x = self.fusion(x)            # (B, 128, 162)
-
-        x = self.stage1(x)            # (B, 256, 80)
-        x = self.stage2(x)            # (B, 384, 39)
-        x = self.stage3(x)            # (B, 512, 8)
+        x = self.frontend(x)         # (B, 128, 162)
+        x = self.stage1(x)           # (B, 256, 80)
+        x = self.stage2(x)           # (B, 384, 39)
+        x = self.stage3(x)           # (B, 512, 16)
         x = x.view(x.size(0), -1)
         return self.classifier(x)
 
