@@ -38,11 +38,11 @@ def extract_prosody(waveform, sr=16000, hop_length=320):
         f0: (T_frames,) F0 曲线（未 voiced 帧为 0）
         energy: (T_frames,) RMS 能量
     """
-    # F0 — 使用 librosa 的 pyin
-    f0, voiced_flag, _ = librosa.pyin(
+    # F0 — 使用 librosa.yin（比 pyin 快 10x，精度略低但足够）
+    f0 = librosa.yin(
         waveform, sr=sr,
         fmin=librosa.note_to_hz('C2'),   # ~65 Hz
-        fmax=librosa.note_to_hz('C6'),   # ~1047 Hz（覆盖儿童高频）
+        fmax=librosa.note_to_hz('C7'),   # ~2093 Hz（覆盖儿童高频）
         hop_length=hop_length,
     )
     f0 = np.nan_to_num(f0, nan=0.0)

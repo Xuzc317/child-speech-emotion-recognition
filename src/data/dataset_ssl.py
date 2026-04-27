@@ -25,30 +25,30 @@ import librosa
 class SSLFeatureDataset(Dataset):
     """模式 A：从预提取的 .npy 特征文件加载。
 
-    使用方式和旧项目的 npyDataset 类似，但特征是 (T, 768) 帧级序列
-    而非 (162,) 均值向量。
-
-    TODO Phase 1:
-      1. 用 scripts/extract_ssl_features.py 为所有 WAV 提取特征
-      2. 保存为 {speaker}_{emotion}_{idx}.npy 或类似命名
-      3. 或者直接保存为 train_ssl_feats.npy / test_ssl_feats.npy
+    Args:
+        data_path: .npy 文件路径，形状 (N, T, 768) float32
+        label_path: .npy 文件路径，形状 (N,) int64
+        prosody_path: 可选 .npy，形状 (N, T, 2) float32 (F0 + energy)
     """
 
-    def __init__(self, data_path, label_path):
-        """
-        Args:
-            data_path: .npy 文件路径，形状 (N, T, 768) float32
-            label_path: .npy 文件路径，形状 (N,) int64
-        """
+    def __init__(self, data_path, label_path, prosody_path=None):
         self.datas = np.load(data_path).astype(np.float32)
         self.labels = np.load(label_path)
+        if prosody_path and os.path.exists(prosody_path):
+            self.prosody = np.load(prosody_path).astype(np.float32)
+        else:
+            self.prosody = None
 
     def __len__(self):
         return len(self.labels)
 
     def __getitem__(self, idx):
         x = self.datas[idx]  # (T, 768)
-        return torch.from_numpy(x), torch.tensor(self.labels[idx], dtype=torch.int64)
+        label = torch.tensor(self.labels[idx], dtype=torch.int64)
+        if self.prosody is not None:
+            p = self.prosody[idx]  # (T, 2)
+            return torch.from_numpy(x), label, torch.from_numpy(p)
+        return torch.from_numpy(x), label
 
 
 class SSLOnlineDataset(Dataset):
@@ -106,17 +106,17 @@ class SSLOnlineDataset(Dataset):
 def collate_fn_ssl_features(batch):
     """SSL 特征序列的 collate 函数。
 
-    处理变长序列，统一 padding 到 batch 内最大长度。
+    支持可选的韵律特征（3 元组模式）。
     """
+    has_prosody = len(batch[0]) == 3
     features = [item[0] for item in batch]
     labels = torch.stack([item[1] for item in batch])
+    prosody = [item[2] for item in batch] if has_prosody else None
 
-    # 找到最大时间步
     max_t = max(f.shape[0] for f in features)
     feat_dim = features[0].shape[1]
 
-    padded = []
-    masks = []
+    padded, masks = [], []
     for f in features:
         t = f.shape[0]
         if t < max_t:
@@ -128,4 +128,15 @@ def collate_fn_ssl_features(batch):
             mask = torch.ones(t)
         masks.append(mask)
 
-    return torch.stack(padded), labels, torch.stack(masks)
+    result = [torch.stack(padded), labels, torch.stack(masks)]
+    if has_prosody:
+        # Pad prosody to same max_t
+        prosody_padded = []
+        for p in prosody:
+            if p.shape[0] < max_t:
+                pad = torch.zeros(max_t - p.shape[0], p.shape[1])
+                prosody_padded.append(torch.cat([p, pad], dim=0))
+            else:
+                prosody_padded.append(p)
+        result.append(torch.stack(prosody_padded))  # (B, T, 2)
+    return tuple(result)

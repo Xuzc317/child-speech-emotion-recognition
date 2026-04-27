@@ -35,3 +35,4 @@ experiments/logs/
 # Model cache
 .cache/
 .claude/
+data/*.npz

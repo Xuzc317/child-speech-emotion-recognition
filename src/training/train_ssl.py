@@ -58,7 +58,7 @@ class DistributionCalibratedSER(nn.Module):
       waveforms / ssl_feats → Backbone → Adapter → Pooling → Classifier
     """
 
-    def __init__(self, config):
+    def __init__(self, config, adapter_init=None):
         super().__init__()
         self.use_backbone = config.get('use_backbone', True)
         self.use_adapter = config.get('use_adapter', True)
@@ -74,7 +74,9 @@ class DistributionCalibratedSER(nn.Module):
 
         # 2. Distribution Calibration Adapter
         if self.use_adapter:
-            self.adapter = AcousticCalibrationAdapter(dim=768)
+            init_scale = adapter_init['scale'] if adapter_init else None
+            init_bias = adapter_init['bias'] if adapter_init else None
+            self.adapter = AcousticCalibrationAdapter(dim=768, init_scale=init_scale, init_bias=init_bias)
 
         # 3. Temporal Importance Pooling
         if self.use_prosody:
@@ -122,6 +124,8 @@ def train():
     parser.add_argument('--finetune', action='store_true', default=False,
                         help='Unfreeze backbone for fine-tuning (default: frozen)')
     parser.add_argument('--use_adapter', action='store_true', default=False)
+    parser.add_argument('--random_init_adapter', action='store_true', default=False,
+                        help='Use random init for adapter (skip statistical prior)')
     parser.add_argument('--use_prosody', action='store_true', default=False)
     # Training
     parser.add_argument('--lr', type=float, default=3e-4)
@@ -135,21 +139,33 @@ def train():
 
     # ── 数据加载 ──
     if args.mode == 'precomputed':
-        train_dataset = SSLFeatureDataset(args.train_feats, args.train_labels)
-        test_dataset = SSLFeatureDataset(args.test_feats, args.test_labels)
+        prosody_train = prosody_test = None
+        if args.use_prosody:
+            base = os.path.dirname(args.train_feats)
+            tag = os.path.basename(args.train_feats).replace('_wavlm_feats.npy', '').replace('_e2v_feats.npy', '')
+            # Determine the prosody prefix from the features filename
+            for pfx in ['wavlm', 'e2v']:
+                if pfx in args.train_feats:
+                    prosody_train = os.path.join(base, f'train_{pfx}_prosody.npy')
+                    prosody_test = os.path.join(base, f'test_{pfx}_prosody.npy')
+                    break
+            if not prosody_train or not os.path.exists(prosody_train or ''):
+                print(f"WARNING: Prosody features not found, falling back to mean pooling")
+                args.use_prosody = False
+        train_dataset = SSLFeatureDataset(args.train_feats, args.train_labels, prosody_train)
+        test_dataset = SSLFeatureDataset(args.test_feats, args.test_labels, prosody_test)
     else:
-        # TODO Phase 2: 在线模式
         raise NotImplementedError("Online mode — implement in Phase 2")
 
     train_loader = DataLoader(
         train_dataset, batch_size=args.batch_size,
         shuffle=True, collate_fn=collate_fn_ssl_features,
-        num_workers=4, pin_memory=True,
+        num_workers=0, pin_memory=True,
     )
     test_loader = DataLoader(
         test_dataset, batch_size=args.batch_size,
         shuffle=False, collate_fn=collate_fn_ssl_features,
-        num_workers=4, pin_memory=True,
+        num_workers=0, pin_memory=True,
     )
 
     # ── 模型 ──
@@ -160,7 +176,21 @@ def train():
         'use_adapter': args.use_adapter,
         'use_prosody': args.use_prosody,
     }
-    model = DistributionCalibratedSER(config).to(device)
+
+    # Load adapter statistical prior if available
+    adapter_init = None
+    if args.use_adapter and not args.random_init_adapter:
+        init_path = os.path.join(os.path.dirname(args.train_feats), 'adapter_init.npz')
+        if os.path.exists(init_path):
+            adapter_init = dict(np.load(init_path))
+            print(f"Loaded adapter init from {init_path}")
+            print(f"  scale mean={adapter_init['scale'].mean():.4f}, bias mean={adapter_init['bias'].mean():.4f}")
+        else:
+            print(f"WARNING: --use_adapter set but {init_path} not found, using random init")
+    elif args.use_adapter and args.random_init_adapter:
+        print(f"Using random Adapter init (--random_init_adapter)")
+
+    model = DistributionCalibratedSER(config, adapter_init=adapter_init).to(device)
     print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"Trainable:  {sum(p.numel() for p in model.parameters() if p.requires_grad):,}")
 
@@ -180,11 +210,17 @@ def train():
         train_correct = 0
         train_total = 0
 
-        for inputs, labels, masks in tqdm(train_loader, desc=f'Epoch {epoch+1}'):
-            inputs, labels = inputs.to(device), labels.to(device)
+        for batch in tqdm(train_loader, desc=f'Epoch {epoch+1}'):
+            inputs, labels = batch[0].to(device), batch[1].to(device)
+            prosody_batch = batch[3].to(device) if len(batch) >= 4 else None
 
             optimizer.zero_grad()
-            outputs = model(inputs)  # precomputed: 特征直接进 adapter+pooling+classifier
+            if prosody_batch is not None:
+                f0 = prosody_batch[:, :, 0:1]
+                energy = prosody_batch[:, :, 1:2]
+                outputs = model(inputs, f0=f0, energy=energy)
+            else:
+                outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -199,9 +235,15 @@ def train():
         val_correct = 0
         val_total = 0
         with torch.no_grad():
-            for inputs, labels, masks in test_loader:
-                inputs, labels = inputs.to(device), labels.to(device)
-                outputs = model(inputs)
+            for batch in test_loader:
+                inputs, labels = batch[0].to(device), batch[1].to(device)
+                prosody_batch = batch[3].to(device) if len(batch) >= 4 else None
+                if prosody_batch is not None:
+                    f0 = prosody_batch[:, :, 0:1]
+                    energy = prosody_batch[:, :, 1:2]
+                    outputs = model(inputs, f0=f0, energy=energy)
+                else:
+                    outputs = model(inputs)
                 _, preds = torch.max(outputs, 1)
                 val_correct += (preds == labels).sum().item()
                 val_total += labels.size(0)

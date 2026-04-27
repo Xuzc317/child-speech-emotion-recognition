@@ -44,18 +44,17 @@ class AcousticCalibrationAdapter(nn.Module):
       gate 网络可以根据帧内容动态调整校准强度。
     """
 
-    def __init__(self, dim=768, reduction=4):
+    def __init__(self, dim=768, reduction=4, init_scale=None, init_bias=None):
         super().__init__()
 
-        # TODO Phase 2:
-        #   用儿童 vs 成人语音在 SSL 特征空间中的统计差异
-        #   初始化 scale 和 bias
-        #   方法：在 BESD MY 上跑一次 frozen backbone，收集帧级特征
-        #         计算 per-dimension mean/std，与成人数据做差
-        #   这个初始化使得适配器一开始就"知道"分布偏移的方向
-
-        self.scale = nn.Parameter(torch.ones(dim))
-        self.bias = nn.Parameter(torch.zeros(dim))
+        if init_scale is not None:
+            self.scale = nn.Parameter(torch.tensor(init_scale, dtype=torch.float32))
+        else:
+            self.scale = nn.Parameter(torch.ones(dim))
+        if init_bias is not None:
+            self.bias = nn.Parameter(torch.tensor(init_bias, dtype=torch.float32))
+        else:
+            self.bias = nn.Parameter(torch.zeros(dim))
 
         # 轻量 gate: 根据帧内容做非线性调整
         self.gate = nn.Sequential(
