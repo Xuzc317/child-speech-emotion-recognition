@@ -1,0 +1,37 @@
+# Data files (large .npy)
+data/*.npy
+
+# Checkpoints
+checkpoints/*.pth
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Conda/venv
+env/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Experiments
+experiments/logs/
+
+# Model cache
+.cache/
+.claude/
