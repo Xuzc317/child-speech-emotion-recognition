@@ -107,10 +107,11 @@ def main():
     print(f"  Frames: {adult_feats.shape[0]}, Mean norm: {np.linalg.norm(adult_mean):.2f}")
 
     # Compute adapter initialization
-    # scale = adult_std / child_std (补偿方差差异)
-    # bias  = adult_mean - child_mean (补偿均值偏移)
+    # 目标：使 child feature 经 x*scale + bias 后的分布对齐 adult 分布
+    # E[x*scale + bias] = μ_adult  ⇒  bias = μ_adult - μ_child * scale
+    # Var[x*scale + bias] ≈ Var[adult]  ⇒  scale = σ_adult / σ_child
     scale_init = adult_std / child_std
-    bias_init = adult_mean - child_mean
+    bias_init = adult_mean - child_mean * scale_init
 
     print(f"\n=== Adapter Init Stats ===")
     print(f"  scale: min={scale_init.min():.4f}, max={scale_init.max():.4f}, mean={scale_init.mean():.4f}")
