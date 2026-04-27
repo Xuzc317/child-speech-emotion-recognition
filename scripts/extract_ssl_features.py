@@ -20,7 +20,7 @@ import torch
 import librosa
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.data.preprocess import collect_wav_files, split_speakers, CLASS_NAMES
+from src.data.preprocess import collect_wav_files, split_speakers_3way, CLASS_NAMES
 from src.models.ssl_backbone import SSLBackbone, preprocess_wav
 
 
@@ -67,14 +67,16 @@ def main():
             sys.exit(1)
     entries = collect_wav_files(wav_dir)
 
-    # 2. Speaker-independent 划分
-    print("Splitting speakers...")
-    train_entries, test_entries, train_sids, test_sids = split_speakers(entries)
+    # 2. Speaker-independent 60/20/20 三路划分
+    print("Splitting speakers (60/20/20)...")
+    train_entries, val_entries, test_entries, train_sids, val_sids, test_sids = split_speakers_3way(entries)
     print(f"  Train: {len(train_entries)} WAVs from {len(train_sids)} speakers")
+    print(f"  Val:   {len(val_entries)} WAVs from {len(val_sids)} speakers")
     print(f"  Test:  {len(test_entries)} WAVs from {len(test_sids)} speakers")
 
     if args.max_samples:
         train_entries = train_entries[:args.max_samples]
+        val_entries = val_entries[:args.max_samples]
         test_entries = test_entries[:args.max_samples]
 
     # 3. 加载 SSL backbone（frozen）
@@ -119,8 +121,9 @@ def main():
         print(f"  Saved {len(features)} samples to {split_name}_{tag}_feats.npy (shape: {feats_arr.shape})")
 
     tag = args.prefix if args.prefix else 'ssl'
-    extract_and_save(train_entries, f'train', tag)
-    extract_and_save(test_entries, f'test', tag)
+    extract_and_save(train_entries, 'train', tag)
+    extract_and_save(val_entries,  'val',   tag)
+    extract_and_save(test_entries, 'test',  tag)
 
     print("Done!")
 

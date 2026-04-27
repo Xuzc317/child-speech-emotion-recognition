@@ -14,7 +14,7 @@ import os, sys, argparse, time, numpy as np, torch, librosa
 from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.data.preprocess import collect_wav_files, split_speakers
+from src.data.preprocess import collect_wav_files, split_speakers_3way
 from src.models.ssl_backbone import SSLBackbone, preprocess_wav
 
 # Augmentation configs
@@ -61,7 +61,7 @@ def main():
     wav_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                            '..', '提交到团队', '数据集', 'BESD', 'BESD', 'MY')
     entries = collect_wav_files(wav_dir)
-    train_entries, test_entries, _, _ = split_speakers(entries)
+    train_entries, val_entries, test_entries, _, _, _ = split_speakers_3way(entries)
 
     # Load backbone once
     print(f"Loading {args.model} backbone (frozen)...")
@@ -77,7 +77,7 @@ def main():
         print(f"Config: {cfg_name} — pitch={cfg['pitch_range']}, stretch={cfg['stretch_range']}")
         print(f"{'='*60}")
 
-        for split_name, entries in [('train', train_entries), ('test', test_entries)]:
+        for split_name, entries in [('train', train_entries), ('val', val_entries), ('test', test_entries)]:
             it = entries[:args.max_samples] if args.max_samples else entries
             feats_list, labels_list, skipped = [], [], 0
             t0 = time.time()

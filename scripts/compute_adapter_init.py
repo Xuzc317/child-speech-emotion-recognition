@@ -21,22 +21,7 @@ from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.models.ssl_backbone import SSLBackbone, preprocess_wav
-
-
-def collect_wavs(wav_dir):
-    """递归收集目录下所有 WAV 文件，返回 [(path, label_idx), ...]"""
-    entries = []
-    if not os.path.isdir(wav_dir):
-        print(f"  WARNING: {wav_dir} not found")
-        return entries
-    for cls_name in sorted(os.listdir(wav_dir)):
-        cls_dir = os.path.join(wav_dir, cls_name)
-        if not os.path.isdir(cls_dir):
-            continue
-        for fname in sorted(os.listdir(cls_dir)):
-            if fname.endswith('.wav'):
-                entries.append(os.path.join(cls_dir, fname))
-    return entries
+from src.data.preprocess import collect_wav_files, split_speakers_3way
 
 
 def collect_frame_features(wav_paths, backbone, device, max_files=None):
@@ -90,17 +75,25 @@ def main():
     print(f"Loading {args.model} backbone (frozen)...")
     backbone = SSLBackbone(model_name=args.model, frozen=True, device=device)
 
-    # Collect child features
-    print(f"\n=== Child speech: {child_dir} ===")
-    child_paths = collect_wavs(child_dir)
-    print(f"  Found {len(child_paths)} WAVs")
+    # Collect child features — ONLY use TRAIN speakers to avoid data leakage
+    print(f"\n=== Child speech (train-only): {child_dir} ===")
+    all_entries = collect_wav_files(child_dir)
+    train_entries, _, _, _, _, _ = split_speakers_3way(all_entries)
+    child_paths = [e[0] for e in train_entries]  # Only train speaker paths
+    print(f"  {len(child_paths)} train WAVs (from {len(all_entries)} total)")
     child_feats = collect_frame_features(child_paths, backbone, device, args.max_child)
     child_mean, child_std = compute_stats(child_feats)
     print(f"  Frames: {child_feats.shape[0]}, Mean norm: {np.linalg.norm(child_mean):.2f}")
 
-    # Collect adult features
+    # Collect adult features (IEMOCAP has no speaker split needed — all adult)
     print(f"\n=== Adult speech: {adult_dir} ===")
-    adult_paths = collect_wavs(adult_dir)
+    adult_paths = []
+    for cls_name in sorted(os.listdir(adult_dir)):
+        cls_dir = os.path.join(adult_dir, cls_name)
+        if os.path.isdir(cls_dir):
+            for fname in sorted(os.listdir(cls_dir)):
+                if fname.endswith('.wav'):
+                    adult_paths.append(os.path.join(cls_dir, fname))
     print(f"  Found {len(adult_paths)} WAVs")
     adult_feats = collect_frame_features(adult_paths, backbone, device, args.max_adult)
     adult_mean, adult_std = compute_stats(adult_feats)

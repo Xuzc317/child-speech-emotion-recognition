@@ -115,6 +115,8 @@ def train():
     # Precomputed mode
     parser.add_argument('--train_feats', default='data/train_ssl_feats.npy')
     parser.add_argument('--train_labels', default='data/train_labels.npy')
+    parser.add_argument('--val_feats', default='data/val_ssl_feats.npy')
+    parser.add_argument('--val_labels', default='data/val_labels.npy')
     parser.add_argument('--test_feats', default='data/test_ssl_feats.npy')
     parser.add_argument('--test_labels', default='data/test_labels.npy')
     # Online mode
@@ -139,20 +141,26 @@ def train():
 
     # ── 数据加载 ──
     if args.mode == 'precomputed':
-        prosody_train = prosody_test = None
+        prosody_train = prosody_val = prosody_test = None
         if args.use_prosody:
             base = os.path.dirname(args.train_feats)
-            tag = os.path.basename(args.train_feats).replace('_wavlm_feats.npy', '').replace('_e2v_feats.npy', '')
-            # Determine the prosody prefix from the features filename
             for pfx in ['wavlm', 'e2v']:
                 if pfx in args.train_feats:
                     prosody_train = os.path.join(base, f'train_{pfx}_prosody.npy')
+                    prosody_val = os.path.join(base, f'val_{pfx}_prosody.npy')
                     prosody_test = os.path.join(base, f'test_{pfx}_prosody.npy')
                     break
             if not prosody_train or not os.path.exists(prosody_train or ''):
                 print(f"WARNING: Prosody features not found, falling back to mean pooling")
                 args.use_prosody = False
         train_dataset = SSLFeatureDataset(args.train_feats, args.train_labels, prosody_train)
+        val_exists = os.path.exists(args.val_feats)
+        if val_exists:
+            val_dataset = SSLFeatureDataset(args.val_feats, args.val_labels, prosody_val)
+            print(f"Val set: {len(val_dataset)} samples")
+        else:
+            print(f"Val set not found ({args.val_feats}), falling back to test for early stopping")
+            val_dataset = SSLFeatureDataset(args.test_feats, args.test_labels, prosody_test)
         test_dataset = SSLFeatureDataset(args.test_feats, args.test_labels, prosody_test)
     else:
         raise NotImplementedError("Online mode — implement in Phase 2")
@@ -160,6 +168,11 @@ def train():
     train_loader = DataLoader(
         train_dataset, batch_size=args.batch_size,
         shuffle=True, collate_fn=collate_fn_ssl_features,
+        num_workers=0, pin_memory=True,
+    )
+    val_loader = DataLoader(
+        val_dataset, batch_size=args.batch_size,
+        shuffle=False, collate_fn=collate_fn_ssl_features,
         num_workers=0, pin_memory=True,
     )
     test_loader = DataLoader(
@@ -201,7 +214,7 @@ def train():
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
     # ── 训练循环 ──
-    best_acc = 0.0
+    best_val_acc = 0.0
     patience_counter = 0
 
     for epoch in range(args.epochs):
@@ -230,12 +243,12 @@ def train():
             train_correct += (preds == labels).sum().item()
             train_total += labels.size(0)
 
-        # Eval
+        # Eval on VAL (for early stopping) — test set never seen during training
         model.eval()
         val_correct = 0
         val_total = 0
         with torch.no_grad():
-            for batch in test_loader:
+            for batch in val_loader:
                 inputs, labels = batch[0].to(device), batch[1].to(device)
                 prosody_batch = batch[3].to(device) if len(batch) >= 4 else None
                 if prosody_batch is not None:
@@ -255,18 +268,39 @@ def train():
         print(f"Epoch {epoch+1}/{args.epochs}  "
               f"Train Acc: {train_acc:.2%}  Val Acc: {val_acc:.2%}")
 
-        # Early stopping
-        if val_acc > best_acc:
-            best_acc = val_acc
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
             patience_counter = 0
             torch.save(model.state_dict(), f"checkpoints/best_ser_model.pth")
         else:
             patience_counter += 1
             if patience_counter >= args.patience:
-                print(f"Early stopping at epoch {epoch+1}, best val acc: {best_acc:.2%}")
+                print(f"Early stopping at epoch {epoch+1}, best val acc: {best_val_acc:.2%}")
                 break
 
-    print(f"Best validation accuracy: {best_acc:.2%}")
+    # Final evaluation on held-out TEST set
+    model.load_state_dict(torch.load("checkpoints/best_ser_model.pth"))
+    model.eval()
+    test_correct = 0
+    test_total = 0
+    with torch.no_grad():
+        for batch in test_loader:
+            inputs, labels = batch[0].to(device), batch[1].to(device)
+            prosody_batch = batch[3].to(device) if len(batch) >= 4 else None
+            if prosody_batch is not None:
+                f0 = prosody_batch[:, :, 0:1]
+                energy = prosody_batch[:, :, 1:2]
+                outputs = model(inputs, f0=f0, energy=energy)
+            else:
+                outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            test_correct += (preds == labels).sum().item()
+            test_total += labels.size(0)
+
+    test_acc = test_correct / test_total
+    print(f"Best val accuracy: {best_val_acc:.2%}")
+    print(f"Test accuracy (held-out): {test_acc:.2%}")
+    print(f"RESULT: val={best_val_acc:.4f} test={test_acc:.4f}")
 
 
 if __name__ == "__main__":

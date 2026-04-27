@@ -124,6 +124,55 @@ def split_speakers(entries):
     return train_entries, test_entries, train_sids, test_sids
 
 
+def split_speakers_3way(entries, train_ratio=0.6, val_ratio=0.2):
+    """60/20/20 三路 speaker 划分，避免数据泄露。
+
+    - train: 用于模型训练
+    - val:   用于 early stopping 和超参选择
+    - test:  仅用于最终评估（严格 hold-out）
+
+    test_ratio = 1 - train_ratio - val_ratio
+    """
+    speaker_map = {}
+    speaker_profile = {}
+    for path, label, sid in entries:
+        speaker_map.setdefault(sid, []).append((path, label))
+        speaker_profile.setdefault(sid, set()).add(label)
+
+    profile_groups = {}
+    for sid, profile in speaker_profile.items():
+        key = frozenset(profile)
+        profile_groups.setdefault(key, []).append(sid)
+
+    rng = np.random.RandomState(SEED)
+    train_sids, val_sids, test_sids = set(), set(), set()
+
+    for profile, sids in profile_groups.items():
+        sorted_sids = sorted(sids)
+        perm = rng.permutation(len(sorted_sids))
+        n_train = max(1, int(len(sorted_sids) * train_ratio))
+        n_val = max(1, int(len(sorted_sids) * val_ratio))
+        for i in perm[:n_train]:
+            train_sids.add(sorted_sids[i])
+        for i in perm[n_train:n_train + n_val]:
+            val_sids.add(sorted_sids[i])
+        for i in perm[n_train + n_val:]:
+            test_sids.add(sorted_sids[i])
+
+    assert train_sids.isdisjoint(val_sids), "FATAL: train/val overlap!"
+    assert train_sids.isdisjoint(test_sids), "FATAL: train/test overlap!"
+    assert val_sids.isdisjoint(test_sids), "FATAL: val/test overlap!"
+
+    def gather(sids):
+        result = []
+        for sid in sids:
+            for path, label in speaker_map[sid]:
+                result.append((path, label, sid))
+        return result
+
+    return gather(train_sids), gather(val_sids), gather(test_sids), train_sids, val_sids, test_sids
+
+
 def extract_features_from_entries(entries, split_name):
     """Extract 3x processing per WAV (original + noise + stretch+pitch)."""
     from src.data.dataset import get_features

@@ -13,7 +13,7 @@ import librosa
 from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.data.preprocess import collect_wav_files, split_speakers, CLASS_NAMES
+from src.data.preprocess import collect_wav_files, split_speakers_3way, CLASS_NAMES
 from src.models.pooling import extract_prosody
 
 
@@ -54,7 +54,7 @@ def main():
         wav_dir = os.path.join(script_dir, '..', '提交到团队', '数据集', 'BESD', 'BESD', 'MY')
 
     entries = collect_wav_files(wav_dir)
-    train_entries, test_entries, _, _ = split_speakers(entries)
+    train_entries, val_entries, test_entries, _, _, _ = split_speakers_3way(entries)
 
     def process(entries, split_name):
         feats, skipped = [], 0
@@ -76,6 +76,7 @@ def main():
         print(f"  Saved {arr.shape} to {out} ({skipped} skipped)")
 
     process(train_entries, 'train')
+    process(val_entries,  'val')
     process(test_entries, 'test')
     print("Done!")
 
