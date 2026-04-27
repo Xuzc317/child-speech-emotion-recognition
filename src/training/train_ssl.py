@@ -40,6 +40,7 @@ from src.models.adapter import AcousticCalibrationAdapter, DomainAdversarialAdap
 from src.models.pooling import TemporalImportancePooling
 from src.models.drse_cnn import DrseCNN
 from src.utils.tracker import ExperimentTracker
+from src.utils.experiment_logger import ExperimentLogger
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -213,6 +214,20 @@ def train():
     )
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
+    # ── 实验日志 ──
+    run_name = f"{args.ssl_model}_adp{int(args.use_adapter)}_pros{int(args.use_prosody)}_seed{args.seed}"
+    exp_log = ExperimentLogger(name=run_name, config={
+        "model": args.ssl_model,
+        "mode": args.mode,
+        "use_adapter": args.use_adapter,
+        "use_prosody": args.use_prosody,
+        "batch_size": args.batch_size,
+        "lr": args.lr,
+        "seed": args.seed,
+        "patience": args.patience,
+        "epochs": args.epochs,
+    })
+
     # ── 训练循环 ──
     best_val_acc = 0.0
     patience_counter = 0
@@ -267,6 +282,7 @@ def train():
 
         print(f"Epoch {epoch+1}/{args.epochs}  "
               f"Train Acc: {train_acc:.2%}  Val Acc: {val_acc:.2%}")
+        exp_log.log_epoch(epoch + 1, train_acc=train_acc, val_acc=val_acc)
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
@@ -301,6 +317,7 @@ def train():
     print(f"Best val accuracy: {best_val_acc:.2%}")
     print(f"Test accuracy (held-out): {test_acc:.2%}")
     print(f"RESULT: val={best_val_acc:.4f} test={test_acc:.4f}")
+    exp_log.finish(best_val=best_val_acc, test_acc=test_acc)
 
 
 if __name__ == "__main__":
