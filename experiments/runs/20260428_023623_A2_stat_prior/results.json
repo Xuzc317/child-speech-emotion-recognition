@@ -1,0 +1,8 @@
+{
+  "name": "A2_stat_prior",
+  "timestamp": "20260428_023623",
+  "duration_minutes": 4.8,
+  "total_epochs": 3,
+  "best_val_acc": 0.863194,
+  "test_acc": 0.792467
+}

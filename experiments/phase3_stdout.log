@@ -1,0 +1,87 @@
+=== Phase 3 Ablation Study ===
+Date: 2026-04-28 02:30:48
+Device: NVIDIA GeForce RTX 4090 D
+Train: 2507, Val: 787, Test: 885
+Experiments: 5 configs x 3 seeds = 15 runs
+
+--- A1_baseline ---
+[Logger] A1_baseline → experiments/runs/20260428_023048_A1_baseline
+  A1_baseline seed=42: val=0.8577 test=0.7910
+  A1_baseline seed=123: val=0.8539 test=0.7684
+  A1_baseline seed=456: val=0.8590 test=0.7910
+[Logger] A1_baseline finished in 5.6min
+[Logger]   best_val=0.8568
+[Logger]   test_acc=0.7834
+[Logger]   log: experiments/runs/20260428_023048_A1_baseline
+  Mean val=0.8568±0.0022 test=0.7834±0.0107 (335s)
+
+--- A2_stat_prior ---
+[Logger] A2_stat_prior → experiments/runs/20260428_023623_A2_stat_prior
+  A2_stat_prior seed=42: val=0.8602 test=0.7932
+  A2_stat_prior seed=123: val=0.8628 test=0.7921
+  A2_stat_prior seed=456: val=0.8666 test=0.7921
+[Logger] A2_stat_prior finished in 4.8min
+[Logger]   best_val=0.8632
+[Logger]   test_acc=0.7925
+[Logger]   log: experiments/runs/20260428_023623_A2_stat_prior
+  Mean val=0.8632±0.0026 test=0.7925±0.0005 (289s)
+
+--- A2b_rand_init ---
+[Logger] A2b_rand_init → experiments/runs/20260428_024112_A2b_rand_init
+  A2b_rand_init seed=42: val=0.8615 test=0.7864
+  A2b_rand_init seed=123: val=0.8717 test=0.8045
+  A2b_rand_init seed=456: val=0.8590 test=0.7944
+[Logger] A2b_rand_init finished in 4.7min
+[Logger]   best_val=0.8640
+[Logger]   test_acc=0.7951
+[Logger]   log: experiments/runs/20260428_024112_A2b_rand_init
+  Mean val=0.8640±0.0055 test=0.7951±0.0074 (281s)
+
+--- B2_self_attn ---
+[Logger] B2_self_attn → experiments/runs/20260428_024553_B2_self_attn
+  B2_self_attn seed=42: val=0.8615 test=0.7864
+  B2_self_attn seed=123: val=0.8717 test=0.8045
+  B2_self_attn seed=456: val=0.8590 test=0.7944
+[Logger] B2_self_attn finished in 4.6min
+[Logger]   best_val=0.8640
+[Logger]   test_acc=0.7951
+[Logger]   log: experiments/runs/20260428_024553_B2_self_attn
+  Mean val=0.8640±0.0055 test=0.7951±0.0074 (276s)
+
+--- B3_prosody ---
+[Logger] B3_prosody → experiments/runs/20260428_025029_B3_prosody
+  B3_prosody seed=42: val=0.8806 test=0.7932
+  B3_prosody seed=123: val=0.8920 test=0.8282
+  B3_prosody seed=456: val=0.8831 test=0.8158
+[Logger] B3_prosody finished in 3.6min
+[Logger]   best_val=0.8852
+[Logger]   test_acc=0.8124
+[Logger]   log: experiments/runs/20260428_025029_B3_prosody
+  Mean val=0.8852±0.0049 test=0.8124±0.0145 (215s)
+
+--- A3_full_finetune ---
+[Logger] A3_full_finetune → experiments/runs/20260428_025404_A3_full_finetune
+  A3_full_finetune seed=42: val=0.8844 test=0.8226
+  A3_full_finetune seed=123: val=0.8818 test=0.8023
+  A3_full_finetune seed=456: val=0.8895 test=0.8339
+[Logger] A3_full_finetune finished in 4.2min
+[Logger]   best_val=0.8852
+[Logger]   test_acc=0.8196
+[Logger]   log: experiments/runs/20260428_025404_A3_full_finetune
+  Mean val=0.8852±0.0032 test=0.8196±0.0131 (252s)
+
+
+================================================================================
+FINAL ABLATION TABLE
+================================================================================
+Config                 Val Mean  Val Std  Test Mean Test Std
+----------------------------------------------------------
+A1_baseline             0.8568±0.0022     0.7834±0.0107 
+A2_stat_prior           0.8632±0.0026     0.7925±0.0005 
+A2b_rand_init           0.8640±0.0055     0.7951±0.0074 
+B2_self_attn            0.8640±0.0055     0.7951±0.0074 
+B3_prosody              0.8852±0.0049     0.8124±0.0145 
+A3_full_finetune        0.8852±0.0032     0.8196±0.0131 
+
+Saved to logs/phase3_ablation.json
+Done at 2026-04-28 02:58:17

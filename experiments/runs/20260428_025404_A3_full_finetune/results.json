@@ -1,0 +1,8 @@
+{
+  "name": "A3_full_finetune",
+  "timestamp": "20260428_025404",
+  "duration_minutes": 4.2,
+  "total_epochs": 3,
+  "best_val_acc": 0.885218,
+  "test_acc": 0.819586
+}

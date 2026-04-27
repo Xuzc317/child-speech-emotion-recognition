@@ -195,60 +195,47 @@ def extract_features_from_entries(entries, split_name):
 
 
 def main():
+    """DEPRECATED: 此入口仅为旧 162-dim 特征提取保留。
+
+    新项目使用 SSL 帧级特征，通过 scripts/extract_ssl_features.py
+    直接调用 collect_wav_files() + split_speakers_3way() 完成 60/20/20
+    三路划分。请勿使用本函数生成数据。
+    """
     print("=" * 60)
-    print("Speaker-Independent Preprocessing: MY Dataset")
-    print(f"WAV dir: {WAV_DIR}")
-    print(f"Seed: {SEED}, Train ratio: {TRAIN_RATIO}")
-    print(f"Output: {OUT_DIR}")
+    print("WARNING: This entry point is DEPRECATED for the new project.")
+    print("Use scripts/extract_ssl_features.py for SSL feature extraction.")
+    print("It uses split_speakers_3way() (60/20/20) to prevent data leakage.")
     print("=" * 60)
 
     # Step 1: Collect WAV files
-    print("\n[1/5] Collecting WAV files from MY/ ...")
+    print("\n[1/3] Collecting WAV files from MY/ ...")
     entries = collect_wav_files()
     print(f"  Total: {len(entries)} WAV files")
     unique = len(set(sid for _, _, sid in entries))
     print(f"  Unique speakers: {unique}")
 
-    # Step 2: Split by speaker
-    print("\n[2/5] Splitting speakers 70/30 (seed=42)...")
-    train_entries, test_entries, train_sids, test_sids = split_speakers(entries)
-    print(f"  Train speakers: {len(train_sids)}")
-    print(f"  Test speakers:  {len(test_sids)}")
-    print(f"  Train WAVs:     {len(train_entries)}")
-    print(f"  Test WAVs:      {len(test_entries)}")
-    assert train_sids.isdisjoint(test_sids), "FATAL: speaker overlap!"
+    # Step 2: 3-way split (updated from old 70/30)
+    print("\n[2/3] Splitting speakers 60/20/20 (seed=42)...")
+    train_entries, val_entries, test_entries, train_sids, val_sids, test_sids = split_speakers_3way(entries)
+    print(f"  Train: {len(train_entries)} WAVs ({len(train_sids)} speakers)")
+    print(f"  Val:   {len(val_entries)} WAVs ({len(val_sids)} speakers)")
+    print(f"  Test:  {len(test_entries)} WAVs ({len(test_sids)} speakers)")
 
-    # Show a few speaker IDs from each split
-    print(f"  Train speakers (sample): {sorted(train_sids)[:5]}...")
-    print(f"  Test speakers (sample):  {sorted(test_sids)[:5]}...")
-
-    # Step 3: Extract training features
-    print("\n[3/5] Extracting training features (3x processing per WAV)...")
+    # Step 3: Extract features (old 162-dim method, for backward compat only)
+    print("\n[3/3] Extracting features (3x processing per WAV, old method)...")
     X_train, y_train = extract_features_from_entries(train_entries, "train")
-    print(f"  X_train: {X_train.shape}, y_train: {y_train.shape}")
-    print(f"  Label distribution: {np.bincount(y_train)}")
-
-    # Step 4: Extract test features
-    print("\n[4/5] Extracting test features (3x processing per WAV)...")
     X_test, y_test = extract_features_from_entries(test_entries, "test")
+    print(f"  X_train: {X_train.shape}, y_train: {y_train.shape}")
     print(f"  X_test: {X_test.shape}, y_test: {y_test.shape}")
-    print(f"  Label distribution: {np.bincount(y_test)}")
 
-    # Step 5: Save
-    print("\n[5/5] Saving files...")
     np.save(TRAIN_DATA, X_train)
     np.save(TRAIN_LABEL, y_train)
     np.save(TEST_DATA, X_test)
     np.save(TEST_LABEL, y_test)
-    print(f"  {TRAIN_DATA} ({os.path.getsize(TRAIN_DATA) / 1024 / 1024:.1f} MB)")
-    print(f"  {TRAIN_LABEL} ({os.path.getsize(TRAIN_LABEL) / 1024:.1f} KB)")
-    print(f"  {TEST_DATA} ({os.path.getsize(TEST_DATA) / 1024 / 1024:.1f} MB)")
-    print(f"  {TEST_LABEL} ({os.path.getsize(TEST_LABEL) / 1024:.1f} KB)")
 
     print("\n" + "=" * 60)
-    print("Preprocessing complete — speaker-independent, no data leakage.")
-    print(f"Train: {len(X_train)} samples from {len(train_sids)} speakers (3x processing)")
-    print(f"Test:  {len(X_test)} samples from {len(test_sids)} speakers (3x processing)")
+    print("Preprocessing complete (3-way split).")
+    print(f"Train: {len(X_train)} | Val: {len(val_entries)} | Test: {len(X_test)}")
     print("=" * 60)
 
 

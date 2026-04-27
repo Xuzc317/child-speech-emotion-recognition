@@ -1,0 +1,11 @@
+{
+  "experiment": "A2_stat_prior",
+  "use_adapter": true,
+  "use_prosody": false,
+  "stat_prior": true,
+  "finetune": false,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "name": "A2_stat_prior",
+  "timestamp": "20260428_023623"
+}

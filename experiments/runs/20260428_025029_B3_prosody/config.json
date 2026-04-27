@@ -1,0 +1,11 @@
+{
+  "experiment": "B3_prosody",
+  "use_adapter": true,
+  "use_prosody": true,
+  "stat_prior": false,
+  "finetune": false,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "name": "B3_prosody",
+  "timestamp": "20260428_025029"
+}

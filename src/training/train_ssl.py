@@ -160,7 +160,11 @@ def train():
             val_dataset = SSLFeatureDataset(args.val_feats, args.val_labels, prosody_val)
             print(f"Val set: {len(val_dataset)} samples")
         else:
-            print(f"Val set not found ({args.val_feats}), falling back to test for early stopping")
+            print("=" * 60)
+            print("WARNING: Val set NOT FOUND — falling back to test set for validation!")
+            print("This reintroduces DATA LEAKAGE (test used for early stopping).")
+            print("Generate val features with scripts/extract_ssl_features.py first.")
+            print("=" * 60)
             val_dataset = SSLFeatureDataset(args.test_feats, args.test_labels, prosody_test)
         test_dataset = SSLFeatureDataset(args.test_feats, args.test_labels, prosody_test)
     else:
