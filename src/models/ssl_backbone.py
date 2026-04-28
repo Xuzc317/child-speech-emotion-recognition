@@ -43,53 +43,68 @@ class SSLBackbone(nn.Module):
     def _load_model(self):
         """加载预训练 SSL 模型。
 
-        emotion2vec（推荐）: 通过 FunASR + ModelScope 加载 'iic/emotion2vec_base'
+        emotion2vec 系列（通过 FunASR + ModelScope）:
+          - 'iic/emotion2vec_base'        (~94M,  768-dim)
+          - 'iic/emotion2vec_plus_base'   (~300M, 768-dim)
+          - 'iic/emotion2vec_plus_large'  (~600M, 1024-dim)
         WavLM（备选）: 'microsoft/wavlm-base' 或 'microsoft/wavlm-base-sv'
-          - wavlm-base-sv 是 speaker verification 版本，encoder 与 base 相同
         """
         model_name = self.model_name  # 局部变量，避免 fallback 污染原始值
 
-        if 'emotion2vec' in model_name:
-            try:
-                # 优先走 transformers（HF 网络可访问时）
-                from transformers import Wav2Vec2Model
-                model = Wav2Vec2Model.from_pretrained("emotion2vec/emotion2vec_base")
-                print(f"[SSLBackbone] Loaded emotion2vec via HuggingFace")
-            except Exception:
-                # Fallback: 本地缓存的 FunASR emotion2vec
-                try:
-                    model = self._load_emotion2vec_funasr()
-                except Exception as e:
-                    print(f"[SSLBackbone] emotion2vec unavailable ({e}), falling back to WavLM")
-                    return self._load_wavlm()
+        if 'emotion2vec_plus_large' in model_name:
+            model = self._load_emotion2vec_funasr(
+                model_id='iic/emotion2vec_plus_large',
+                hidden_size=1024,
+            )
+        elif 'emotion2vec_plus_base' in model_name:
+            model = self._load_emotion2vec_funasr(
+                model_id='iic/emotion2vec_plus_base',
+                hidden_size=768,
+            )
+        elif 'emotion2vec' in model_name:
+            # emotion2vec_base (原始版本)
+            model = self._load_emotion2vec_funasr(
+                model_id='iic/emotion2vec_base',
+                hidden_size=768,
+            )
         elif 'wavlm' in model_name:
             model = self._load_wavlm()
         else:
             raise ValueError(f"Unknown model: {self.model_name}")
         return model.to(self.device)
 
-    def _load_emotion2vec_funasr(self):
-        """通过 FunASR 从 ModelScope 加载 emotion2vec（离线可用）。"""
+    def _load_emotion2vec_funasr(self, model_id='iic/emotion2vec_base', hidden_size=768):
+        """通过 FunASR 从 ModelScope 加载 emotion2vec 系列模型（离线可用）。"""
         from funasr import AutoModel
         funasr_model = AutoModel(
-            model='iic/emotion2vec_base',
+            model=model_id,
             hub='ms',
             device=str(self.device),
             disable_update=True,
         )
-        print(f"[SSLBackbone] Loaded emotion2vec via FunASR/ModelScope")
-        return Emotion2vecFunASRWrapper(funasr_model)
+        print(f"[SSLBackbone] Loaded {model_id} via FunASR/ModelScope (hidden_size={hidden_size})")
+        return Emotion2vecFunASRWrapper(funasr_model, hidden_size=hidden_size)
 
     def _load_wavlm(self):
         """加载 WavLM base 模型。"""
         from transformers import WavLMModel
+        import os
         for model_id in ['microsoft/wavlm-base-sv', 'microsoft/wavlm-base']:
             try:
-                model = WavLMModel.from_pretrained(model_id)
+                model = WavLMModel.from_pretrained(model_id, local_files_only=True)
                 print(f"[SSLBackbone] Loaded {model_id}")
                 return model
             except Exception:
                 continue
+        # Fallback: try local snapshot path
+        local_path = '/root/.cache/huggingface/hub/models--microsoft--wavlm-base-sv/snapshots/0a23162ffc49adcf42bdf836a00cb2eb45af3601'
+        if os.path.isdir(local_path):
+            try:
+                model = WavLMModel.from_pretrained(local_path, local_files_only=True)
+                print(f"[SSLBackbone] Loaded WavLM from local snapshot")
+                return model
+            except Exception:
+                pass
         raise RuntimeError("Cannot load WavLM — check network or cache")
 
     def _freeze(self):
@@ -127,11 +142,13 @@ class Emotion2vecFunASRWrapper(nn.Module):
     使 SSLBackbone 无需区分底层加载方式。
     """
 
-    def __init__(self, funasr_model):
+    def __init__(self, funasr_model, hidden_size=768):
         super().__init__()
         self._funasr_model = funasr_model
         self.inner = funasr_model.model  # funasr.models.emotion2vec.model.Emotion2vec
-        self.config = type('Config', (), {'hidden_size': 768, 'num_hidden_layers': 12})()
+        self.hidden_size = hidden_size
+        num_layers = 24 if hidden_size == 1024 else 12
+        self.config = type('Config', (), {'hidden_size': hidden_size, 'num_hidden_layers': num_layers})()
 
     def forward(self, waveforms, output_hidden_states=False):
         if waveforms.dim() == 3:

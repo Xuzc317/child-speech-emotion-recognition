@@ -37,7 +37,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--wav_dir', default=None, help='BESD MY dataset directory')
     parser.add_argument('--output_dir', default='data/', help='Output directory')
-    parser.add_argument('--model', default='emotion2vec', choices=['emotion2vec', 'wavlm'])
+    parser.add_argument('--model', default='emotion2vec',
+                        choices=['emotion2vec', 'emotion2vec_plus_base', 'emotion2vec_plus_large', 'wavlm'])
     parser.add_argument('--prefix', default='', help='Filename prefix (e.g. wavlm_ or e2v_)')
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--max_samples', type=int, default=None, help='Limit samples for testing')

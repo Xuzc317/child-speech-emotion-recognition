@@ -61,6 +61,7 @@ class DistributionCalibratedSER(nn.Module):
 
     def __init__(self, config, adapter_init=None):
         super().__init__()
+        dim = config.get('feature_dim', 768)
         self.use_backbone = config.get('use_backbone', True)
         self.use_adapter = config.get('use_adapter', True)
         self.use_prosody = config.get('use_prosody', True)
@@ -77,14 +78,14 @@ class DistributionCalibratedSER(nn.Module):
         if self.use_adapter:
             init_scale = adapter_init['scale'] if adapter_init else None
             init_bias = adapter_init['bias'] if adapter_init else None
-            self.adapter = AcousticCalibrationAdapter(dim=768, init_scale=init_scale, init_bias=init_bias)
+            self.adapter = AcousticCalibrationAdapter(dim=dim, init_scale=init_scale, init_bias=init_bias)
 
         # 3. Temporal Importance Pooling
         if self.use_prosody:
-            self.pooling = TemporalImportancePooling(ssl_dim=768)
+            self.pooling = TemporalImportancePooling(ssl_dim=dim)
 
         # 4. Classifier
-        self.classifier = DrseCNN(input_dim=768, num_classes=config.get('num_classes', 6))
+        self.classifier = DrseCNN(input_dim=dim, num_classes=config.get('num_classes', 6))
 
     def forward(self, waveforms, f0=None, energy=None):
         # 1. SSL 帧级特征 (B, T, 768)
@@ -130,6 +131,8 @@ def train():
     parser.add_argument('--random_init_adapter', action='store_true', default=False,
                         help='Use random init for adapter (skip statistical prior)')
     parser.add_argument('--use_prosody', action='store_true', default=False)
+    parser.add_argument('--feature_dim', type=int, default=768,
+                        help='SSL feature dimension (768 for WavLM/emotion2vec, 1024 for emotion2vec_plus_large)')
     # Training
     parser.add_argument('--lr', type=float, default=3e-4)
     parser.add_argument('--weight_decay', type=float, default=1e-3)
@@ -193,6 +196,7 @@ def train():
         'frozen_backbone': not args.finetune,
         'use_adapter': args.use_adapter,
         'use_prosody': args.use_prosody,
+        'feature_dim': args.feature_dim,
     }
 
     # Load adapter statistical prior if available
