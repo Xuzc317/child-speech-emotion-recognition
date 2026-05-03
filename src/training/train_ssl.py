@@ -140,6 +140,10 @@ def train():
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--patience', type=int, default=20)
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--num_workers', type=int, default=4,
+                        help='DataLoader workers (0 for Windows, 4+ for Linux cloud)')
+    parser.add_argument('--output_dir', default='checkpoints',
+                        help='Directory for model checkpoints')
     parser.add_argument('--allow_test_as_val', action='store_true', default=False,
                         help='DANGEROUS: allow using test set as validation (reintroduces data leakage). '
                              'Only for debugging or backward compatibility with old experiments.')
@@ -187,17 +191,17 @@ def train():
     train_loader = DataLoader(
         train_dataset, batch_size=args.batch_size,
         shuffle=True, collate_fn=collate_fn_ssl_features,
-        num_workers=0, pin_memory=True,
+        num_workers=args.num_workers, pin_memory=True,
     )
     val_loader = DataLoader(
         val_dataset, batch_size=args.batch_size,
         shuffle=False, collate_fn=collate_fn_ssl_features,
-        num_workers=0, pin_memory=True,
+        num_workers=args.num_workers, pin_memory=True,
     )
     test_loader = DataLoader(
         test_dataset, batch_size=args.batch_size,
         shuffle=False, collate_fn=collate_fn_ssl_features,
-        num_workers=0, pin_memory=True,
+        num_workers=args.num_workers, pin_memory=True,
     )
 
     # ── 模型 ──
@@ -306,7 +310,8 @@ def train():
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             patience_counter = 0
-            torch.save(model.state_dict(), f"checkpoints/best_ser_model.pth")
+            os.makedirs(args.output_dir, exist_ok=True)
+            torch.save(model.state_dict(), os.path.join(args.output_dir, 'best_ser_model.pth'))
         else:
             patience_counter += 1
             if patience_counter >= args.patience:
@@ -314,7 +319,7 @@ def train():
                 break
 
     # Final evaluation on held-out TEST set
-    model.load_state_dict(torch.load("checkpoints/best_ser_model.pth"))
+    model.load_state_dict(torch.load(os.path.join(args.output_dir, 'best_ser_model.pth')))
     model.eval()
     test_correct = 0
     test_total = 0

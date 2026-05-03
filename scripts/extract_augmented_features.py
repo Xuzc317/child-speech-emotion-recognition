@@ -77,7 +77,9 @@ def main():
         print(f"Config: {cfg_name} — pitch={cfg['pitch_range']}, stretch={cfg['stretch_range']}")
         print(f"{'='*60}")
 
-        for split_name, entries in [('train', train_entries), ('val', val_entries), ('test', test_entries)]:
+        # Only extract TRAIN features. Val/test always use clean features
+        # (augmentation only affects training data; val/test must stay clean for fair eval).
+        for split_name, entries in [('train', train_entries)]:
             it = entries[:args.max_samples] if args.max_samples else entries
             feats_list, labels_list, skipped = [], [], 0
             t0 = time.time()

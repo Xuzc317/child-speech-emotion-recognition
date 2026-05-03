@@ -1,19 +1,18 @@
-"""Phase 3: Complete Ablation Study on Cloud (3-way split, no leakage)
+"""[DEPRECATED v5 — DO NOT USE FOR NEW EXPERIMENTS]
 
-Runs all module combinations x 3 seeds, logs structured JSON.
-Total: 6 configs x 3 seeds = 18 runs (~90 min on RTX 4090D)
+Phase 3 ablation study on 60/20/20 split (HISTORICAL protocol only).
 
-Configurations:
-  A1: Baseline (mean pool, no adapter)
-  A2: Adapter stat-prior
-  A2b: Adapter random-init
-  A3_ft: [KNOWN ISSUE v5] NOT true full fine-tune — use_backbone=False in precomputed mode,
-         so WavLM is never in the training graph. This is effectively a reduced-LR control.
-  B2: [KNOWN ISSUE v5] NOT self-attention — use_prosody=False falls back to mean pooling,
-      making B2 identical to A2b. Results are duplicates.
-  B3: Adapter + Prosody pool (our recommended model)
+This script produced all v4/v5 paper results. It is preserved for reproducibility
+of historical numbers ONLY. All results from this script are labeled
+"historical 60/20/20 speaker-independent protocol" in the v5 paper.
 
-Data split: 60/20/20 via split_speakers_3way() [HISTORICAL — v5 replaces with outer 7:3 + inner val]
+KNOWN ISSUES (fixed in v5):
+  - A3_ft: NOT true full fine-tune (use_backbone=False in precomputed mode)
+  - B2: NOT self-attention (use_prosody=False → mean pooling, = A2b duplicate)
+
+REPLACEMENT:
+  Use scripts/run_experiments_v5.py for all new experiments under the
+  "outer 7:3 + inner val" protocol (split_speakers_7_3_with_inner_val).
 """
 
 import sys, os, json, time, numpy as np, torch
