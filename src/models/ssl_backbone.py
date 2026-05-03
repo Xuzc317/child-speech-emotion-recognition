@@ -194,28 +194,3 @@ def preprocess_wav(path, target_sr=16000, duration=4.0):
     return torch.from_numpy(data).float().unsqueeze(0), sr, None
 
 
-def collate_fn_ssl(batch):
-    """SSL 数据集的 collate 函数。
-
-    batch 内各条音频在 collate 时 padding 到相同长度，
-    同时生成 attention_mask。
-    """
-    waveforms = [item[0] for item in batch]
-    labels = torch.stack([item[1] for item in batch])
-
-    # 找到 batch 内最大长度，padding
-    max_len = max(w.shape[1] for w in waveforms)
-    padded = []
-    attention_masks = []
-    for w in waveforms:
-        pad_len = max_len - w.shape[1]
-        if pad_len > 0:
-            padded_w = torch.nn.functional.pad(w, (0, pad_len))
-            mask = torch.cat([torch.ones(w.shape[1]), torch.zeros(pad_len)])
-        else:
-            padded_w = w
-            mask = torch.ones(w.shape[1])
-        padded.append(padded_w)
-        attention_masks.append(mask)
-
-    return torch.stack(padded), labels, torch.stack(attention_masks).bool()

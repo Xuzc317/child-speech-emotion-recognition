@@ -34,12 +34,11 @@ from tqdm import tqdm
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.data.dataset_ssl import SSLFeatureDataset, SSLOnlineDataset, collate_fn_ssl_features
+from src.data.dataset_ssl import SSLFeatureDataset, collate_fn_ssl_features
 from src.models.ssl_backbone import SSLBackbone
-from src.models.adapter import AcousticCalibrationAdapter, DomainAdversarialAdapter
+from src.models.adapter import AcousticCalibrationAdapter
 from src.models.pooling import TemporalImportancePooling
 from src.models.drse_cnn import DrseCNN
-from src.utils.tracker import ExperimentTracker
 from src.utils.experiment_logger import ExperimentLogger
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

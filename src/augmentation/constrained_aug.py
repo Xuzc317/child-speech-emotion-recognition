@@ -153,30 +153,7 @@ class DistributionConstrainedAugmentation:
 
 
 # ============================================================
-# Part 3：SpecAugment（SSL 特征上的标准增强）
-# ============================================================
-
-class SpecAugment(nn.Module):
-    """在 SSL 模型的输入频谱上做时间/频率掩码。
-
-    SpecAugment 是 SSL 模型的标准增强方式，对 WavLM/emotion2vec
-    等模型有效。不是创新，是工程实践中应该做的事情。
-    """
-
-    def __init__(self, freq_mask_param=10, time_mask_param=10):
-        super().__init__()
-        self.freq_mask_param = freq_mask_param
-        self.time_mask_param = time_mask_param
-
-    def forward(self, x):
-        """x: (B, T, 768) — 在时间维上做 mask"""
-        # 简化实现：在时间维上随机 mask 连续帧
-        # TODO Phase 2: 可以使用 torchaudio 的 FrequencyMasking / TimeMasking
-        return x
-
-
-# ============================================================
-# Part 4：分布偏移的定量衡量（负面实验关键工具）
+# Part 3：分布偏移的定量衡量（负面实验关键工具）
 # ============================================================
 
 def compute_frechet_distance(feats_1, feats_2):
@@ -200,16 +177,6 @@ def compute_frechet_distance(feats_1, feats_2):
         covmean = covmean.real
 
     return diff @ diff + np.trace(sigma1 + sigma2 - 2 * covmean)
-
-
-def compute_mmd(feats_1, feats_2, kernel='rbf', sigma=1.0):
-    """Maximum Mean Discrepancy（MMD ↓）。
-
-    另一种分布距离衡量，与 FD 互补。
-    """
-    # TODO Phase 2: 实现 MMD 计算
-    # 用于负面实验中定量证明"增强把样本推出了儿童分布"
-    pass
 
 
 def measure_distribution_shift(original_feats, augmented_feats):

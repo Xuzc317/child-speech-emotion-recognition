@@ -1,20 +1,10 @@
-"""Module 1：分布校准适配器 (Distribution Calibration Adapter)
+"""Module 1：声学校准适配器 (Acoustic Calibration Adapter)
 
-核心思想：
-  emotion2vec/wav2vec 在成人数据上预训练，儿童语音在其隐空间中
-  存在系统性分布偏移。我们不 fine-tune 整个 backbone，而是在
-  frozen SSL 之上加一个轻量校准层，显式补偿已知的声学差异。
+在 frozen SSL backbone 之上加一个轻量校准层（scale + bias + gate），
+补偿儿童语音在成人预训练模型特征空间中的分布偏移。
 
-与 LoRA 的区别：
-  LoRA 是通用参数高效微调，在目标数据上直接拟合；
-  我们的适配器以可解释的方式补偿已知的声学偏移（F0、formant），
-  第一个 scale/bias 参数由儿童语音统计先验初始化，而非随机初始化。
-
-整体校准策略——有两种设计方向，Phase 2 时需要实验对比：
-  A. 声学补偿型 (AcousticCalibrationAdapter) —— 用统计先验初始化
-  B. 分布对齐型 (DomainAdversarialAdapter) —— 对抗训练 + 域混淆
-
-两个方向可以独立实现，也可以串联使用。
+v6 结论：6:2:2 协议下 Adapter 贡献仅 ~0.5pp test，已从核心方法路径移除。
+保留此模块用于消融讨论和未来的分布偏移分析。
 """
 
 import torch
@@ -74,42 +64,4 @@ class AcousticCalibrationAdapter(nn.Module):
         gate_out = self.gate(x)  # (B, T, 768)
         out = out + 0.1 * gate_out * x  # 残差缩放，保持稳定性
 
-        return out
-
-
-class DomainAdversarialAdapter(nn.Module):
-    """分布对齐型适配器（备选，需要成人对比数据）。
-
-    核心思想：
-      用一个 domain classifier（成人 vs 儿童）来判断适配器的输出
-      是否还保留着域信息。训练目标：
-        - 适配器：最大化 domain classifier 的 loss（让分不出儿童/成人）
-        - domain classifier：最小化分类 loss
-
-      当 domain classifier 无法区分时，说明适配器的输出已经
-      "域无关"，分布偏移被校准了。
-
-    依赖条件：
-      - 需要有成人语音数据（如 IEMOCAP 或 RAVDESS 的样本）
-      - 训练时多一个对抗 loss，调参更复杂
-
-    建议：Phase 2 内先实现 AcousticCalibrationAdapter，
-    如果效果不够再用 DomainAdversarialAdapter。
-    """
-
-    def __init__(self, dim=768):
-        super().__init__()
-        self.adapter = nn.Sequential(
-            nn.Linear(dim, dim),
-            nn.LayerNorm(dim),
-            nn.GELU(),
-            nn.Linear(dim, dim),
-        )
-        # 残差连接
-        self.residual = True
-
-    def forward(self, x):
-        out = self.adapter(x)
-        if self.residual:
-            out = x + 0.1 * out  # 残差 + 缩放
         return out
