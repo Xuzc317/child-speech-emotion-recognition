@@ -1,0 +1,119 @@
+Device: NVIDIA GeForce RTX 4090 D
+adapter_init.npz NOT found - stat-prior skipped, random-init OK
+Train: 2468 samples, shape=(2468, 200, 768), classes=[c0=410, c1=414, c2=415, c3=410, c4=409, c5=410]
+Val: 860 samples, shape=(860, 200, 768), classes=[c0=145, c1=145, c2=145, c3=144, c4=136, c5=145]
+Test: 851 samples, shape=(851, 200, 768), classes=[c0=140, c1=140, c2=140, c3=145, c4=146, c5=140]
+
+======================================================================
+  PART 1: MAIN ABLATION STUDY
+======================================================================
+
+============================================================
+  A1_baseline
+============================================================
+  seed=42: val=0.8256 test=0.7861
+  -> saved /root/autodl-tmp/v5_data/models/A1_baseline_seed42.pth
+  seed=123: val=0.8174 test=0.7803
+  -> saved /root/autodl-tmp/v5_data/models/A1_baseline_seed123.pth
+  seed=456: val=0.8174 test=0.7920
+  -> saved /root/autodl-tmp/v5_data/models/A1_baseline_seed456.pth
+  Mean: val=0.8202 std 0.0038  test=0.7861 std 0.0048  (434s)
+
+============================================================
+  A2b_adapter
+============================================================
+  seed=42: val=0.8291 test=0.7897
+  -> saved /root/autodl-tmp/v5_data/models/A2b_adapter_seed42.pth
+  seed=123: val=0.8384 test=0.7779
+  -> saved /root/autodl-tmp/v5_data/models/A2b_adapter_seed123.pth
+  seed=456: val=0.8244 test=0.7967
+  -> saved /root/autodl-tmp/v5_data/models/A2b_adapter_seed456.pth
+  Mean: val=0.8306 std 0.0058  test=0.7881 std 0.0078  (556s)
+
+============================================================
+  A3_prosody_only
+============================================================
+  seed=42: val=0.8442 test=0.8026
+  -> saved /root/autodl-tmp/v5_data/models/A3_prosody_only_seed42.pth
+  seed=123: val=0.8547 test=0.8167
+  -> saved /root/autodl-tmp/v5_data/models/A3_prosody_only_seed123.pth
+  seed=456: val=0.8430 test=0.8061
+  -> saved /root/autodl-tmp/v5_data/models/A3_prosody_only_seed456.pth
+  Mean: val=0.8473 std 0.0052  test=0.8085 std 0.0060  (482s)
+
+============================================================
+  B3_final
+============================================================
+  seed=42: val=0.8640 test=0.8179
+  -> saved /root/autodl-tmp/v5_data/models/B3_final_seed42.pth
+  seed=123: val=0.8721 test=0.8261
+  -> saved /root/autodl-tmp/v5_data/models/B3_final_seed123.pth
+  seed=456: val=0.8500 test=0.8002
+  -> saved /root/autodl-tmp/v5_data/models/B3_final_seed456.pth
+  Mean: val=0.8620 std 0.0091  test=0.8147 std 0.0108  (480s)
+
+======================================================================
+  PART 2: AUGMENTATION SENSITIVITY ANALYSIS
+======================================================================
+
+============================================================
+  C1_none
+============================================================
+  seed=42: val=0.8442 test=0.8132
+  -> saved /root/autodl-tmp/v5_data/models/C1_none_seed42.pth
+  seed=123: val=0.8488 test=0.8049
+  -> saved /root/autodl-tmp/v5_data/models/C1_none_seed123.pth
+  seed=456: val=0.8628 test=0.8190
+  -> saved /root/autodl-tmp/v5_data/models/C1_none_seed456.pth
+  Mean: val=0.8519 std 0.0079  test=0.8124 std 0.0058  (382s)
+
+============================================================
+  C2_adult
+============================================================
+  seed=42: val=0.5360 test=0.5100
+  -> saved /root/autodl-tmp/v5_data/models/C2_adult_seed42.pth
+  seed=123: val=0.5616 test=0.5100
+  -> saved /root/autodl-tmp/v5_data/models/C2_adult_seed123.pth
+  seed=456: val=0.5267 test=0.4982
+  -> saved /root/autodl-tmp/v5_data/models/C2_adult_seed456.pth
+  Mean: val=0.5415 std 0.0147  test=0.5061 std 0.0055  (320s)
+
+============================================================
+  C3_child
+============================================================
+  seed=42: val=0.5988 test=0.5828
+  -> saved /root/autodl-tmp/v5_data/models/C3_child_seed42.pth
+  seed=123: val=0.6140 test=0.6040
+  -> saved /root/autodl-tmp/v5_data/models/C3_child_seed123.pth
+  seed=456: val=0.6163 test=0.6099
+  -> saved /root/autodl-tmp/v5_data/models/C3_child_seed456.pth
+  Mean: val=0.6097 std 0.0077  test=0.5989 std 0.0116  (311s)
+
+============================================================
+  C4_extreme
+============================================================
+  seed=42: val=0.4721 test=0.4783
+  -> saved /root/autodl-tmp/v5_data/models/C4_extreme_seed42.pth
+  seed=123: val=0.4767 test=0.4383
+  -> saved /root/autodl-tmp/v5_data/models/C4_extreme_seed123.pth
+  seed=456: val=0.4674 test=0.4783
+  -> saved /root/autodl-tmp/v5_data/models/C4_extreme_seed456.pth
+  Mean: val=0.4721 std 0.0038  test=0.4649 std 0.0188  (294s)
+
+================================================================================
+  FINAL RESULTS TABLE (v5 protocol)
+================================================================================
+Experiment             Val Mean  Val Std  Test Mean Test Std
+----------------------------------------------------------
+A1_baseline             0.8202 std 0.0038     0.7861 std 0.0048 
+A2b_adapter             0.8306 std 0.0058     0.7881 std 0.0078 
+A3_prosody_only         0.8473 std 0.0052     0.8085 std 0.0060 
+B3_final                0.8620 std 0.0091     0.8147 std 0.0108 
+C1_none                 0.8519 std 0.0079     0.8124 std 0.0058 
+C2_adult                0.5415 std 0.0147     0.5061 std 0.0055 
+C3_child                0.6097 std 0.0077     0.5989 std 0.0116 
+C4_extreme              0.4721 std 0.0038     0.4649 std 0.0188 
+
+Results saved to: /root/autodl-tmp/v5_data/logs/v5_results.json
+Models saved to: /root/autodl-tmp/v5_data/models//
+Done at 2026-05-04 01:05:44

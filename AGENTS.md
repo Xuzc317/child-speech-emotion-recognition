@@ -45,3 +45,20 @@
 - 所有 Conv1d 操作必须在**真实的帧级时间轴**上滑动，而非特征拼接维度
 - ONNX 兼容性要求：不要使用 `nn.AdaptiveAvgPool1d`，改用 `MaxPool1d` 或固定 `AvgPool1d`
 - 特征维度：emotion2vec 帧级 768-dim（不再是 162-dim mean-pooled）
+- 数据划分：外部 8:2 + 内部 val（`split_speakers_7_3_with_inner_val`），目标 6:2:2
+
+## 当前状态 (2026-05-04)
+
+- **Phase 5 完成**: v5 6:2:2 协议全部实验复核通过
+- **最终推荐模型**: A3 = WavLM frozen + Prosody Pooling + DrseNet (无 Adapter)
+  - Test: 80.85% (Run 2) / 80.73% (独立运行)
+  - B3 (+Adapter): 81.47%，Adapter 贡献仅 ~0.5-0.6pp
+- **关键发现**: Adapter 可删除，Prosody Pooling 是主驱动力 (+2.24pp over baseline)
+- **增强实验**: 所有增强均有害 (C2 52% / C3 59% / C4 47% vs C1 80%)
+- **论文 v6**: 方法章节简化为一个核心模块 (Prosody Pooling)，Adapter 降级为消融讨论
+
+## 实验数据位置
+
+- `experiments/v5_622/` — v5 6:2:2 完整实验数据
+- `checkpoints/v5_622/` — 15+ 个 .pth 模型文件
+- `experiments/phase3_ablation.json` — 历史 60/20/20 协议结果

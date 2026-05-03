@@ -50,6 +50,7 @@ def main():
     parser.add_argument('--output_dir', default='data/')
     parser.add_argument('--configs', nargs='+', default=['C1_none', 'C2_adult', 'C3_child', 'C4_extreme'])
     parser.add_argument('--max_samples', type=int, default=None)
+    parser.add_argument('--wav_dir', default=None, help='BESD MY dataset directory')
     parser.add_argument('--seed', type=int, default=42)
     args = parser.parse_args()
 
@@ -58,8 +59,10 @@ def main():
     rng = np.random.RandomState(args.seed)
 
     # Collect WAVs with speaker split
-    wav_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                           '..', '提交到团队', '数据集', 'BESD', 'BESD', 'MY')
+    wav_dir = args.wav_dir
+    if not wav_dir:
+        wav_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                               '..', '提交到团队', '数据集', 'BESD', 'BESD', 'MY')
     entries = collect_wav_files(wav_dir)
     train_entries, val_entries, test_entries, _, _, _, _ = split_speakers_7_3_with_inner_val(entries)
 
