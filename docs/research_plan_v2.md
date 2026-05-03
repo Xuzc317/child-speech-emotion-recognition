@@ -148,6 +148,20 @@
 
 ---
 
+## 补充：SER 领域标准评价指标
+
+SER 顶会论文**以 UAR (Unweighted Average Recall) 为主指标**，WA (Weighted Accuracy) 为辅助。
+INTERSPEECH ComParE 挑战赛从 2009 年起只用 UAR 排名。
+
+```python
+from sklearn.metrics import recall_score, accuracy_score
+uar = recall_score(y_true, y_pred, average='macro')   # 每类等权
+wa  = accuracy_score(y_true, y_pred)                   # 即常规 accuracy
+```
+
+C-BESD 类别均衡（6 类每类 ~417），WA ≈ UAR，但论文中必须两个都报告。
+表格规范写法：`WA (%) / UAR (%)`，差异用 "percentage points" 而非 "pp"。
+
 ## 五、待办清单
 
 - [ ] Phase 6.1a：复现 C-BESD 基线（MFCC+CNN on 6:2:2）
