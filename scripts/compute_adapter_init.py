@@ -21,7 +21,7 @@ from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.models.ssl_backbone import SSLBackbone, preprocess_wav
-from src.data.preprocess import collect_wav_files, split_speakers_3way
+from src.data.preprocess import collect_wav_files, split_speakers_7_3_with_inner_val
 
 
 def collect_frame_features(wav_paths, backbone, device, max_files=None):
@@ -75,12 +75,15 @@ def main():
     print(f"Loading {args.model} backbone (frozen)...")
     backbone = SSLBackbone(model_name=args.model, frozen=True, device=device)
 
-    # Collect child features — ONLY use TRAIN speakers to avoid data leakage
-    print(f"\n=== Child speech (train-only): {child_dir} ===")
+    # Collect child features — CRITICAL: ONLY use TRAIN speakers for adapter_init.
+    # Using val or test speakers here would leak their distribution statistics
+    # into the adapter's initial parameters (scale/bias), violating the
+    # hold-out principle. This is enforced by the split function.
+    print(f"\n=== Child speech (TRAIN-ONLY for adapter init): {child_dir} ===")
     all_entries = collect_wav_files(child_dir)
-    train_entries, _, _, _, _, _ = split_speakers_3way(all_entries)
-    child_paths = [e[0] for e in train_entries]  # Only train speaker paths
-    print(f"  {len(child_paths)} train WAVs (from {len(all_entries)} total)")
+    train_entries, _, _, _, _, _, _ = split_speakers_7_3_with_inner_val(all_entries)
+    child_paths = [e[0] for e in train_entries]  # ONLY train speaker paths
+    print(f"  {len(child_paths)} train-only WAVs (val+test excluded, from {len(all_entries)} total)")
     child_feats = collect_frame_features(child_paths, backbone, device, args.max_child)
     child_mean, child_std = compute_stats(child_feats)
     print(f"  Frames: {child_feats.shape[0]}, Mean norm: {np.linalg.norm(child_mean):.2f}")

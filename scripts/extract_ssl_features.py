@@ -20,7 +20,7 @@ import torch
 import librosa
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.data.preprocess import collect_wav_files, split_speakers_3way, CLASS_NAMES
+from src.data.preprocess import collect_wav_files, split_speakers_7_3_with_inner_val, CLASS_NAMES
 from src.models.ssl_backbone import SSLBackbone, preprocess_wav
 
 
@@ -68,12 +68,10 @@ def main():
             sys.exit(1)
     entries = collect_wav_files(wav_dir)
 
-    # 2. Speaker-independent 60/20/20 三路划分
-    print("Splitting speakers (60/20/20)...")
-    train_entries, val_entries, test_entries, train_sids, val_sids, test_sids = split_speakers_3way(entries)
-    print(f"  Train: {len(train_entries)} WAVs from {len(train_sids)} speakers")
-    print(f"  Val:   {len(val_entries)} WAVs from {len(val_sids)} speakers")
-    print(f"  Test:  {len(test_entries)} WAVs from {len(test_sids)} speakers")
+    # 2. Speaker-independent 划分：外部 7:3 + 内部 val（最终协议 v5）
+    print("Splitting speakers (outer 7:3 + inner val)...")
+    train_entries, val_entries, test_entries, train_sids, val_sids, test_sids, split_stats = \
+        split_speakers_7_3_with_inner_val(entries)
 
     if args.max_samples:
         train_entries = train_entries[:args.max_samples]

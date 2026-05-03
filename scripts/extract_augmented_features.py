@@ -14,7 +14,7 @@ import os, sys, argparse, time, numpy as np, torch, librosa
 from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.data.preprocess import collect_wav_files, split_speakers_3way
+from src.data.preprocess import collect_wav_files, split_speakers_7_3_with_inner_val
 from src.models.ssl_backbone import SSLBackbone, preprocess_wav
 
 # Augmentation configs
@@ -61,7 +61,7 @@ def main():
     wav_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                            '..', '提交到团队', '数据集', 'BESD', 'BESD', 'MY')
     entries = collect_wav_files(wav_dir)
-    train_entries, val_entries, test_entries, _, _, _ = split_speakers_3way(entries)
+    train_entries, val_entries, test_entries, _, _, _, _ = split_speakers_7_3_with_inner_val(entries)
 
     # Load backbone once
     print(f"Loading {args.model} backbone (frozen)...")

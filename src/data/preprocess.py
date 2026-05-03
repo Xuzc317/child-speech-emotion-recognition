@@ -78,7 +78,10 @@ def collect_wav_files(wav_dir=None):
 
 
 def split_speakers(entries):
-    """Split unique speaker IDs 70/30 stratified by emotion-class profile.
+    """[DEPRECATED v5] 旧 70/30 划分，仅 train/test 两路。
+
+    已被 split_speakers_7_3_with_inner_val() 替代。
+    Phase 1 基线实验 (emotion2vec, WavLM linear probe) 来自此函数。
 
     Speakers are grouped by which combination of emotion classes they have
     recordings for (their "profile"). Each profile group is split 70/30.
@@ -125,7 +128,11 @@ def split_speakers(entries):
 
 
 def split_speakers_3way(entries, train_ratio=0.6, val_ratio=0.2):
-    """60/20/20 三路 speaker 划分，避免数据泄露。
+    """[DEPRECATED v5] 60/20/20 三路 speaker 划分。
+
+    已被 split_speakers_7_3_with_inner_val() 替代。
+    历史 Phase 3 实验结果来自此函数。
+    仅保留用于复现历史实验。
 
     - train: 用于模型训练
     - val:   用于 early stopping 和超参选择
@@ -173,6 +180,157 @@ def split_speakers_3way(entries, train_ratio=0.6, val_ratio=0.2):
     return gather(train_sids), gather(val_sids), gather(test_sids), train_sids, val_sids, test_sids
 
 
+def split_speakers_7_3_with_inner_val(entries, outer_train_ratio=0.7, inner_val_ratio=0.15, seed=42):
+    """外部 7:3 + 内部 val 的说话人独立划分（最终协议 v5）。
+
+    协议：
+      1. 外部 speaker-independent 7:3 划分：
+         - 70% speaker → trainval
+         - 30% speaker → final test (严格 hold-out)
+      2. 内部从 trainval 中划分 validation：
+         - 从 70% trainval speaker 中再划出 inner_val_ratio 作为 val
+         - 默认 inner_val_ratio=0.15 → train 约 59.5%, val 约 10.5%
+      3. adapter_init 只用 train speaker，不用 val/test
+      4. val 只用于 early stopping 和模型选择
+      5. test 严格 hold-out，训练中完全不可见，只在最终评估时使用一次
+
+    保证：
+      - train/val/test speaker 三者互斥
+      - profile-stratified 每层都保持情绪分布均衡
+      - 对过小的 profile 分组做安全处理（避免 max(1) 导致比例严重失真）
+
+    Returns:
+      train_entries, val_entries, test_entries,
+      train_sids, val_sids, test_sids,
+      stats: dict with speaker counts, sample counts, class distribution per split
+    """
+    rng = np.random.RandomState(seed)
+
+    # ── 建立 speaker → entries 映射和 profile 分组 ──
+    speaker_map = {}
+    speaker_profile = {}
+    for path, label, sid in entries:
+        speaker_map.setdefault(sid, []).append((path, label))
+        speaker_profile.setdefault(sid, set()).add(label)
+
+    profile_groups = {}
+    for sid, profile in speaker_profile.items():
+        key = frozenset(profile)
+        profile_groups.setdefault(key, []).append(sid)
+
+    total_speakers = len(speaker_map)
+    trainval_sids = set()
+    test_sids = set()
+
+    # ── 第 1 步：外部 7:3 划分 (trainval vs test) ──
+    for profile, sids in profile_groups.items():
+        sorted_sids = sorted(sids)
+        perm = rng.permutation(len(sorted_sids))
+        n_trainval = max(1, int(len(sorted_sids) * outer_train_ratio))
+        # 对小 profile 做安全处理：至少留 1 个给 test（如果 >=2 人）
+        if len(sorted_sids) >= 2:
+            n_trainval = max(1, min(n_trainval, len(sorted_sids) - 1))
+        for i in perm[:n_trainval]:
+            trainval_sids.add(sorted_sids[i])
+        for i in perm[n_trainval:]:
+            test_sids.add(sorted_sids[i])
+
+    assert trainval_sids.isdisjoint(test_sids), \
+        "FATAL: trainval/test speaker overlap in outer split!"
+
+    # ── 第 2 步：内部从 trainval 划分 val ──
+    # 对 trainval 内部再做 profile-stratified split
+    train_sids = set()
+    val_sids = set()
+
+    for profile, sids in profile_groups.items():
+        # 只考虑 trainval 中的 speaker
+        trainval_in_profile = [sid for sid in sorted(sids) if sid in trainval_sids]
+        if len(trainval_in_profile) == 0:
+            continue
+        perm = rng.permutation(len(trainval_in_profile))
+        n_val = max(1, int(len(trainval_in_profile) * inner_val_ratio))
+        # 安全处理：至少保留 1 个给 train
+        if len(trainval_in_profile) >= 2:
+            n_val = max(1, min(n_val, len(trainval_in_profile) - 1))
+        for i in perm[:n_val]:
+            val_sids.add(trainval_in_profile[i])
+        for i in perm[n_val:]:
+            train_sids.add(trainval_in_profile[i])
+
+    # ── 三层互斥断言 ──
+    assert train_sids.isdisjoint(val_sids), \
+        "FATAL: train/val speaker overlap in inner split!"
+    assert train_sids.isdisjoint(test_sids), \
+        "FATAL: train/test speaker overlap!"
+    assert val_sids.isdisjoint(test_sids), \
+        "FATAL: val/test speaker overlap!"
+
+    # ── 组装 entries ──
+    def gather(sids):
+        result = []
+        for sid in sids:
+            for path, label in speaker_map[sid]:
+                result.append((path, label, sid))
+        return result
+
+    train_entries = gather(train_sids)
+    val_entries = gather(val_sids)
+    test_entries = gather(test_sids)
+
+    # ── 统计信息 ──
+    def class_dist(entries_list):
+        from collections import Counter
+        cnt = Counter()
+        for _, label, _ in entries_list:
+            cls_name = CLASS_NAMES[label]
+            cnt[cls_name] += 1
+        return dict(cnt)
+
+    stats = {
+        'outer_train_ratio': outer_train_ratio,
+        'inner_val_ratio': inner_val_ratio,
+        'seed': seed,
+        'total_speakers': total_speakers,
+        'total_samples': len(entries),
+        'train_speakers': len(train_sids),
+        'val_speakers': len(val_sids),
+        'test_speakers': len(test_sids),
+        'train_samples': len(train_entries),
+        'val_samples': len(val_entries),
+        'test_samples': len(test_entries),
+        'train_ratio': len(train_entries) / len(entries),
+        'val_ratio': len(val_entries) / len(entries),
+        'test_ratio': len(test_entries) / len(entries),
+        'train_class_dist': class_dist(train_entries),
+        'val_class_dist': class_dist(val_entries),
+        'test_class_dist': class_dist(test_entries),
+        'total_class_dist': class_dist(entries),
+    }
+
+    # ── 打印统计 ──
+    print(f"\n{'='*60}")
+    print(f"Speaker split: outer 7:3 + inner val (seed={seed})")
+    print(f"{'='*60}")
+    print(f"Total: {total_speakers} speakers, {len(entries)} samples")
+    print(f"  Train: {stats['train_speakers']} speakers, {stats['train_samples']} samples "
+          f"({stats['train_ratio']:.1%})")
+    print(f"  Val:   {stats['val_speakers']} speakers, {stats['val_samples']} samples "
+          f"({stats['val_ratio']:.1%})")
+    print(f"  Test:  {stats['test_speakers']} speakers, {stats['test_samples']} samples "
+          f"({stats['test_ratio']:.1%})")
+    print(f"Class distribution (total): {stats['total_class_dist']}")
+    print(f"  Train: {stats['train_class_dist']}")
+    print(f"  Val:   {stats['val_class_dist']}")
+    print(f"  Test:  {stats['test_class_dist']}")
+
+    # 验证 speaker 数守恒
+    assert stats['train_speakers'] + stats['val_speakers'] + stats['test_speakers'] == total_speakers, \
+        "FATAL: speaker count mismatch!"
+
+    return train_entries, val_entries, test_entries, train_sids, val_sids, test_sids, stats
+
+
 def extract_features_from_entries(entries, split_name):
     """Extract 3x processing per WAV (original + noise + stretch+pitch)."""
     from src.data.dataset import get_features
@@ -198,13 +356,14 @@ def main():
     """DEPRECATED: 此入口仅为旧 162-dim 特征提取保留。
 
     新项目使用 SSL 帧级特征，通过 scripts/extract_ssl_features.py
-    直接调用 collect_wav_files() + split_speakers_3way() 完成 60/20/20
-    三路划分。请勿使用本函数生成数据。
+    直接调用 collect_wav_files() + split_speakers_7_3_with_inner_val()
+    完成外部 7:3 + 内部 val 的严格划分。
+    请勿使用本函数生成数据。
     """
     print("=" * 60)
     print("WARNING: This entry point is DEPRECATED for the new project.")
     print("Use scripts/extract_ssl_features.py for SSL feature extraction.")
-    print("It uses split_speakers_3way() (60/20/20) to prevent data leakage.")
+    print("It uses split_speakers_7_3_with_inner_val() (outer 7:3 + inner val).")
     print("=" * 60)
 
     # Step 1: Collect WAV files

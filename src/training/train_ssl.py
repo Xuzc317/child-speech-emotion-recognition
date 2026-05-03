@@ -140,6 +140,9 @@ def train():
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--patience', type=int, default=20)
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--allow_test_as_val', action='store_true', default=False,
+                        help='DANGEROUS: allow using test set as validation (reintroduces data leakage). '
+                             'Only for debugging or backward compatibility with old experiments.')
 
     args = parser.parse_args()
 
@@ -162,13 +165,21 @@ def train():
         if val_exists:
             val_dataset = SSLFeatureDataset(args.val_feats, args.val_labels, prosody_val)
             print(f"Val set: {len(val_dataset)} samples")
-        else:
+        elif args.allow_test_as_val:
             print("=" * 60)
-            print("WARNING: Val set NOT FOUND — falling back to test set for validation!")
+            print("DANGER: --allow_test_as_val set — using test set as validation!")
             print("This reintroduces DATA LEAKAGE (test used for early stopping).")
-            print("Generate val features with scripts/extract_ssl_features.py first.")
+            print("Results from this run MUST NOT be reported as final results.")
             print("=" * 60)
             val_dataset = SSLFeatureDataset(args.test_feats, args.test_labels, prosody_test)
+        else:
+            print("=" * 60)
+            print("ERROR: Validation set NOT FOUND!")
+            print(f"  Expected: {args.val_feats}")
+            print("  Generate val features with: python scripts/extract_ssl_features.py")
+            print("  Or use --allow_test_as_val to force test-as-val (NOT for final results).")
+            print("=" * 60)
+            sys.exit(1)
         test_dataset = SSLFeatureDataset(args.test_feats, args.test_labels, prosody_test)
     else:
         raise NotImplementedError("Online mode — implement in Phase 2")

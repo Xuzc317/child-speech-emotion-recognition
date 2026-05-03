@@ -1,15 +1,19 @@
 """Phase 3: Complete Ablation Study on Cloud (3-way split, no leakage)
 
-Runs all module combinations × 3 seeds, logs structured JSON.
-Total: 6 configs × 3 seeds = 18 runs (~90 min on RTX 4090D)
+Runs all module combinations x 3 seeds, logs structured JSON.
+Total: 6 configs x 3 seeds = 18 runs (~90 min on RTX 4090D)
 
 Configurations:
   A1: Baseline (mean pool, no adapter)
   A2: Adapter stat-prior
   A2b: Adapter random-init
-  A3_ft: Full fine-tune WavLM + adapter (unfrozen backbone)
-  B2: Self-attention pool (no prosody)
-  B3: Adapter + Prosody pool (our best)
+  A3_ft: [KNOWN ISSUE v5] NOT true full fine-tune — use_backbone=False in precomputed mode,
+         so WavLM is never in the training graph. This is effectively a reduced-LR control.
+  B2: [KNOWN ISSUE v5] NOT self-attention — use_prosody=False falls back to mean pooling,
+      making B2 identical to A2b. Results are duplicates.
+  B3: Adapter + Prosody pool (our recommended model)
+
+Data split: 60/20/20 via split_speakers_3way() [HISTORICAL — v5 replaces with outer 7:3 + inner val]
 """
 
 import sys, os, json, time, numpy as np, torch
@@ -132,11 +136,13 @@ experiments = [
     ('A1_baseline',    False, False, False, False),
     ('A2_stat_prior',  True,  False, True,  False),
     ('A2b_rand_init',  True,  False, False, False),
-    ('B2_self_attn',   True,  False, False, False),  # adapter + mean pool (vs B3 prosody)
+    # KNOWN ISSUE v5: B2 is identical to A2b — use_prosody=False means mean pooling, not self-attention
+    ('B2_self_attn',   True,  False, False, False),  # adapter + mean pool (NOT self-attention!)
     ('B3_prosody',     True,  True,  False, False),
 ]
 
 print('=== Phase 3 Ablation Study ===')
+print('NOTE: Data split = 60/20/20 (HISTORICAL protocol, replaced by outer 7:3 + inner val in v5)')
 dt = time.strftime('%Y-%m-%d %H:%M:%S')
 print(f'Date: {dt}')
 print(f'Device: {torch.cuda.get_device_name(0)}')
@@ -153,8 +159,12 @@ for name, use_adp, use_pros, stat_prior, ft in experiments:
     test_vals = [v['test'] for v in res.values()]
     print(f'  Mean val={np.mean(val_vals):.4f}±{np.std(val_vals):.4f} test={np.mean(test_vals):.4f}±{np.std(test_vals):.4f} ({elapsed:.0f}s)\n')
 
-# Full fine-tune (A3) — smaller batch for 24GB VRAM
-print('--- A3_full_finetune ---')
+# KNOWN ISSUE v5: A3 is NOT true full fine-tune.
+# use_backbone=False means WavLM is never in the training graph in precomputed mode.
+# The model only trains adapter + classifier on pre-extracted fixed features.
+# Slightly different hyperparams (bs=16, lr=1e-4) vs B3 (bs=128, lr=3e-4).
+# This is downgraded from "full fine-tune" to "reduced-LR control" in v5.
+print('--- A3_full_finetune [KNOWN ISSUE: not true fine-tune, use_backbone=False in precomputed mode] ---')
 t0 = time.time()
 res = run_experiment('A3_full_finetune', True, True, False, True, bs=16, lr=1e-4, epochs=50, patience=10)
 all_results['A3_full_finetune'] = res
