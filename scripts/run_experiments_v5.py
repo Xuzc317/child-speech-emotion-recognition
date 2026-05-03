@@ -3,9 +3,9 @@
 Runs all needed experiments under the new split (outer 8:2 + inner val).
 
 Main ablation (3 configs × 3 seeds = 9 runs):
-  A1:  WavLM + mean pooling + DrseNet
-  A2b: WavLM + Adapter(random init) + mean pooling + DrseNet
-  B3:  WavLM + Adapter(random init) + Prosody Pooling + DrseNet  [FINAL MODEL]
+  A1:  WavLM + mean pooling + SEMLP
+  A2b: WavLM + Adapter(random init) + mean pooling + SEMLP
+  B3:  WavLM + Adapter(random init) + Prosody Pooling + SEMLP  [FINAL MODEL]
 
 Augmentation sensitivity (4 configs × 3 seeds = 12 runs):
   C1: B3 + no augmentation (clean train)

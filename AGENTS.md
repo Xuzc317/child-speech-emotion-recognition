@@ -23,7 +23,7 @@
 │   │   ├── ssl_backbone.py      # WavLM/emotion2vec 封装
 │   │   ├── adapter.py           # 声学校准适配器 (消融讨论)
 │   │   ├── pooling.py           # 韵律引导时序重要性池化 (核心方法)
-│   │   └── drse_cnn.py          # DrseNet 分类器
+│   │   └── semlp.py          # SEMLP 分类器
 │   ├── augmentation/
 │   │   └── constrained_aug.py   # 分布约束增强 + FD 计算
 │   ├── training/
@@ -50,7 +50,7 @@
 
 ## 当前状态 (2026-05-04)
 
-- **最终推荐模型**: A3 = WavLM frozen + Prosody Pooling + DrseNet (无 Adapter)
+- **最终推荐模型**: A3 = WavLM frozen + Prosody Pooling + SEMLP (无 Adapter)
   - 6:2:2 协议 Test: 80.85% ± 0.60%
   - Prosody Pooling 是主驱动力 (+2.24pp over mean pool baseline)
   - Adapter 贡献仅 ~0.5pp，已从核心方法移除

@@ -1,4 +1,4 @@
 from .ssl_backbone import SSLBackbone
-from .adapter import AcousticCalibrationAdapter, DomainAdversarialAdapter
+from .adapter import AcousticCalibrationAdapter
 from .pooling import TemporalImportancePooling
-from .drse_cnn import DrseCNN
+from .semlp import SEMLP

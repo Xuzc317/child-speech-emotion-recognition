@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(ROOT, 'src'))
 from data.dataset_ssl import SSLFeatureDataset, collate_fn_ssl_features
 from models.adapter import AcousticCalibrationAdapter
 from models.pooling import TemporalImportancePooling
-from models.drse_cnn import DrseCNN
+from models.semlp import SEMLP
 
 # ── Chinese font for matplotlib ──
 _font_candidates = ['C:/Windows/Fonts/msyh.ttc','C:/Windows/Fonts/simsun.ttc','C:/Windows/Fonts/simhei.ttf']
@@ -41,7 +41,7 @@ class CalibratedSER(nn.Module):
         super().__init__()
         self.adapter = AcousticCalibrationAdapter(dim=dim)
         self.pooling = TemporalImportancePooling(ssl_dim=dim)
-        self.classifier = DrseCNN(input_dim=dim, num_classes=num_classes)
+        self.classifier = SEMLP(input_dim=dim, num_classes=num_classes)
 
     def forward(self, x, f0=None, energy=None):
         x = self.adapter(x)

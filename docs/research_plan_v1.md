@@ -10,7 +10,7 @@
 
 | 指标 | 数值 |
 |------|------|
-| 模型 | A3 = WavLM frozen + Prosody Pooling + DrseNet |
+| 模型 | A3 = WavLM frozen + Prosody Pooling + SEMLP |
 | 6:2:2 Test | 80.85% ± 0.60% |
 | vs 旧基线 (162-dim) | +45pp |
 | 核心增益来源 | Prosody Pooling: +2.24pp (A1→A3) |

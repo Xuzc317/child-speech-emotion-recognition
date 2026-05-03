@@ -38,7 +38,7 @@ from src.data.dataset_ssl import SSLFeatureDataset, collate_fn_ssl_features
 from src.models.ssl_backbone import SSLBackbone
 from src.models.adapter import AcousticCalibrationAdapter
 from src.models.pooling import TemporalImportancePooling
-from src.models.drse_cnn import DrseCNN
+from src.models.semlp import SEMLP
 from src.utils.experiment_logger import ExperimentLogger
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -52,7 +52,7 @@ class DistributionCalibratedSER(nn.Module):
       1. SSL Backbone (frozen) —— 帧级特征提取
       2. Distribution Calibration Adapter —— 分布偏移校准
       3. Temporal Importance Pooling —— 韵律引导的时序融合
-      4. DrseCNN / Simple Classifier —— 情感分类
+      4. SEMLP / Simple Classifier —— 情感分类
 
     前向：
       waveforms / ssl_feats → Backbone → Adapter → Pooling → Classifier
@@ -84,7 +84,7 @@ class DistributionCalibratedSER(nn.Module):
             self.pooling = TemporalImportancePooling(ssl_dim=dim)
 
         # 4. Classifier
-        self.classifier = DrseCNN(input_dim=dim, num_classes=config.get('num_classes', 6))
+        self.classifier = SEMLP(input_dim=dim, num_classes=config.get('num_classes', 6))
 
     def forward(self, waveforms, f0=None, energy=None):
         # 1. SSL 帧级特征 (B, T, 768)
