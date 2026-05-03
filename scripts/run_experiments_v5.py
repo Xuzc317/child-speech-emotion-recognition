@@ -1,6 +1,6 @@
 """Cloud experiment runner for v5 final protocol.
 
-Runs all needed experiments under the new split (outer 7:3 + inner val).
+Runs all needed experiments under the new split (outer 8:2 + inner val).
 
 Main ablation (3 configs × 3 seeds = 9 runs):
   A1:  WavLM + mean pooling + DrseNet
@@ -181,7 +181,6 @@ def main():
         f'{data}train_{pfx}_prosody.npy',
         f'{data}val_{pfx}_prosody.npy',
         f'{data}test_{pfx}_prosody.npy',
-        f'{data}adapter_init.npz',
     ]
     missing = [f for f in required if not os.path.exists(f)]
     if missing:
@@ -189,9 +188,9 @@ def main():
         for f in missing:
             print(f'  {f}')
         print('\nRun the following on cloud first:')
-        print(f'  python scripts/extract_ssl_features.py --model wavlm --prefix {pfx} --device cuda')
-        print(f'  python scripts/extract_prosody_features.py --prefix {pfx}')
-        print(f'  python scripts/compute_adapter_init.py --device cuda')
+        print(f'  python scripts/extract_ssl_features.py --model wavlm --prefix {pfx} --device cuda --output_dir {data}')
+        print(f'  python scripts/extract_prosody_features.py --prefix {pfx} --output_dir {data}')
+        print(f'  (adapter_init.npz is optional — only needed for stat-prior A2 experiment)')
         sys.exit(1)
 
     # Paths for clean features
@@ -205,8 +204,14 @@ def main():
     val_prosody = f'{data}val_{pfx}_prosody.npy'
     test_prosody = f'{data}test_{pfx}_prosody.npy'
 
-    # Load adapter_init
-    adapter_init = dict(np.load(f'{data}adapter_init.npz'))
+    # Load adapter_init (optional — only needed for stat-prior A2; random-init A2b/B3 don't use it)
+    adapter_init_path = f'{data}adapter_init.npz'
+    if os.path.exists(adapter_init_path):
+        adapter_init = dict(np.load(adapter_init_path))
+        print('Loaded adapter_init.npz (for stat-prior experiments)')
+    else:
+        adapter_init = None
+        print('adapter_init.npz NOT found — stat-prior experiments will be skipped, random-init OK')
 
     # Print dataset info
     for split, fp, lp in [('Train', train_feat, train_label), ('Val', val_feat, val_label), ('Test', test_feat, test_label)]:
@@ -216,7 +221,7 @@ def main():
         cls_str = ', '.join(f'c{c}={n}' for c, n in zip(unique_cls, counts))
         print(f'{split}: {len(labels)} samples, shape={feats.shape}, classes=[{cls_str}]')
 
-    all_results = {'meta': {'protocol': 'outer 7:3 + inner val',
+    all_results = {'meta': {'protocol': 'outer 8:2 + inner val',
                              'split_function': 'split_speakers_7_3_with_inner_val',
                              'seeds': SEEDS, 'batch_size': BATCH_SIZE,
                              'lr': LR, 'epochs': EPOCHS, 'patience': PATIENCE,
@@ -292,7 +297,7 @@ def main():
 
     # ── Print final table ──
     print('\n' + '='*80)
-    print('  FINAL RESULTS TABLE (v5 protocol: outer 7:3 + inner val)')
+    print('  FINAL RESULTS TABLE (v5 protocol: outer 8:2 + inner val)')
     print('='*80)
     print(f'{"Experiment":<20} {"Val Mean":>10} {"Val Std":>8} {"Test Mean":>10} {"Test Std":>8}')
     print('-'*58)

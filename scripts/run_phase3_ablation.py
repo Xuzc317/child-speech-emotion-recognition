@@ -12,7 +12,7 @@ KNOWN ISSUES (fixed in v5):
 
 REPLACEMENT:
   Use scripts/run_experiments_v5.py for all new experiments under the
-  "outer 7:3 + inner val" protocol (split_speakers_7_3_with_inner_val).
+  "outer 8:2 + inner val" protocol (split_speakers_7_3_with_inner_val).
 """
 
 import sys, os, json, time, numpy as np, torch
@@ -141,7 +141,7 @@ experiments = [
 ]
 
 print('=== Phase 3 Ablation Study ===')
-print('NOTE: Data split = 60/20/20 (HISTORICAL protocol, replaced by outer 7:3 + inner val in v5)')
+print('NOTE: Data split = 60/20/20 (HISTORICAL protocol, replaced by outer 8:2 + inner val in v5)')
 dt = time.strftime('%Y-%m-%d %H:%M:%S')
 print(f'Date: {dt}')
 print(f'Device: {torch.cuda.get_device_name(0)}')

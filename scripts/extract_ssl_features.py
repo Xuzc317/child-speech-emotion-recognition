@@ -68,8 +68,8 @@ def main():
             sys.exit(1)
     entries = collect_wav_files(wav_dir)
 
-    # 2. Speaker-independent 划分：外部 7:3 + 内部 val（最终协议 v5）
-    print("Splitting speakers (outer 7:3 + inner val)...")
+    # 2. Speaker-independent 划分：外部 8:2 + 内部 val（最终协议 v5）
+    print("Splitting speakers (outer 8:2 + inner val)...")
     train_entries, val_entries, test_entries, train_sids, val_sids, test_sids, split_stats = \
         split_speakers_7_3_with_inner_val(entries)
 
