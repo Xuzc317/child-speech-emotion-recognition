@@ -9,6 +9,7 @@ is universally beneficial for high-F0-variance populations" — still valid.
 """
 import os, sys, argparse, time, json, glob
 import numpy as np
+import librosa
 import torch, torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
@@ -56,14 +57,15 @@ def load_iemocap(data_dir):
 
     for cls_name in sorted(os.listdir(wav_dir)):
         cls_dir = os.path.join(wav_dir, cls_name)
-        if os.path.isdir(cls_dir):
-            mapped = IEMOCAP_MAP.get(cls_name)
-            if mapped is None:
-                continue
-            label_idx = CLASS_NAMES.index(mapped)
-            for fname in sorted(os.listdir(cls_dir)):
-                if fname.endswith('.wav'):
-                    entries.append((os.path.join(cls_dir, fname), label_idx))
+        if not os.path.isdir(cls_dir):
+            continue
+        # Directories are already named by emotion: ANGER, DISGUST, etc.
+        if cls_name not in CLASS_NAMES:
+            continue
+        label_idx = CLASS_NAMES.index(cls_name)
+        for fname in sorted(os.listdir(cls_dir)):
+            if fname.endswith('.wav'):
+                entries.append((os.path.join(cls_dir, fname), label_idx))
     return entries
 
 
@@ -242,7 +244,6 @@ def main():
         print("Skipping Phase 6.1b — need IEMOCAP data.")
         return
 
-    import librosa  # lazy import
     print("Loading WavLM backbone (frozen)...")
     backbone = SSLBackbone(model_name='wavlm', frozen=True, device=device)
 
