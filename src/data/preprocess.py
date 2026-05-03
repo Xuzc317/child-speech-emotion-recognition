@@ -180,8 +180,8 @@ def split_speakers_3way(entries, train_ratio=0.6, val_ratio=0.2):
     return gather(train_sids), gather(val_sids), gather(test_sids), train_sids, val_sids, test_sids
 
 
-def split_speakers_7_3_with_inner_val(entries, outer_train_ratio=0.8, inner_val_ratio=0.15, seed=42):
-    """外部 8:2 + 内部 val 的说话人独立划分（最终协议 v5）。
+def split_speakers_7_3_with_inner_val(entries, outer_train_ratio=0.8, inner_val_ratio=0.25, seed=42):
+    """外部 8:2 + 内部 val 的说话人独立划分（最终协议 v5, 目标 ~6:2:2）。
 
     协议：
       1. 外部 speaker-independent 8:2 划分：
@@ -189,7 +189,7 @@ def split_speakers_7_3_with_inner_val(entries, outer_train_ratio=0.8, inner_val_
          - 20% speaker → final test (严格 hold-out)
       2. 内部从 trainval 中划分 validation：
          - 从 80% trainval speaker 中再划出 inner_val_ratio 作为 val
-         - 默认 inner_val_ratio=0.15 → train 约 68%, val 约 12%
+         - 默认 outer=0.8, inner=0.25 → train 约 60%, val 约 20%, test 约 20%
       3. adapter_init 只用 train speaker，不用 val/test
       4. val 只用于 early stopping 和模型选择
       5. test 严格 hold-out，训练中完全不可见，只在最终评估时使用一次
@@ -310,7 +310,7 @@ def split_speakers_7_3_with_inner_val(entries, outer_train_ratio=0.8, inner_val_
 
     # ── 打印统计 ──
     print(f"\n{'='*60}")
-    print(f"Speaker split: outer 8:2 + inner val (seed={seed})")
+    print(f"Speaker split: outer 8:2 + inner val — target 6:2:2 (seed={seed})")
     print(f"{'='*60}")
     print(f"Total: {total_speakers} speakers, {len(entries)} samples")
     print(f"  Train: {stats['train_speakers']} speakers, {stats['train_samples']} samples "
@@ -357,13 +357,13 @@ def main():
 
     新项目使用 SSL 帧级特征，通过 scripts/extract_ssl_features.py
     直接调用 collect_wav_files() + split_speakers_7_3_with_inner_val()
-    完成外部 8:2 + 内部 val 的严格划分。
+    完成外部 8:2 + 内部 val 的严格划分（目标 6:2:2）。
     请勿使用本函数生成数据。
     """
     print("=" * 60)
     print("WARNING: This entry point is DEPRECATED for the new project.")
     print("Use scripts/extract_ssl_features.py for SSL feature extraction.")
-    print("It uses split_speakers_7_3_with_inner_val() (outer 8:2 + inner val).")
+    print("It uses split_speakers_7_3_with_inner_val() (outer 8:2 + inner val, target 6:2:2).")
     print("=" * 60)
 
     # Step 1: Collect WAV files
