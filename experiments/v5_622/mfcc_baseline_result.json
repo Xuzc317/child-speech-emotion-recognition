@@ -1,0 +1,10 @@
+{
+  "experiment": "C-BESD MFCC+CNN baseline (Phase 6.1a)",
+  "split": "6:2:2 speaker-independent (seed=42)",
+  "seed": 42,
+  "best_val_wa": 0.5511627793312073,
+  "best_val_uar": 0.550430546204249,
+  "test_wa": 0.5017626285552979,
+  "test_uar": 0.5028527577718099,
+  "published_baseline_wa": 0.76
+}
