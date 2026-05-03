@@ -72,65 +72,61 @@
 
 ---
 
-## 三、修正后的研究路线
+## 三、修正后的研究路线（对应顶会投稿要求）
 
-### Phase 6.1：建立外部基准（1-2 天）
+> 对标 INTERSPEECH/ICASSP 顶会标准。每个 Phase 标注了对应解决的顶会审稿人关注点。
 
-**目标**：让论文有可引用的外部比较对象
+### Phase 6.1：建立外部基准 ⇢ 解决"单数据集""无可比 SOTA"问题
 
-1. **复现 C-BESD 基线**：用 MFCC + CNN 在我们的 6:2:2 split 上跑，验证 76% 是否可复现
-2. **成人 SER 参照**：在 IEMOCAP 上用同样的 A3 架构跑一次，作为"成人 vs 儿童"的对比数据
-3. **其他 SSL backbone 对比**：WavLM vs HuBERT vs wav2vec2 在 C-BESD 上的对比（论证为什么选 WavLM）
+#### 6.1a MFCC+CNN 基线 ✅
+- **结果**: Test WA=50.2%, UAR=50.3% (严格 6:2:2)
+- **发现**: C-BESD 已发表 76% 可能非 speaker-independent（26pp 差距）
+- **论文价值**: 我们的 A3 比严格基线高 30pp，比已发表高 5pp
 
-### Phase 6.2：修复技术债（1 天）
+#### 6.1b IEMOCAP 成人 A1 vs A3 — 🔄 云端执行中
+- **目的**: 验证"儿童更需要韵律引导"的核心论点
+- **硬件**: 云端 RTX 4090D (24GB)，本地 RTX 3060 太慢
+- **预计耗时**: 云端 ~30min
 
-- Padding mask 支持（消除 40% 零填充帧干扰）
+#### 6.1c 多 SSL backbone 对比
+- WavLM vs HuBERT vs wav2vec2 on C-BESD
+- **目的**: (1) 论证 WavLM 选择合理性 (2) 提供额外外部基准点
+- **硬件**: 云端 RTX 4090D
+
+### Phase 6.2：修复技术债 ⇢ 消除已知 limitation
+
+- Padding mask 支持
 - 修正 FD 计算 bug（`compute_adapter_init.py`）
-- 补全 FD_age（成人 vs 儿童）、FD_lang（英语 vs 泰卢固语）
+- 补全 FD_age、FD_lang
 
-### Phase 6.3：可解释性分析（2-3 天）
+### Phase 6.3：可解释性分析 ⇢ 提升 scientific depth
 
-原路径 A：
 - Per-class attention 可视化
 - Attention-F0 correlation 量化
-- 成人 vs 儿童 attention 模式对比（核心假设：儿童更需要韵律引导）
+- 儿童 vs 成人 attention 模式对比
 
-### Phase 6.4：统一 FD 框架（1-2 天）
+### Phase 6.4：统一 FD 框架 ⇢ 论文核心记忆点
 
-原路径 C：
 - 三维 FD-Accuracy 图（年龄 / 增强 / 语言）
-- FD 作为"分布偏移风险指标"的理论框架
-- 论证：语言偏移 > 增强偏移 > 年龄偏移
+- FD 作为"分布偏移风险指标"
 
-### Phase 6.5：论文 v7（1 周）
+### Phase 6.5：论文 v7
 
-按顶会格式重写，核心叙事：
 ```
-1. Introduction
-   - 儿童 SER 被忽视，SSL 模型未进入该领域
-   - 仅有的 C-BESD 基线是 76%（手工特征+CNN）
-
-2. Related Work
-   - 成人 SER 中的 SSL 模型
-   - 儿童 ASR 中的 SSL 模型（但 SER 仍是空白）
-   - 分布偏移理论（domain shift, FD）
-
-3. Method
-   - Prosody-guided Temporal Importance Pooling（核心）
-   - SEMLP classifier（一句话）
-   
-4. Experiments (这是论文的核心差异化章节)
-   4.1 C-BESD 主结果：A3 = 80.85% vs 基线 76%
-   4.2 消融：A1(mean) → A3(prosody) → B3(+adapter)
-   4.3 成人对比：IEMOCAP 上的 Prosody Pooling 增益远小于儿童
-   4.4 增强敏感性（负面实验）：FD-Aug vs Accuracy
-   4.5 跨语言迁移：FD-Lang 最大，解释为何跨语言几乎失效
-   4.6 统一 FD-Accuracy 图（三个维度的单调关系）
-
-5. Conclusion
-   - 首次在儿童 SER 中引入 SSL + 韵律池化
-   - 提出 FD 框架量化多维度分布偏移
-   - 儿童 SER 仍远未解决（跨语言 20%），呼吁更多关注
+实验章节（顶会标准）:
+4.1 数据集与实验设置
+4.2 C-BESD 主结果（WA+UAR, mean±std）
+    - A3 = 80.85% / 80.8% (WA/UAR)
+    - vs MFCC 严格基线 50.2% (+30pp)
+    - vs 已发表基线 76% (+5pp)
+4.3 消融与模块贡献
+    - A1→A3→B3 贡献链
+    - Adapter 仅 +0.5pp, Prosody +2.24pp
+4.4 成人对比 (IEMOCAP)
+4.5 多 backbone 对比 (WavLM/HuBERT/wav2vec2)
+4.6 增强敏感性分析 (C1-C4)
+4.7 跨语言迁移 (X1/X2)
+4.8 统一 FD-Accuracy 框架
 ```
 
 ---
