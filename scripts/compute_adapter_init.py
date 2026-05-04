@@ -128,10 +128,29 @@ def main():
     np.savez(save_path, **out)
     print(f"\nSaved adapter init to {save_path}")
 
-    # Also compute Frechet Distance between child and adult SSL distributions
+    # Compute Frechet Distance between child and adult SSL distributions
+    # FD = ||μ1-μ2||² + Tr(Σ1+Σ2 - 2(Σ1·Σ2)^½)
     diff_mean = adult_mean - child_mean
-    fd = float(diff_mean @ diff_mean)
-    print(f"Distribution gap (||mean_diff||^2): {fd:.4f}")
+    # Build diagonal covariance approximations from saved std
+    sigma1 = np.diag(child_std ** 2)
+    sigma2 = np.diag(adult_std ** 2)
+    from scipy import linalg
+    covmean = linalg.sqrtm(sigma1 @ sigma2)
+    if np.iscomplexobj(covmean):
+        covmean = covmean.real
+    fd_diag = float(diff_mean @ diff_mean + np.trace(sigma1 + sigma2 - 2 * covmean))
+    print(f"FD (diagonal cov): {fd_diag:.4f}")
+    # Also report full-cov FD if we kept the raw features
+    fd_full = None
+    if 'child_feats' in dir() and 'adult_feats' in dir():
+        sigma1_full = np.cov(child_feats, rowvar=False)
+        sigma2_full = np.cov(adult_feats, rowvar=False)
+        covmean_full = linalg.sqrtm(sigma1_full @ sigma2_full)
+        if np.iscomplexobj(covmean_full):
+            covmean_full = covmean_full.real
+        fd_full = float(diff_mean @ diff_mean + np.trace(sigma1_full + sigma2_full - 2 * covmean_full))
+        print(f"FD (full cov): {fd_full:.4f}")
+    print(f"  (Previous version reported ||mean_diff||²={float(diff_mean @ diff_mean):.4f})")
     print("Done!")
 
 
