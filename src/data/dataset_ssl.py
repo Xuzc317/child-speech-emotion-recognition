@@ -60,7 +60,7 @@ def collate_fn_ssl_features(batch):
         if t < max_t:
             pad = torch.zeros(max_t - t, feat_dim)
             padded.append(torch.cat([f, pad], dim=0))
-            mask = torch.cat([torch.ones(t), torch.zeros(max_t - t)])
+            mask = torch.cat([torch.ones(t, dtype=torch.bool), torch.zeros(max_t - t, dtype=torch.bool)])
         else:
             padded.append(f)
             mask = torch.ones(t)
