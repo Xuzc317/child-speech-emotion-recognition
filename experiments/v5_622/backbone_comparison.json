@@ -12,15 +12,15 @@
     "test_uar": 0.8028
   },
   "wav2vec2_A1_mean": {
-    "best_val_wa": 0.5744,
-    "best_val_uar": 0.5759,
-    "test_wa": 0.5758,
-    "test_uar": 0.5764
+    "best_val_wa": 0.5616,
+    "best_val_uar": 0.5620,
+    "test_wa": 0.5605,
+    "test_uar": 0.5608
   },
   "wav2vec2_A3_prosody": {
-    "best_val_wa": 0.5686,
-    "best_val_uar": 0.5689,
-    "test_wa": 0.5687,
-    "test_uar": 0.5694
+    "best_val_wa": 0.5581,
+    "best_val_uar": 0.5582,
+    "test_wa": 0.5558,
+    "test_uar": 0.5558
   }
 }
