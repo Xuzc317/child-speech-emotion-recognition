@@ -1,0 +1,7 @@
+{
+  "fd_lang": 16.482139061627073,
+  "en_samples": 500,
+  "te_samples": 500,
+  "feature_dim": 768,
+  "note": "Computed from real WavLM features, not estimated"
+}
