@@ -93,13 +93,18 @@ def compute_prosody_stats(feats_path, name):
         energy_means.append(en_valid.mean())
         energy_stds.append(en_valid.std())
 
+    # Use median (not mean) for F0 — mean is inflated by YIN spurious detections at fmax
+    all_f0_valid = f0[f0 > 10]
     stats = {
         'n': len(data),
-        'f0_mean_of_means': float(np.mean(f0_means)),
+        'f0_mean': float(np.mean(f0_means)),  # inflated by artifacts
+        'f0_median': float(np.median(f0)),  # more robust
+        'f0_median_of_voiced': float(np.median(all_f0_valid)) if len(all_f0_valid) > 0 else 0,
         'f0_std_of_means': float(np.std(f0_means)),
         'f0_range': f"[{float(np.min(f0_means)):.0f}, {float(np.max(f0_maxs)):.0f}]",
         'energy_mean': float(np.mean(energy_means)),
         'energy_std': float(np.std(energy_means)),
+        'note': 'F0 mean is inflated by YIN algorithm spurious detections at upper bound (2093 Hz). Use median for central tendency.',
     }
     return stats
 
