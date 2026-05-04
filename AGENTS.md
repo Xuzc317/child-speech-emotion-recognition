@@ -50,16 +50,23 @@
 
 ## 当前状态 (2026-05-04)
 
+- **Phase 6.1-6.5 全部完成**: 实验 + 审查 + 论文 v7 中英文
 - **最终推荐模型**: A3 = WavLM frozen + Prosody Pooling + SEMLP (无 Adapter)
-  - 6:2:2 协议 Test: 80.85% ± 0.60%
-  - Prosody Pooling 是主驱动力 (+2.24pp over mean pool baseline)
-  - Adapter 贡献仅 ~0.5pp，已从核心方法移除
-- **增强实验**: 所有增强均有害 — C1(clean) 80% > C3(child) 59% > C2(adult) 52% > C4(extreme) 47%
+  - C-BESD 6:2:2 Test: 80.9% WA / 80.8% UAR
+  - Prosody Pooling 是主驱动力 (+2.24 percentage points)
+- **跨数据集三组对比**:
+  - C-BESD (儿童, 指定表达): +2.24 percentage points
+  - CREMA-D (成人, 指定表达): +0.75 percentage points
+  - IEMOCAP (成人, 自然对话): −2.12 percentage points
+- **增强实验**: 所有增强均有害, FD-Accuracy 严格单调
 - **跨语言**: English↔Telugu 迁移几乎完全失效 (19-28%)
-- **下一步**: 路径 A+C — 可解释性分析 + FD 理论框架完善
+- **可解释性**: Attention Entropy-Accuracy 负相关
+- **统一FD框架**: 年龄/增强/语言三维 FD-Accuracy 单调
+- **论文 v7**: `docs/论文初稿_v7_cn.docx` (中文), `docs/论文初稿_v7.docx` (English)
+- **参考文献**: 7 篇 PDF 下载到 `references/`
 
 ## 实验数据位置
 
-- `experiments/v5_622/` — 6:2:2 完整实验数据 (2 轮 × 8 configs × 3 seeds)
+- `experiments/v5_622/` — 完整实验数据 (3 数据集对比 + attention + FD)
 - `checkpoints/v5_622/` — 24 个 .pth 模型文件
-- `experiments/phase3_ablation.json` — 历史 60/20/20 协议结果
+- `references/` — 7 篇参考文献 PDF
