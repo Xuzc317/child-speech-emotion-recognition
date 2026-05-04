@@ -1,14 +1,26 @@
 {
+  "wavlm_A1_mean": {
+    "best_val_wa": 0.8163,
+    "best_val_uar": 0.8161,
+    "test_wa": 0.7850,
+    "test_uar": 0.7856
+  },
+  "wavlm_A3_prosody": {
+    "best_val_wa": 0.8465,
+    "best_val_uar": 0.8465,
+    "test_wa": 0.8026,
+    "test_uar": 0.8028
+  },
   "wav2vec2_A1_mean": {
-    "best_val_wa": 0.5744186043739319,
-    "best_val_uar": 0.5758653481801351,
-    "test_wa": 0.5757932066917419,
-    "test_uar": 0.5764497121175131
+    "best_val_wa": 0.5744,
+    "best_val_uar": 0.5759,
+    "test_wa": 0.5758,
+    "test_uar": 0.5764
   },
   "wav2vec2_A3_prosody": {
-    "best_val_wa": 0.5686046481132507,
-    "best_val_uar": 0.5689490884542465,
-    "test_wa": 0.5687426328659058,
-    "test_uar": 0.5693934460481008
+    "best_val_wa": 0.5686,
+    "best_val_uar": 0.5689,
+    "test_wa": 0.5687,
+    "test_uar": 0.5694
   }
 }
