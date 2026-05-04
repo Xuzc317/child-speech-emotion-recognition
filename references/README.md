@@ -58,7 +58,15 @@
 - **标题**: Empathetic Deep Learning: Transferring Adult Speech Emotion Models to Children With Gender-Specific Adaptations
 - **作者**: Lesyk, E. et al.
 - **发表**: Human-Centric Intelligent Systems, 2024
-- **获取方式**: Springer Open Access — https://link.springer.com/article/10.1007/s42452-024-05890-6
+- **文件**: `lesyk2024_empathetic.pdf` (19.5 MB)
+- **下载**: https://link.springer.com/article/10.1007/s42452-024-05890-6
+
+### [8] Paralinguistic Representations for SER (INTERSPEECH 2024)
+- **标题**: Are Paralinguistic Representations all that is needed for Speech Emotion Recognition?
+- **作者**: Phukan, O. C. et al.
+- **发表**: INTERSPEECH, 2024
+- **文件**: `phukan2024_paralinguistic.pdf` (1.3 MB)
+- **下载**: https://arxiv.org/abs/2402.01579
 
 ---
 
