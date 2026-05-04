@@ -1,0 +1,18 @@
+{
+  "fd_values": {
+    "Age (Child vs Adult)": 6.870197772979736,
+    "C1 (Clean)": 0.0,
+    "C3 (Child Aug)": 8.71,
+    "C2 (Adult Aug)": 9.87,
+    "C4 (Extreme Aug)": 11.99,
+    "Language (EN vs TE)": 137.40395545959473
+  },
+  "accuracy_values": {
+    "Age (Child vs Adult)": "{'child_A3': 0.8085, 'adult_A3': 0.5238}",
+    "C1 (Clean)": 0.8034,
+    "C3 (Child Aug)": 0.5875,
+    "C2 (Adult Aug)": 0.5229,
+    "C4 (Extreme Aug)": 0.4685,
+    "Language (EN vs TE)": "{'cross': 0.2, 'mixed': 0.81}"
+  }
+}
