@@ -75,8 +75,13 @@ def pre_extract(entries_list, backbone, use_prosody=True):
     """Extract SSL features + optional prosody."""
     import soundfile as sf
     feats_list, labels_list, prosody_list = [], [], []
+    skipped = 0
     for path, label in tqdm(entries_list, desc='Extract'):
-        y, sr_in = sf.read(path)
+        try:
+            y, sr_in = sf.read(path)
+        except Exception:
+            skipped += 1
+            continue
         if sr_in != SR:
             import librosa
             y = librosa.resample(y.astype(np.float64), orig_sr=sr_in, target_sr=SR).astype(np.float32)
