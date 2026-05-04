@@ -69,6 +69,10 @@ class SSLBackbone(nn.Module):
             )
         elif 'wavlm' in model_name:
             model = self._load_wavlm()
+        elif 'hubert' in model_name:
+            model = self._load_hubert()
+        elif 'wav2vec2' in model_name or 'wav2vec' in model_name:
+            model = self._load_wav2vec2()
         else:
             raise ValueError(f"Unknown model: {self.model_name}")
         return model.to(self.device)
@@ -106,6 +110,35 @@ class SSLBackbone(nn.Module):
             except Exception:
                 pass
         raise RuntimeError("Cannot load WavLM — check network or cache")
+
+    def _load_hubert(self):
+        """Load HuBERT base model."""
+        from transformers import HubertModel
+        for model_id in ['facebook/hubert-base-ls960']:
+            try:
+                model = HubertModel.from_pretrained(model_id, local_files_only=True)
+                print(f"[SSLBackbone] Loaded {model_id}")
+                return model
+            except Exception:
+                continue
+        # Fallback: try downloading
+        model = HubertModel.from_pretrained('facebook/hubert-base-ls960')
+        print(f"[SSLBackbone] Loaded facebook/hubert-base-ls960 (downloaded)")
+        return model
+
+    def _load_wav2vec2(self):
+        """Load wav2vec2 base model."""
+        from transformers import Wav2Vec2Model
+        for model_id in ['facebook/wav2vec2-base-960h']:
+            try:
+                model = Wav2Vec2Model.from_pretrained(model_id, local_files_only=True)
+                print(f"[SSLBackbone] Loaded {model_id}")
+                return model
+            except Exception:
+                continue
+        model = Wav2Vec2Model.from_pretrained('facebook/wav2vec2-base-960h')
+        print(f"[SSLBackbone] Loaded facebook/wav2vec2-base-960h (downloaded)")
+        return model
 
     def _freeze(self):
         for param in self.backbone.parameters():
