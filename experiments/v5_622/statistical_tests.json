@@ -1,0 +1,43 @@
+{
+  "bootstrap": {
+    "cb_a1_a3": {
+      "mean": 0.022326674500587562,
+      "ci95": [
+        0.014101057579318454,
+        0.03642773207990602
+      ],
+      "raw_deltas": [
+        0.016451233842538215,
+        0.03642773207990602,
+        0.014101057579318454
+      ]
+    },
+    "iemocap": {
+      "delta": -0.021240949630737305,
+      "note": "single run, no CI available"
+    },
+    "cremad": {
+      "delta": 0.007482945919036865,
+      "note": "single run, no CI available"
+    }
+  },
+  "acoustic": {
+    "cbesd": {
+      "n": 2507,
+      "f0_mean_of_means": 1067.5960693359375,
+      "f0_std_of_means": 347.04461669921875,
+      "f0_range": "[137, 2286]",
+      "energy_mean": 0.03033028542995453,
+      "energy_std": 0.015027814544737339
+    },
+    "iemocap": "needs extraction from cloud run",
+    "cremad": "needs extraction from local run"
+  },
+  "attention_correlation": {
+    "pearson_r": -0.5152930903305136,
+    "pearson_p": 0.295472470700434,
+    "spearman_rho": -0.4285714285714286,
+    "spearman_p": 0.39650145772594736,
+    "n": 6
+  }
+}
