@@ -154,8 +154,13 @@ def main():
     for init_mode in ['random', 'stat_prior']:
         adapter_init = None
         if init_mode == 'stat_prior':
-            init_path = f'{data_dir}/adapter_init.npz'
-            if os.path.exists(init_path):
+            init_paths = [f'{data_dir}/adapter_init.npz', '/root/ser_project/data/adapter_init.npz']
+            init_path = None
+            for p in init_paths:
+                if os.path.exists(p):
+                    init_path = p
+                    break
+            if init_path:
                 adapter_init = dict(np.load(init_path))
                 print(f"  Loaded stat prior from {init_path}")
             else:
