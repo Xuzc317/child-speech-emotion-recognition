@@ -102,8 +102,10 @@ class TemporalImportancePooling(nn.Module):
         Returns:
             pooled: (B, 768)  加权融合特征
         """
-        # 韵律特征投影
-        prosody = torch.cat([f0, energy], dim=-1)  # (B, T, 2)
+        # 韵律特征投影（先归一化到 [0,1] 尺度）
+        f0_norm = f0 / 2093.0  # C7 = ~2093 Hz, covers children's F0 range
+        energy_norm = energy / (energy.max(dim=1, keepdim=True).values.clamp(min=1e-8))
+        prosody = torch.cat([f0_norm, energy_norm], dim=-1)  # (B, T, 2)
         prosody_emb = self.prosody_proj(prosody)    # (B, T, 64)
 
         # 融合特征
@@ -115,7 +117,7 @@ class TemporalImportancePooling(nn.Module):
 
         # Mask padding frames: set attention score to -inf before softmax
         if mask is not None:
-            attn_weights = attn_weights.masked_fill(~mask, float('-inf'))
+            attn_weights = attn_weights.masked_fill(mask == 0, float('-inf'))
 
         attn_weights = F.softmax(attn_weights, dim=1)  # (B, T)
 

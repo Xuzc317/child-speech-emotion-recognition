@@ -103,7 +103,7 @@ class DistributionCalibratedSER(nn.Module):
         else:
             # Mask-aware mean pooling
             if mask is not None:
-                mask_f = mask.float().unsqueeze(-1)  # (B, T, 1)
+                mask_f = mask.to(dtype=ssl_feats.dtype).unsqueeze(-1)  # (B, T, 1)
                 pooled = (ssl_feats * mask_f).sum(dim=1) / mask_f.sum(dim=1).clamp(min=1)
             else:
                 pooled = ssl_feats.mean(dim=1)
