@@ -86,7 +86,7 @@ class DistributionCalibratedSER(nn.Module):
         # 4. Classifier
         self.classifier = SEMLP(input_dim=dim, num_classes=config.get('num_classes', 6))
 
-    def forward(self, waveforms, f0=None, energy=None):
+    def forward(self, waveforms, f0=None, energy=None, mask=None):
         # 1. SSL 帧级特征 (B, T, 768)
         if self.use_backbone:
             ssl_feats = self.backbone(waveforms)
@@ -99,9 +99,14 @@ class DistributionCalibratedSER(nn.Module):
 
         # 3. 时序池化
         if self.use_prosody and f0 is not None and energy is not None:
-            pooled = self.pooling(ssl_feats, f0, energy)
+            pooled = self.pooling(ssl_feats, f0, energy, mask=mask)
         else:
-            pooled = ssl_feats.mean(dim=1)  # fallback: mean pooling
+            # Mask-aware mean pooling
+            if mask is not None:
+                mask_f = mask.float().unsqueeze(-1)  # (B, T, 1)
+                pooled = (ssl_feats * mask_f).sum(dim=1) / mask_f.sum(dim=1).clamp(min=1)
+            else:
+                pooled = ssl_feats.mean(dim=1)
 
         # 4. 分类
         return self.classifier(pooled)
@@ -262,15 +267,16 @@ def train():
 
         for batch in tqdm(train_loader, desc=f'Epoch {epoch+1}'):
             inputs, labels = batch[0].to(device), batch[1].to(device)
+            mask = batch[2].to(device) if len(batch) >= 3 else None
             prosody_batch = batch[3].to(device) if len(batch) >= 4 else None
 
             optimizer.zero_grad()
             if prosody_batch is not None:
                 f0 = prosody_batch[:, :, 0:1]
                 energy = prosody_batch[:, :, 1:2]
-                outputs = model(inputs, f0=f0, energy=energy)
+                outputs = model(inputs, f0=f0, energy=energy, mask=mask)
             else:
-                outputs = model(inputs)
+                outputs = model(inputs, mask=mask)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -280,20 +286,21 @@ def train():
             train_correct += (preds == labels).sum().item()
             train_total += labels.size(0)
 
-        # Eval on VAL (for early stopping) — test set never seen during training
+        # Eval on VAL (for early stopping)
         model.eval()
         val_correct = 0
         val_total = 0
         with torch.no_grad():
             for batch in val_loader:
                 inputs, labels = batch[0].to(device), batch[1].to(device)
+                mask = batch[2].to(device) if len(batch) >= 3 else None
                 prosody_batch = batch[3].to(device) if len(batch) >= 4 else None
                 if prosody_batch is not None:
                     f0 = prosody_batch[:, :, 0:1]
                     energy = prosody_batch[:, :, 1:2]
-                    outputs = model(inputs, f0=f0, energy=energy)
+                    outputs = model(inputs, f0=f0, energy=energy, mask=mask)
                 else:
-                    outputs = model(inputs)
+                    outputs = model(inputs, mask=mask)
                 _, preds = torch.max(outputs, 1)
                 val_correct += (preds == labels).sum().item()
                 val_total += labels.size(0)
@@ -325,13 +332,14 @@ def train():
     with torch.no_grad():
         for batch in test_loader:
             inputs, labels = batch[0].to(device), batch[1].to(device)
+            mask = batch[2].to(device) if len(batch) >= 3 else None
             prosody_batch = batch[3].to(device) if len(batch) >= 4 else None
             if prosody_batch is not None:
                 f0 = prosody_batch[:, :, 0:1]
                 energy = prosody_batch[:, :, 1:2]
-                outputs = model(inputs, f0=f0, energy=energy)
+                outputs = model(inputs, f0=f0, energy=energy, mask=mask)
             else:
-                outputs = model(inputs)
+                outputs = model(inputs, mask=mask)
             _, preds = torch.max(outputs, 1)
             test_correct += (preds == labels).sum().item()
             test_total += labels.size(0)

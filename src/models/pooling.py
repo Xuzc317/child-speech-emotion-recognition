@@ -92,12 +92,13 @@ class TemporalImportancePooling(nn.Module):
             nn.Linear(128, 1),
         )
 
-    def forward(self, ssl_feats, f0, energy):
+    def forward(self, ssl_feats, f0, energy, mask=None):
         """
         Args:
             ssl_feats: (B, T, 768)  SSL 帧级特征
             f0: (B, T, 1)  F0（归一化到 [0, 1]）
             energy: (B, T, 1)  能量（归一化到 [0, 1]）
+            mask: (B, T) bool, True=valid frame, False=padding (optional)
         Returns:
             pooled: (B, 768)  加权融合特征
         """
@@ -111,6 +112,11 @@ class TemporalImportancePooling(nn.Module):
         # Attention 权重
         attn_weights = self.attn(combined)            # (B, T, 1)
         attn_weights = attn_weights.squeeze(-1)       # (B, T)
+
+        # Mask padding frames: set attention score to -inf before softmax
+        if mask is not None:
+            attn_weights = attn_weights.masked_fill(~mask, float('-inf'))
+
         attn_weights = F.softmax(attn_weights, dim=1)  # (B, T)
 
         # 加权求和
