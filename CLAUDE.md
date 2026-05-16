@@ -9,12 +9,18 @@
 ```
 新方案-分布驱动儿童SER/
 ├── docs/                        # 文档
+│   ├── module1_data_pipeline.md # Module 1: 数据管道标准化文档
 │   ├── 方向对比与方案设计.md      # 三方对比 + 框架设计
 │   └── 实施步骤指南.md           # 分阶段实施指导
 ├── src/
 │   ├── data/
-│   │   ├── preprocess.py        # speaker 划分逻辑（从旧项目复用）
-│   │   ├── dataset_ssl.py       # SSL 特征提取 + 数据集类
+│   │   ├── audio_processor.py   # 标准化音频预处理 (16kHz, mono, peak-norm)
+│   │   ├── label_mapper.py      # 统一4类标签映射 (angry/happy/neutral/sad)
+│   │   ├── speaker_splitter.py  # 确定性hash说话人独立划分 (70/15/15)
+│   │   ├── dataset.py           # 统一跨语料库数据集类
+│   │   ├── data_loader.py       # DataLoader 构建器 + 跨语料库支持
+│   │   ├── preprocess.py        # [legacy] speaker 划分逻辑（BESD-only）
+│   │   ├── dataset_ssl.py       # [legacy] SSL 特征提取 + 数据集类
 │   │   └── statistics.py        # 儿童语音统计分析
 │   ├── models/
 │   │   ├── __init__.py
@@ -24,7 +30,8 @@
 │   │   └── drse_cnn.py          # DrseNet 分类器
 │   ├── augmentation/
 │   │   ├── __init__.py
-│   │   └── constrained_aug.py   # Module 3: 分布约束增强 + SpecAugment
+│   │   ├── safe_augmentation.py  # SafeAWGN: 加性高斯白噪声 (SNR 10-20dB)
+│   │   └── constrained_aug.py   # [legacy] 分布约束增强 (已废弃)
 │   ├── training/
 │   │   ├── __init__.py
 │   │   └── train_ssl.py         # 新的训练脚本
