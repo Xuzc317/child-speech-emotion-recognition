@@ -145,14 +145,16 @@ class SSLBackbone(nn.Module):
             param.requires_grad = False
         print(f"[SSLBackbone] Frozen {self.model_name} — {sum(p.numel() for p in self.backbone.parameters()):,} params frozen")
 
-    def forward(self, waveforms, sr=16000):
+    def forward(self, waveforms, sr=16000, return_all_layers=False):
         """输入波形，输出帧级特征。
 
         Args:
             waveforms: (B, T_wav) 或 (B, 1, T_wav)，float32，已重采样到 16kHz
             sr: 采样率（必须匹配 SSL 模型要求）
+            return_all_layers: 若 True，返回 (last_hidden_state, all_hidden_states)
         Returns:
             feats: (B, T_frames, 768) 帧级特征
+            若 return_all_layers: (last_hidden_state, hidden_states_tuple)
         """
         if waveforms.dim() == 3:
             waveforms = waveforms.squeeze(1)
@@ -163,8 +165,9 @@ class SSLBackbone(nn.Module):
         else:
             outputs = self.backbone(waveforms, output_hidden_states=True)
 
-        # 取最后一层隐藏状态作为帧级特征
-        # outputs.last_hidden_state: (B, T_frames, 768)
+        if return_all_layers:
+            return outputs.last_hidden_state, outputs.hidden_states
+
         return outputs.last_hidden_state
 
 
