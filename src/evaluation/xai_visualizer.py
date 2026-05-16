@@ -171,10 +171,24 @@ class AttentionProsodyExplainer:
         t_wav = np.arange(len(waveform)) / self.sr
         t_attn = np.arange(T) * self.ssl_hop_samples / self.sr
 
+        # Save raw aligned data for external analysis
+        os.makedirs('results', exist_ok=True)
+        np.savez_compressed(
+            'results/xai_raw_data.npz',
+            waveform=waveform,
+            f0_contour=f0_a,
+            rms_contour=rms_a,
+            attention_weights=attn_a,
+            time_wav=t_wav,
+            time_attn=t_attn,
+        )
+
         # Normalize prosody for display
         f0_norm = f0_a / max(f0_a.max(), 1.0)
         rms_norm = rms_a / max(rms_a.max(), 1e-8)
-        attn_norm = attn_a / max(attn_a.max(), 1e-8)
+        # Min-Max scaling for attention to avoid flat-line due to softmax compression
+        attn_min, attn_max = attn_a.min(), attn_a.max()
+        attn_norm = (attn_a - attn_min) / (attn_max - attn_min + 1e-8)
 
         fig, axes = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
 
