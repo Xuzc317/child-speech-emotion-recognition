@@ -126,3 +126,102 @@ class TemporalImportancePooling(nn.Module):
         pooled = pooled.squeeze(1)  # (B, 768)
 
         return pooled
+
+
+class SelfAttentionPooling(nn.Module):
+    """Pure self-attention pooling — strict ablation baseline.
+
+    Uses ONLY the SSL features (B, T, 768) to compute per-frame attention
+    weights. No prosody features (F0, energy). Designed to have exactly
+    the same number of trainable parameters as TemporalImportancePooling
+    (111,105) for a fair comparison.
+
+    Architecture: 4-layer MLP attention
+      Linear(768, 116) → ReLU → Linear(116, 100) → ReLU
+      → Linear(100, 100) → Tanh → Linear(100, 1)
+
+    Parameter count proof:
+      Linear(768, 116): 768*116 + 116 = 89,204
+      Linear(116, 100): 116*100 + 100 = 11,700
+      Linear(100, 100): 100*100 + 100 = 10,100
+      Linear(100, 1):   100*1 + 1     =    101
+      Total: 89,204 + 11,700 + 10,100 + 101 = 111,105
+    """
+
+    def __init__(self, ssl_dim: int = 768):
+        super().__init__()
+        self.attn = nn.Sequential(
+            nn.Linear(ssl_dim, 116),
+            nn.ReLU(),
+            nn.Linear(116, 100),
+            nn.ReLU(),
+            nn.Linear(100, 100),
+            nn.Tanh(),
+            nn.Linear(100, 1),
+        )
+
+    def forward(self, ssl_feats, mask=None):
+        """
+        Args:
+            ssl_feats: (B, T, 768) SSL frame-level features
+            mask: (B, T) bool, True=valid, False=padding (optional)
+        Returns:
+            pooled: (B, 768) weighted-sum pooled features
+        """
+        attn_weights = self.attn(ssl_feats)      # (B, T, 1)
+        attn_weights = attn_weights.squeeze(-1)   # (B, T)
+
+        if mask is not None:
+            attn_weights = attn_weights.masked_fill(mask == 0, float('-inf'))
+
+        attn_weights = F.softmax(attn_weights, dim=1)  # (B, T)
+
+        pooled = torch.bmm(attn_weights.unsqueeze(1), ssl_feats)  # (B, 1, 768)
+        pooled = pooled.squeeze(1)  # (B, 768)
+        return pooled
+
+
+def create_pooling(pooling_type: str = 'prosody_guided', ssl_dim: int = 768):
+    """Factory function with configurable toggle between pooling types.
+
+    Args:
+        pooling_type: 'prosody_guided' or 'self_attention'
+        ssl_dim: SSL feature dimension (default 768)
+
+    Returns:
+        nn.Module — the pooling module
+
+    Raises:
+        AssertionError: if parameter counts don't match
+        ValueError: if pooling_type is unknown
+    """
+    if pooling_type == 'prosody_guided':
+        pooler = TemporalImportancePooling(ssl_dim=ssl_dim)
+    elif pooling_type == 'self_attention':
+        pooler = SelfAttentionPooling(ssl_dim=ssl_dim)
+    else:
+        raise ValueError(
+            f"Unknown pooling_type '{pooling_type}'. "
+            f"Must be 'prosody_guided' or 'self_attention'."
+        )
+
+    return pooler
+
+
+def verify_parameter_parity():
+    """Runtime assertion: both poolers must have identical parameter counts.
+
+    Returns True if they match, raises AssertionError if not.
+    """
+    prosody_pooler = TemporalImportancePooling(ssl_dim=768)
+    self_attn_pooler = SelfAttentionPooling(ssl_dim=768)
+
+    n_prosody = sum(p.numel() for p in prosody_pooler.parameters())
+    n_self = sum(p.numel() for p in self_attn_pooler.parameters())
+
+    assert n_prosody == n_self, (
+        f"PARAMETER COUNT MISMATCH: "
+        f"TemporalImportancePooling={n_prosody}, "
+        f"SelfAttentionPooling={n_self}"
+    )
+    return True
