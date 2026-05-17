@@ -1,0 +1,14 @@
+{
+  "exp_name": "smoke_test",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "best_val_wa": 0.7583547557840618,
+  "test_wa": 0.7574074074074074,
+  "test_uar": 0.7554347826086956,
+  "best_epoch": 1
+}

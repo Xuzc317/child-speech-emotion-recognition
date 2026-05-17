@@ -1,0 +1,14 @@
+{
+  "exp_name": "exp2_prosody_guided",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "best_val_wa": 0.9074550128534704,
+  "test_wa": 0.9203703703703704,
+  "test_uar": 0.9198249089740843,
+  "best_epoch": 16
+}
