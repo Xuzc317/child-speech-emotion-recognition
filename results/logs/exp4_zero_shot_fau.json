@@ -1,0 +1,14 @@
+{
+  "exp_name": "exp4_zero_shot_fau",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "best_val_wa": 0.9074550128534704,
+  "test_wa": 0.16677646025472112,
+  "test_uar": 0.21570347244141208,
+  "best_epoch": 16
+}

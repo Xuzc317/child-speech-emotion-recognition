@@ -2,4 +2,5 @@ experiment,train_data,test_data,pooling_type,speech_type,test_wa,test_uar,best_v
 exp1_self_attention,C-BESD,C-BESD,self_attention,acted,0.7963,0.7969,0.7866,2
 exp2_prosody_guided,C-BESD,C-BESD,prosody_guided,acted,0.9204,0.9198,0.9075,16
 exp3_adult_iemocap,IEMOCAP,IEMOCAP,prosody_guided,spontaneous,0.6014,0.5934,0.5747,17
-exp4_zero_shot_fau,Future: C-BESD,FAU-Aibo,prosody_guided,spontaneous,TBD,TBD,TBD,TBD
+exp4_zero_shot_fau,C-BESD,FAU-Aibo,prosody_guided,spontaneous,0.1668,0.2157,0.9075,16
+exp5_fau_indomain,FAU-Aibo,FAU-Aibo,prosody_guided,spontaneous,0.6887,0.5614,0.6428,2
