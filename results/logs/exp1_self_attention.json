@@ -1,0 +1,14 @@
+{
+  "exp_name": "exp1_self_attention",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "best_val_wa": 0.7866323907455013,
+  "test_wa": 0.7962962962962963,
+  "test_uar": 0.7969158278003856,
+  "best_epoch": 2
+}

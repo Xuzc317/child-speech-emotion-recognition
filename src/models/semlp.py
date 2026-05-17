@@ -56,4 +56,6 @@ class SEMLP(nn.Module):
         )
 
     def forward(self, x):
+        if x.size(0) == 1:
+            return self.eval().net(x)
         return self.net(x)

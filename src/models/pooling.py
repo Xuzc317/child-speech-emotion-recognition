@@ -14,7 +14,7 @@
 输入：
   - ssl_feats: (B, T, 768)    emotion2vec 帧级特征
   - f0:        (B, T, 1)      帧级 F0 曲线（通过 librosa 提取）
-  - energy:    (B, T, 1)      帧级 RMS 能量
+  - energy:    (B, T, 1)      帧级 RMS 能量/
 
 输出：
   - pooled: (B, 768)          加权融合后的全局特征

@@ -1,0 +1,14 @@
+{
+  "exp_name": "exp3_adult_iemocap",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "best_val_wa": 0.574687669744704,
+  "test_wa": 0.6014339940953184,
+  "test_uar": 0.5934392906283736,
+  "best_epoch": 17
+}
