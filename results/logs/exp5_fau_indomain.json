@@ -1,0 +1,14 @@
+{
+  "exp_name": "exp5_fau_indomain",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "best_val_wa": 0.6427692307692308,
+  "test_wa": 0.6886802810715854,
+  "test_uar": 0.5614478461990479,
+  "best_epoch": 2
+}
