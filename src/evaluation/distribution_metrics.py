@@ -225,6 +225,7 @@ class DistributionShiftProbe:
             if self.pooling == 'mean':
                 lengths = batch[2] if len(batch) >= 3 else None
                 if lengths is not None:
+                    lengths = lengths.to(self.device)
                     mask = torch.arange(
                         frame_feats.shape[1], device=self.device
                     ).unsqueeze(0) < lengths.unsqueeze(1)
