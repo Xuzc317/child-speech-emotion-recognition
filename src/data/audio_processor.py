@@ -11,11 +11,14 @@ class StandardAudioProcessor:
       1. Load with librosa at native sr
       2. Resample to target_sr (16000 Hz)
       3. Convert to mono
-      4. Peak normalize to [-1, 1]
+      4. Truncate to max_duration seconds
+      5. Peak normalize to [-1, 1]
     """
 
-    def __init__(self, target_sr: int = 16000):
+    def __init__(self, target_sr: int = 16000, max_duration: float = 4.0):
         self.target_sr = target_sr
+        self.max_duration = max_duration
+        self.max_samples = int(target_sr * max_duration)
 
     def process(self, waveform: np.ndarray, orig_sr: int) -> np.ndarray:
         """Process an already-loaded waveform.
@@ -36,6 +39,10 @@ class StandardAudioProcessor:
             waveform = librosa.resample(
                 waveform.astype(np.float64), orig_sr=orig_sr, target_sr=self.target_sr
             )
+
+        # Truncate to max_duration
+        if waveform.shape[0] > self.max_samples:
+            waveform = waveform[:self.max_samples]
 
         # Peak normalization
         peak = np.abs(waveform).max()
