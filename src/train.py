@@ -238,6 +238,8 @@ def main():
         history['val_uar'].append(val_uar)
 
         scheduler.step()
+        if (epoch + 1) % 1 == 0:
+            print(f'Epoch {epoch+1}: train_wa={train_wa:.4f}, val_wa={val_wa:.4f}, best={best_val_wa:.4f}', flush=True)
 
         if val_wa > best_val_wa:
             best_val_wa = val_wa
