@@ -3,9 +3,12 @@ data/*.npy
 
 # Checkpoints
 checkpoints/**/*.pth
+checkpoints/
 
 # Misc
 nul
+fau_aibo.tar.gz
+results_remote/
 
 # Python
 __pycache__/
