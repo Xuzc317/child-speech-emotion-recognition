@@ -76,12 +76,13 @@ class TemporalImportancePooling(nn.Module):
       3. 加权求和得到全局特征
     """
 
-    def __init__(self, ssl_dim=768, prosody_dim=2, proj_dim=64):
+    def __init__(self, ssl_dim=768, prosody_dim=2, proj_dim=64, dropout: float = 0.0):
         super().__init__()
 
         self.prosody_proj = nn.Sequential(
             nn.Linear(prosody_dim, proj_dim),
             nn.ReLU(),
+            nn.Dropout(dropout),
             nn.Linear(proj_dim, proj_dim),
         )
 
@@ -89,6 +90,7 @@ class TemporalImportancePooling(nn.Module):
         self.attn = nn.Sequential(
             nn.Linear(ssl_dim + proj_dim, 128),
             nn.Tanh(),
+            nn.Dropout(dropout),
             nn.Linear(128, 1),
         )
 
@@ -148,15 +150,18 @@ class SelfAttentionPooling(nn.Module):
       Total: 89,204 + 11,700 + 10,100 + 101 = 111,105
     """
 
-    def __init__(self, ssl_dim: int = 768):
+    def __init__(self, ssl_dim: int = 768, dropout: float = 0.0):
         super().__init__()
         self.attn = nn.Sequential(
             nn.Linear(ssl_dim, 116),
             nn.ReLU(),
+            nn.Dropout(dropout),
             nn.Linear(116, 100),
             nn.ReLU(),
+            nn.Dropout(dropout),
             nn.Linear(100, 100),
             nn.Tanh(),
+            nn.Dropout(dropout),
             nn.Linear(100, 1),
         )
 
@@ -181,7 +186,7 @@ class SelfAttentionPooling(nn.Module):
         return pooled
 
 
-def create_pooling(pooling_type: str = 'prosody_guided', ssl_dim: int = 768):
+def create_pooling(pooling_type: str = 'prosody_guided', ssl_dim: int = 768, dropout: float = 0.0):
     """Factory function with configurable toggle between pooling types.
 
     Args:
@@ -196,9 +201,9 @@ def create_pooling(pooling_type: str = 'prosody_guided', ssl_dim: int = 768):
         ValueError: if pooling_type is unknown
     """
     if pooling_type == 'prosody_guided':
-        pooler = TemporalImportancePooling(ssl_dim=ssl_dim)
+        pooler = TemporalImportancePooling(ssl_dim=ssl_dim, dropout=dropout)
     elif pooling_type == 'self_attention':
-        pooler = SelfAttentionPooling(ssl_dim=ssl_dim)
+        pooler = SelfAttentionPooling(ssl_dim=ssl_dim, dropout=dropout)
     else:
         raise ValueError(
             f"Unknown pooling_type '{pooling_type}'. "
@@ -213,8 +218,8 @@ def verify_parameter_parity():
 
     Returns True if they match, raises AssertionError if not.
     """
-    prosody_pooler = TemporalImportancePooling(ssl_dim=768)
-    self_attn_pooler = SelfAttentionPooling(ssl_dim=768)
+    prosody_pooler = TemporalImportancePooling(ssl_dim=768, dropout=0.3)
+    self_attn_pooler = SelfAttentionPooling(ssl_dim=768, dropout=0.3)
 
     n_prosody = sum(p.numel() for p in prosody_pooler.parameters())
     n_self = sum(p.numel() for p in self_attn_pooler.parameters())
