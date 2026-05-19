@@ -32,6 +32,17 @@ DATASET_PATHS: Dict[str, str] = {
     'fau-aibo': r'D:\大学\数据集IS2009EmotionChallenge\IS2009EmotionChallenge\IS2009EmotionChallenge\wav',
 }
 
+# Optional path overrides for cross-platform training (e.g., Linux cloud).
+_ENV_OVERRIDES = {
+    'c-besd': os.environ.get('SER_C_BESD_PATH'),
+    'iemocap': os.environ.get('SER_IEMOCAP_PATH'),
+    'crema-d': os.environ.get('SER_CREMA_D_PATH'),
+    'fau-aibo': os.environ.get('SER_FAU_AIBO_PATH'),
+}
+for _k, _v in _ENV_OVERRIDES.items():
+    if _v:
+        DATASET_PATHS[_k] = _v
+
 # IEMOCAP emotion → folder name mapping
 IEMOCAP_EMOTION_FOLDERS = {
     'ang': 'ANGER',     # includes frustrated

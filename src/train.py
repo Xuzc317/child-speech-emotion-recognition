@@ -44,6 +44,7 @@ class SERModel(nn.Module):
         self.pooler = create_pooling(
             pooling_type=self.pooling_type,
             ssl_dim=768,
+            dropout=config.get('pooling_dropout', 0.0),
         )
 
         # Classifier
@@ -112,7 +113,7 @@ def compute_metrics(logits, labels):
     return wa, uar
 
 
-def train_epoch(model, dataloader, optimizer, criterion):
+def train_epoch(model, dataloader, optimizer, criterion, grad_clip=None):
     model.train()
     total_loss, total_correct, total_samples = 0.0, 0, 0
     all_preds, all_labels = [], []
@@ -127,6 +128,8 @@ def train_epoch(model, dataloader, optimizer, criterion):
         logits = model(waveforms, lengths=lengths)
         loss = criterion(logits, labels)
         loss.backward()
+        if grad_clip is not None:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip)
         optimizer.step()
 
         total_loss += loss.item() * waveforms.size(0)
@@ -180,7 +183,11 @@ def main():
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=3e-4)
-    parser.add_argument('--weight_decay', type=float, default=1e-3)
+    parser.add_argument('--weight_decay', type=float, default=None)
+    parser.add_argument('--label_smoothing', type=float, default=None)
+    parser.add_argument('--pooling_dropout', type=float, default=None)
+    parser.add_argument('--grad_clip', type=float, default=None)
+    parser.add_argument('--reg_profile', choices=['default', 'fau'], default='default')
     parser.add_argument('--patience', type=int, default=15)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--ssl_model', default='wavlm')
@@ -188,6 +195,27 @@ def main():
     parser.add_argument('--output_dir', default='checkpoints')
     parser.add_argument('--exp_name', default='exp')
     args = parser.parse_args()
+
+    reg_profiles = {
+        'default': {
+            'weight_decay': 1e-3,
+            'label_smoothing': 0.1,
+            'pooling_dropout': 0.0,
+            'grad_clip': None,
+        },
+        # Strong regularization profile for spontaneous/naturalistic speech.
+        'fau': {
+            'weight_decay': 5e-3,
+            'label_smoothing': 0.15,
+            'pooling_dropout': 0.3,
+            'grad_clip': 1.0,
+        },
+    }
+    reg_cfg = reg_profiles[args.reg_profile]
+    weight_decay = reg_cfg['weight_decay'] if args.weight_decay is None else args.weight_decay
+    label_smoothing = reg_cfg['label_smoothing'] if args.label_smoothing is None else args.label_smoothing
+    pooling_dropout = reg_cfg['pooling_dropout'] if args.pooling_dropout is None else args.pooling_dropout
+    grad_clip = reg_cfg['grad_clip'] if args.grad_clip is None else args.grad_clip
 
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
@@ -208,6 +236,7 @@ def main():
         'pooling_type': args.pooling_type,
         'num_classes': args.num_classes,
         'ssl_model': args.ssl_model,
+        'pooling_dropout': pooling_dropout,
     }
     model = SERModel(config).to(device)
 
@@ -215,12 +244,17 @@ def main():
     n_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Model params: {n_total:,} total, {n_trainable:,} trainable")
 
-    criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+    criterion = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
     optimizer = optim.AdamW(
         filter(lambda p: p.requires_grad, model.parameters()),
-        lr=args.lr, weight_decay=args.weight_decay,
+        lr=args.lr, weight_decay=weight_decay,
     )
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
+    print(
+        f"Regularization profile={args.reg_profile}, "
+        f"weight_decay={weight_decay}, label_smoothing={label_smoothing}, "
+        f"pooling_dropout={pooling_dropout}, grad_clip={grad_clip}"
+    )
 
     os.makedirs(args.output_dir, exist_ok=True)
     save_path = os.path.join(args.output_dir, 'best_model.pt')
@@ -230,7 +264,9 @@ def main():
     history = defaultdict(list)
 
     for epoch in range(args.epochs):
-        train_loss, train_wa, train_uar = train_epoch(model, dls['train'], optimizer, criterion)
+        train_loss, train_wa, train_uar = train_epoch(
+            model, dls['train'], optimizer, criterion, grad_clip=grad_clip
+        )
         val_loss, val_wa, val_uar, _, _ = evaluate(model, dls['val'])
 
         history['train_wa'].append(train_wa)
@@ -272,6 +308,11 @@ def main():
         'test_wa': float(test_wa),
         'test_uar': float(test_uar),
         'best_epoch': int(checkpoint['epoch']),
+        'reg_profile': args.reg_profile,
+        'weight_decay': float(weight_decay),
+        'label_smoothing': float(label_smoothing),
+        'pooling_dropout': float(pooling_dropout),
+        'grad_clip': None if grad_clip is None else float(grad_clip),
     }
     print(f"RESULT: {json.dumps(results)}")
 
