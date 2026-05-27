@@ -3,219 +3,199 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>分布驱动儿童语音情绪识别 · Distribution-Driven Child SER</title>
+<title>分布驱动儿童语音情绪识别</title>
 <style>
-/* ── Paper Mono webfonts ─────────────────────── */
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono[wght].woff2') format('woff2-variations');
-  font-weight: 100 800; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-Thin.woff2') format('woff2'); font-weight: 100;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-ExtraLight.woff2') format('woff2'); font-weight: 200;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-Light.woff2') format('woff2'); font-weight: 300;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-Regular.woff2') format('woff2'); font-weight: 400;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-Medium.woff2') format('woff2'); font-weight: 500;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-SemiBold.woff2') format('woff2'); font-weight: 600;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-Bold.woff2') format('woff2'); font-weight: 700;
-}
-@font-face {
-  font-family: 'Paper Mono';
-  src: url('fonts/PaperMono-ExtraBold.woff2') format('woff2'); font-weight: 800;
-}
-
-/* ── Variables ───────────────────────────────── */
-:root {
-  --bg:       #fafaf8;
-  --card:     #ffffff;
-  --text:     #1a1a1a;
-  --dim:      #5c5c5c;
-  --fade:     #999;
-  --rule:     #e8e8e4;
-  --accent:   #1a1a1a;
-  --ink:      #2c2c2c;
-}
-
 /* ── Reset ───────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* ── Apple system font stack ─────────────────── */
 body {
-  font-family: "Paper Mono", "PingFang SC", "Microsoft YaHei", monospace;
-  background: var(--bg); color: var(--text);
-  min-height: 100vh; font-weight: 300;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+               "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  background: #f2f2f7; color: #1d1d1f;
+  min-height: 100vh; font-weight: 400; line-height: 1.6;
+}
+
+/* ── Frosted sidebar ─────────────────────────── */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+  background: rgba(242,242,247,0.72);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-right: 0.5px solid rgba(0,0,0,0.08);
+  padding: 40px 28px; z-index: 10;
+  overflow-y: auto;
+}
+.sidebar h2 {
+  font-size: 0.7rem; font-weight: 600; color: #86868b;
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 22px 0 8px 0;
+}
+.sidebar h2:first-child { margin-top: 0; }
+.sidebar a {
+  display: block; font-size: 0.82rem; color: #1d1d1f; text-decoration: none;
+  padding: 5px 10px; margin: 1px -10px; border-radius: 6px;
+  font-weight: 400; transition: background 0.12s;
+}
+.sidebar a:hover { background: rgba(0,0,0,0.04); }
+.sidebar a.active { background: rgba(0,0,0,0.06); font-weight: 500; }
+.sidebar .brand {
+  font-size: 0.85rem; font-weight: 700; color: #1d1d1f; margin-bottom: 24px;
+  letter-spacing: -0.01em;
+}
+
+/* ── Main content ────────────────────────────── */
+.main {
+  margin-left: 260px; padding: 52px 56px 80px; max-width: 960px;
+}
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 32px 24px 60px; }
 }
 
 /* ── Header ──────────────────────────────────── */
-header {
-  text-align: center; padding: 64px 28px 40px;
-  max-width: 880px; margin: 0 auto;
+.hero {
+  margin-bottom: 44px; padding-bottom: 36px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.1);
 }
-header h1 {
-  font-family: "Paper Mono", "PingFang SC", monospace;
-  font-size: 1.5rem; font-weight: 600; line-height: 1.45;
-  letter-spacing: -0.01em; color: #111;
+.hero h1 {
+  font-size: 2.6rem; font-weight: 700; letter-spacing: -0.025em;
+  line-height: 1.15; color: #1d1d1f;
 }
-header h1 em { font-style: normal; font-weight: 300; color: var(--dim); }
-header .sub {
-  font-size: 0.82rem; color: var(--fade); margin-top: 14px; font-weight: 300;
-  letter-spacing: 0.04em; text-transform: uppercase;
+.hero .sub {
+  font-size: 0.95rem; color: #86868b; margin-top: 12px; font-weight: 400;
 }
 
-/* ── Two-page grid ───────────────────────────── */
-.pages {
-  display: flex; gap: 32px; justify-content: center;
-  padding: 0 32px 72px; flex-wrap: wrap; max-width: 1500px; margin: 0 auto;
-}
-.page {
-  flex: 1 1 640px; max-width: 720px; min-width: 440px;
-  background: var(--card); padding: 56px 52px 52px;
-  position: relative; overflow: hidden;
-  border: 1px solid var(--rule);
-}
-.page-num {
-  font-family: "Paper Mono", monospace; font-size: 0.7rem; font-weight: 400;
-  color: var(--fade); text-align: right; letter-spacing: 0.06em;
+/* ── Cards ───────────────────────────────────── */
+.card {
+  background: #ffffff; border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  padding: 32px 36px; margin-bottom: 32px;
+  border: 0.5px solid rgba(0,0,0,0.06);
 }
 
 /* ── Typography ──────────────────────────────── */
 h2 {
-  font-family: "Paper Mono", "PingFang SC", monospace;
-  font-size: 1.05rem; font-weight: 700; color: #111;
-  margin: 2em 0 0.5em 0; letter-spacing: 0.02em;
-  padding-bottom: 6px; border-bottom: 1px solid #222;
+  font-size: 1.5rem; font-weight: 700; letter-spacing: -0.015em;
+  color: #1d1d1f; margin: 0 0 16px 0;
 }
 h3 {
-  font-family: "Paper Mono", "PingFang SC", monospace;
-  font-size: 0.88rem; font-weight: 600; color: #1a1a1a;
-  margin: 1.5em 0 0.4em 0; letter-spacing: 0.02em;
+  font-size: 1.1rem; font-weight: 600; color: #1d1d1f;
+  margin: 28px 0 8px 0; letter-spacing: -0.01em;
 }
-p { margin: 0 0 0.75em 0; line-height: 1.7; text-align: justify; hyphens: auto; }
-ol, ul { margin: 0.3em 0 0.8em 1.6em; line-height: 1.65; }
-li { margin: 0.2em 0; }
+p { margin: 0 0 12px 0; color: #3a3a3c; }
+ol, ul { margin: 8px 0 16px 20px; color: #3a3a3c; }
+li { margin: 6px 0; line-height: 1.55; }
 
 /* ── Abstract ────────────────────────────────── */
-.abstract {
-  margin: 0.4em 0 1.2em; padding: 18px 0;
-  border-top: 1px solid #222; border-bottom: 1px solid #222;
-  font-size: 0.84rem; color: #333; line-height: 1.7; font-weight: 300;
+.abstract-card {
+  background: #ffffff; border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  border: 0.5px solid rgba(0,0,0,0.06);
+  padding: 28px 36px; margin-bottom: 32px;
 }
-.abstract b { font-weight: 600; }
+.abstract-card p { font-size: 0.92rem; color: #424245; }
 .keywords {
-  font-size: 0.76rem; color: var(--dim); margin-top: 8px;
-  font-weight: 300; letter-spacing: 0.02em;
+  margin-top: 14px; font-size: 0.82rem; color: #86868b; font-weight: 400;
 }
 
 /* ── Tables ──────────────────────────────────── */
-.table-wrap { margin: 1em 0 1.4em; }
+.table-wrap { margin: 20px 0 24px; overflow-x: auto; }
 .table-wrap caption {
-  text-align: left; font-size: 0.76rem; font-weight: 600; color: #111;
-  margin-bottom: 6px; letter-spacing: 0.03em;
+  text-align: left; font-size: 0.78rem; font-weight: 600; color: #86868b;
+  margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em;
 }
 table {
-  width: 100%; border-collapse: collapse;
-  font-size: 0.74rem; font-variant-numeric: tabular-nums;
-  font-family: "Paper Mono", "PingFang SC", monospace; font-weight: 300;
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  font-size: 0.82rem; font-variant-numeric: tabular-nums;
 }
 thead th {
-  padding: 6px 8px; text-align: center; font-weight: 500; color: #111;
-  border-top: 1.5px solid #222; border-bottom: 1.5px solid #222;
-  letter-spacing: 0.02em;
+  padding: 8px 12px; text-align: center; font-weight: 600; color: #86868b;
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 tbody td {
-  padding: 4px 8px; text-align: center; color: #2a2a2c;
-  border-bottom: 0.5px solid var(--rule);
+  padding: 7px 12px; text-align: center; color: #1d1d1f;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
 }
-tr:last-child td { border-bottom: 1.5px solid #222; }
+tr:last-child td { border-bottom: none; }
 .tnote {
-  font-size: 0.7rem; color: var(--dim); margin-top: 5px;
-  line-height: 1.55; font-weight: 300;
+  margin-top: 8px; font-size: 0.76rem; color: #aeaeb2; line-height: 1.5;
 }
 
 /* ── Figures ─────────────────────────────────── */
-figure.img-wrap { margin: 1.2em 0 1.6em; }
-figure.img-wrap img { width: 100%; height: auto; }
+figure.img-wrap { margin: 20px 0 28px; }
+figure.img-wrap img {
+  width: 100%; height: auto; border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
 figure.img-wrap figcaption {
-  font-size: 0.74rem; color: var(--dim); margin-top: 6px;
-  text-align: left; line-height: 1.55; font-weight: 300;
+  margin-top: 10px; font-size: 0.78rem; color: #86868b;
+  font-weight: 400; letter-spacing: 0.01em;
 }
 
-/* ── References ──────────────────────────────── */
-.ref-list { font-size: 0.76rem; line-height: 1.65; }
-.ref-list li { margin: 0.3em 0; }
-.pending { color: var(--fade); }
+/* ── Badge ───────────────────────────────────── */
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-size: 0.7rem; font-weight: 500; background: #f2f2f7; color: #86868b;
+  margin-right: 6px; letter-spacing: 0.02em;
+}
 
 /* ── Footer ──────────────────────────────────── */
-footer {
-  text-align: center; padding: 28px 20px 52px; font-size: 0.72rem;
-  color: var(--fade); font-weight: 300; letter-spacing: 0.04em;
-  max-width: 700px; margin: 0 auto;
-}
-
-/* ── Responsive ──────────────────────────────── */
-@media (max-width: 1020px) {
-  .pages { flex-direction: column; align-items: center; }
-  .page { flex: auto; max-width: 100%; min-width: 0; padding: 40px 28px 36px; }
-  header { padding: 40px 20px 28px; }
-  header h1 { font-size: 1.25rem; }
+.footer {
+  margin-top: 48px; padding-top: 24px;
+  border-top: 0.5px solid rgba(0,0,0,0.08);
+  font-size: 0.76rem; color: #aeaeb2;
 }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>分布驱动儿童语音情绪识别<br><em>韵律引导时序池化的可解释性-准确率权衡</em></h1>
-  <p class="sub">Anonymous Submission · 2026 · ac_suite_2026-05</p>
-</header>
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav class="sidebar">
+  <div class="brand">分布驱动<br>儿童 SER</div>
+  <h2>论文</h2>
+  <a href="#abstract">摘要</a>
+  <a href="#intro">1. 引言</a>
+  <a href="#method">2. 方法</a>
+  <a href="#results">3. 实验结果</a>
+  <a href="#discussion">4. 讨论与结论</a>
+  <a href="#refs">参考文献</a>
+  <h2>实验数据</h2>
+  <a href="#t4">主实验矩阵</a>
+  <a href="#t5">分布偏移诊断</a>
+  <a href="#t7">FAU 多种子</a>
+  <a href="#t8">可解释性诊断</a>
+</nav>
 
-<div class="pages">
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
 
-<!-- ═══════════════════════ PAGE 1 ═══════════════════════ -->
-<div class="page">
-<div class="page-num">1 / 2</div>
-
-<h2>摘要</h2>
-
-<div class="abstract">
-<p>儿童语音情绪识别系统通常在表演式语料上训练和评估，却部署于自然式场景。本文通过覆盖表演式儿童语音（C-BESD）、自然式儿童语音（FAU Aibo）和成人会话语音（IEMOCAP）的六组受控实验，量化这一差距。在冻结 WavLM 骨干、可学习 12 层融合和参数严格对等的池化头（各 111,105 参数）条件下，系统对比了韵律引导时序重要性池化与纯自注意力池化。三项核心发现：（1）表演式到自然式儿童语音的零样本迁移降至 <b>19.56%</b> WA（低于四类随机基线 25%），而域内表演式达 <b>92.78%</b>，分布偏移（C-BESD 与 FAU 特征空间 FD = 8.50, SMMD = 0.378）而非架构是主要失败模式。（2）在强正则化的自然式 FAU 语音上，韵律引导池化达到 <b>66.36%</b> WA，与自注意力持平（66.18%），同时作为结构正则化器抵抗环境噪声过拟合。（3）仅牺牲 1.48 pp 即可换取可解释性：注意力权重与帧级能量强相关（APC<sub>wav</sub> = 0.718），为安全敏感场景提供可审计的决策依据。</p>
-<p class="keywords">关键词：儿童语音情绪识别 · 分布偏移 · 韵律引导池化 · 可解释性 · Frechet 距离</p>
+<div class="hero">
+  <h1>分布驱动儿童语音情绪识别<br>韵律引导时序池化的可解释性-准确率权衡</h1>
+  <p class="sub">Anonymous Submission &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; <span class="badge">ac_suite_2026-05</span><span class="badge">12/12 JSON Verified</span></p>
 </div>
 
+<!-- ── Abstract ────────────────────────────────── -->
+<div class="abstract-card" id="abstract">
+  <h2>摘要</h2>
+  <p>儿童语音情绪识别（SER）系统通常在表演式语料上训练和评估，却部署于自然式场景。本文通过覆盖表演式儿童语音（C-BESD）、自然式儿童语音（FAU Aibo）和成人会话语音（IEMOCAP）的六组受控实验，量化这一差距。在冻结 WavLM 骨干、可学习 12 层融合和参数严格对等的池化头（各 111,105 参数）条件下，系统对比了韵律引导时序重要性池化与纯自注意力池化。</p>
+  <p>三项核心发现：（1）表演式到自然式儿童语音的零样本迁移降至 <b>19.56%</b> WA——低于四类随机基线 25%——而域内表演式达 <b>92.78%</b>，分布偏移（C-BESD 与 FAU 特征空间 FD = 8.50, SMMD = 0.378）而非架构是主要失败模式。（2）在强正则化的自然式 FAU 语音上，韵律引导池化达到 <b>66.36%</b> WA，与自注意力持平（66.18%），同时作为结构正则化器抵抗环境噪声过拟合。（3）仅牺牲 1.48 pp 即可换取可解释性：注意力权重与帧级能量强相关（APC<sub>wav</sub> = 0.718），为安全敏感场景提供可审计的决策依据。</p>
+  <p class="keywords"><b>关键词</b> &nbsp; 儿童语音情绪识别 &nbsp;·&nbsp; 分布偏移 &nbsp;·&nbsp; 韵律引导池化 &nbsp;·&nbsp; 可解释性 &nbsp;·&nbsp; Fréchet 距离</p>
+</div>
+
+<!-- ── 1. Introduction ─────────────────────────── -->
+<div class="card" id="intro">
 <h2>1. 引言</h2>
 
 <h3>1.1 儿童 SER 的结构性挑战</h3>
-
 <p>语音情绪识别在教育情感计算、儿科心理健康筛查和人机交互中有广泛应用。但儿童语音情绪识别面临三个结构性挑战。</p>
-
-<p><b>01 · 声学差异。</b>儿童声道短、声带薄，基频显著高于成人。对 2,000 条 C-BESD 语音的测量显示 F0 均值为 495.9 Hz（标准差 651.1 Hz，第 95 百分位 2285.7 Hz），而成人会话 F0 典型范围约为 120–210 Hz。面向成人语音设计的模型和特征工程策略不能直接迁移。</p>
-
-<p><b>02 · 语料生态。</b>C-BESD（2,780 条，马来语）是表演式语料——儿童按指定情绪朗读固定句子。FAU Aibo（18,216 条，德语）来自儿童与 Sony Aibo 机器人的自由玩耍录音，是自然式语料 <b>[Steidl, 2009]</b>。表演式语料中的情绪夸张且声学模板化，自然式语料中的情绪微弱、重叠、受噪声干扰。<b>[需补充：C-BESD 数据集原始论文]</b></p>
-
-<p><b>03 · 工程经验不可迁移。</b>数据增强在成人 SER 中是标配，但我们前期实验发现即使在儿童参数约束范围内（pitch ±3 半音、语速 0.85–1.15），准确率仍下降 19.6 pp。儿童语音中的情感信息对波形扰动高度敏感——这正是本文"分布驱动"视角的出发点。</p>
+<p><b>声学差异。</b>儿童声道短、声带薄，基频显著高于成人。对 2,000 条 C-BESD 语音的测量显示 F0 均值为 495.9 Hz（标准差 651.1 Hz，第 95 百分位 2285.7 Hz），而成人会话 F0 典型范围约为 120–210 Hz。面向成人语音设计的模型和特征工程策略不能直接迁移。</p>
+<p><b>语料生态。</b>C-BESD（2,780 条，马来语）是表演式语料——儿童按指定情绪朗读固定句子。FAU Aibo（18,216 条，德语）来自儿童与 Sony Aibo 机器人的自由玩耍录音，是自然式语料 <b>[Steidl, 2009]</b>。表演式语料中的情绪夸张且声学模板化，自然式语料中的情绪微弱、重叠、受噪声干扰。<b>[需补充：C-BESD 数据集原始论文]</b></p>
+<p><b>工程经验不可迁移。</b>数据增强在成人 SER 中是标配，但我们前期实验发现即使在儿童参数约束范围内（pitch ±3 半音、语速 0.85–1.15），准确率仍下降 19.6 pp。儿童语音中的情感信息对波形扰动高度敏感——这正是本文"分布驱动"视角的出发点。</p>
 
 <h3>1.2 分布驱动视角</h3>
-
-<p>WavLM <b>[Chen et al., 2022]</b> 等自监督学习骨干提供了强大的帧级表示，但下游设计决定了情感信息是被提取还是被语料伪影淹没。Kakouros 等人 <b>[2022]</b> 在 IEMOCAP 上使用冻结 WavLM + 注意力池化取得 75.60% UAR（4 类），但评估仅在域内。Dong 等人 <b>[2026]</b> 系统评估了 11 种测试时自适应方法，发现跨语料库泛化效果有限——分布偏移是系统瓶颈，而非特定模型的失败。</p>
-
+<p>Wavlm <b>[Chen et al., 2022]</b> 等自监督学习骨干提供了强大的帧级表示，但下游设计决定了情感信息是被提取还是被语料伪影淹没。Kakouros 等人 <b>[2022]</b> 在 IEMOCAP 上使用冻结 WavLM + 注意力池化取得 75.60% UAR（4 类），但评估仅在域内。Dong 等人 <b>[2026]</b> 系统评估了 11 种测试时自适应方法，发现跨语料库泛化效果有限——分布偏移是系统瓶颈，而非特定模型的失败。</p>
 <p>儿童的情绪表达与<b>韵律</b>紧密相关：音高变化、能量爆发和节奏不规则性在儿童中与成人有系统性差异 <b>[Fan et al., 2024]</b>。我们的假设是：将帧级 F0 和 RMS 能量显式注入时序注意力，可提供一种归纳偏置，它（1）加速学习，（2）在自然式语音上起结构正则化作用，（3）将决策锚定于可测量的声学事件——这是纯数据驱动注意力无法提供的可解释性。</p>
 
 <h3>1.3 贡献</h3>
@@ -225,21 +205,23 @@ footer {
 <li><b>表演→自发零样本边界的定量化</b>——首次在儿童语音场景下量化迁移退化程度（92.78% → 19.56%）。</li>
 <li><b>可解释性-准确率权衡分析</b>——APC<sub>wav</sub> = 0.718，1.48 pp 的表演式准确率代价换取可部署的可解释性。</li>
 </ol>
+</div>
 
+<!-- ── 2. Method ────────────────────────────────── -->
+<div class="card" id="method">
 <h2>2. 方法</h2>
 
 <h3>2.1 系统架构</h3>
-
 <p>流水线分为四个阶段。（1）原始波形经 16 kHz 重采样、单声道、peak normalization、4 s 截断（200 帧，50 Hz）。（2）冻结 WavLM Base+ <b>[Chen et al., 2022]</b>（94.4M 参数）提取每帧 12 层隐藏状态（B × T × 768）。（3）可学习层融合模块用 12 个 softmax 标量权重将全部隐藏状态合并为单一特征图。（4）融合特征经过两种参数对等的池化头之一——<b>韵律引导</b>或<b>自注意力</b>——再由 SEMLP 分类器（593K 参数）输出 4 类 logits。总可训练参数约 704K，不足骨干的 1%。</p>
 
-<p><b>韵律引导池化。</b>F0 通过 YIN 算法 <b>[de Cheveigne &amp; Kawahara, 2002]</b>（C2–C7, 65–2093 Hz）提取，RMS 能量通过 librosa <b>[McFee et al., 2015]</b> 提取，帧移 320 样本与 WavLM 50 Hz 帧率对齐。F0 除以 2093 Hz，能量逐批归一化。2 维韵律向量经 2 层 MLP（2 → 64 → 64）投影为 64 维嵌入，与 SSL 特征拼接（768 + 64 = 832），再经注意力 MLP（832 → 128 → 1）生成逐帧分数，softmax + mask 后加权求和。</p>
+<p><b>韵律引导池化。</b>F0 通过 YIN 算法 <b>[de Cheveigné &amp; Kawahara, 2002]</b>（C2–C7, 65–2093 Hz）提取，RMS 能量通过 librosa <b>[McFee et al., 2015]</b> 提取，帧移 320 样本与 WavLM 50 Hz 帧率对齐。F0 除以 2093 Hz，能量逐批归一化。2 维韵律向量经 2 层 MLP（2 → 64 → 64）投影为 64 维嵌入，与 SSL 特征拼接（768 + 64 = 832），再经注意力 MLP（832 → 128 → 1）生成逐帧分数，softmax + mask 后加权求和。</p>
 
 <p><b>自注意力池化。</b>结构相同但不注入韵律特征：SSL 特征直接经 4 层注意力 MLP（768 → 116 → 100 → 100 → 1）。两种池化头参数数量（111,105）由运行时断言验证严格相等。</p>
 
 <h3>2.2 数据与划分</h3>
 
 <figure class="table-wrap">
-<figcaption>表 1 · 数据集统计与说话人独立划分</figcaption>
+<figcaption>表 1 &nbsp;·&nbsp; 数据集统计与说话人独立划分</figcaption>
 <table>
 <thead><tr><th>语料</th><th>语言</th><th>类型</th><th>总量</th><th>训练</th><th>验证</th><th>测试</th><th>说话人</th></tr></thead>
 <tbody>
@@ -254,7 +236,7 @@ footer {
 <h3>2.3 训练配置与实验矩阵</h3>
 
 <figure class="table-wrap">
-<figcaption>表 2 · 正则化配置</figcaption>
+<figcaption>表 2 &nbsp;·&nbsp; 正则化配置</figcaption>
 <table>
 <thead><tr><th>Profile</th><th>Weight Decay</th><th>Label Smooth</th><th>Dropout</th><th>Grad Clip</th><th>适用</th></tr></thead>
 <tbody>
@@ -262,11 +244,11 @@ footer {
 <tr><td>fau</td><td>5e-3</td><td>0.15</td><td>0.3</td><td>1.0</td><td>FAU Aibo</td></tr>
 </tbody>
 </table>
-<p class="tnote">AdamW, lr = 3e-4, CosineAnnealing (T<sub>max</sub> = 100), patience = 15 (val WA), batch = 16, max 100 epochs. 主实验 seed = 42; FAU 多种子 {42, 123, 456}.</p>
+<p class="tnote">AdamW, lr = 3e-4, CosineAnnealing (Tmax = 100), patience = 15 (val WA), batch = 16, max 100 epochs. 主实验 seed = 42; FAU 多种子 {42, 123, 456}.</p>
 </figure>
 
 <figure class="table-wrap">
-<figcaption>表 3 · 六组实验矩阵</figcaption>
+<figcaption>表 3 &nbsp;·&nbsp; 六组实验矩阵</figcaption>
 <table>
 <thead><tr><th>ID</th><th>训练</th><th>测试</th><th>池化</th><th>正则</th><th>研究问题</th></tr></thead>
 <tbody>
@@ -279,19 +261,16 @@ footer {
 </tbody>
 </table>
 </figure>
+</div>
 
-</div><!-- /page1 -->
-
-<!-- ═══════════════════════ PAGE 2 ═══════════════════════ -->
-<div class="page">
-<div class="page-num">2 / 2</div>
-
+<!-- ── 3. Results ───────────────────────────────── -->
+<div class="card" id="results">
 <h2>3. 实验结果</h2>
 
 <h3>3.1 主实验矩阵</h3>
 
-<figure class="table-wrap">
-<figcaption>表 4 · 六组实验结果</figcaption>
+<figure class="table-wrap" id="t4">
+<figcaption>表 4 &nbsp;·&nbsp; 六组实验结果</figcaption>
 <table>
 <thead><tr><th>Exp</th><th>Train → Test</th><th>Pooling</th><th>WA (%)</th><th>UAR (%)</th><th>Epoch</th><th>N</th></tr></thead>
 <tbody>
@@ -306,24 +285,18 @@ footer {
 <p class="tnote">12/12 JSON 通过 verify_experiment_jsons.py 验收。Exp4 仅在测试说话人（9 人, 3,389 条）上评估。Exp1 test WA (92.78%) ≈ best val WA (92.80%), 排除数据泄露。</p>
 </figure>
 
-<figure class="img-wrap">
-<img src="figures/fig01_main_results.png" alt="fig01">
-<figcaption>图 1 · 六组实验 WA 与 UAR。灰色虚线标注四类随机基线（25%）。Exp4 零样本迁移低于随机水平。</figcaption>
-</figure>
+<figure class="img-wrap"><img src="figures/fig01_main_results.png" alt="fig01"><figcaption>图 1 &nbsp;·&nbsp; 六组实验 WA 与 UAR。灰色虚线标注四类随机基线（25%）。Exp4 零样本迁移低于随机水平。</figcaption></figure>
 
 <p>最关键的结果是 Exp4：在表演式 C-BESD 上达到 92.78% 的模型，零样本迁移至自然式 FAU Aibo 仅剩 19.56%——低于四类随机基线。这不是模型设计的失败，而是分布偏移的失败：表演式语料编码了夸张的声学原型，与自然式儿童语音几乎没有可迁移的共性。73.2 pp 的差距首次量化了儿童语音领域"表演 → 自发"的鸿沟。</p>
 
 <p>在表演式 C-BESD 上（图 6），自注意力比韵律引导池化高 1.48 pp WA（92.78% vs 91.30%），但韵律引导收敛快 3 倍（epoch 10 vs 30），说明韵律特征提供了更强的归纳偏置。</p>
 
-<figure class="img-wrap">
-<img src="figures/fig06_cbesd_comparison.png" alt="fig06">
-<figcaption>图 6 · C-BESD 表演式语料上两种池化对比。1.48 pp WA 差距说明表演式声学模式可被纯数据驱动学习；韵律池化收敛快 3 倍体现了韵律先验的归纳偏置优势。</figcaption>
-</figure>
+<figure class="img-wrap"><img src="figures/fig06_cbesd_comparison.png" alt="fig06"><figcaption>图 6 &nbsp;·&nbsp; C-BESD 表演式语料上两种池化对比。1.48 pp WA 差距说明表演式声学模式可被纯数据驱动学习；韵律池化收敛快 3 倍体现了韵律先验的归纳偏置优势。</figcaption></figure>
 
 <h3>3.2 分布偏移诊断</h3>
 
-<figure class="table-wrap">
-<figcaption>表 5 · 跨语料库 FD 与 SMMD（2026-05-27 AutoDL GPU 重算）</figcaption>
+<figure class="table-wrap" id="t5">
+<figcaption>表 5 &nbsp;·&nbsp; 跨语料库 FD 与 SMMD（2026-05-27 AutoDL GPU 重算）</figcaption>
 <table>
 <thead><tr><th>数据集对</th><th>FD</th><th>SMMD</th><th>偏移构成</th></tr></thead>
 <tbody>
@@ -336,15 +309,12 @@ footer {
 <p class="tnote">DistributionShiftProbe: 在线 WavLM 特征 → mean pooling → 768-dim 句级嵌入, max 500 samples / corpus, seed = 42.</p>
 </figure>
 
-<figure class="img-wrap">
-<img src="figures/fig04_distribution_shift.png" alt="fig04">
-<figcaption>图 4 · 跨语料库分布偏移双指标量化（FD 蓝色, SMMD 橙色）。C-BESD vs CREMA-D（同表演式, 成人+英语）FD = 16.33 远高于 C-BESD vs FAU（FD = 8.50, 自发但儿童+德语）。</figcaption>
-</figure>
+<figure class="img-wrap"><img src="figures/fig04_distribution_shift.png" alt="fig04"><figcaption>图 4 &nbsp;·&nbsp; 跨语料库分布偏移双指标量化（FD 蓝色, SMMD 橙色）。C-BESD vs CREMA-D（同表演式, 成人+英语）FD = 16.33 远高于 C-BESD vs FAU（FD = 8.50, 自发但儿童+德语）。</figcaption></figure>
 
 <h3>3.3 FD-Accuracy 关系</h3>
 
 <figure class="table-wrap">
-<figcaption>表 6 · 分布距离与准确率</figcaption>
+<figcaption>表 6 &nbsp;·&nbsp; 分布距离与准确率</figcaption>
 <table>
 <thead><tr><th>条件</th><th>FD</th><th>WA (%)</th><th>实验</th></tr></thead>
 <tbody>
@@ -356,15 +326,12 @@ footer {
 </table>
 </figure>
 
-<figure class="img-wrap">
-<img src="figures/fig03_fd_accuracy.png" alt="fig03">
-<figcaption>图 3 · FD 与 WA 的散点图。Exp4 和 Exp5 共享相同 FD = 8.50, 但域内训练使 Exp5 比零样本 Exp4 高 46.8 pp——分布距离决定性能上限, 域内数据可部分弥补。</figcaption>
-</figure>
+<figure class="img-wrap"><img src="figures/fig03_fd_accuracy.png" alt="fig03"><figcaption>图 3 &nbsp;·&nbsp; FD 与 WA 的散点图。Exp4 和 Exp5 共享相同 FD = 8.50, 但域内训练使 Exp5 比零样本 Exp4 高 46.8 pp——分布距离决定性能上限, 域内数据可部分弥补。</figcaption></figure>
 
-<h3>3.4 FAU 多种子稳健性 &amp; 可解释性</h3>
+<h3>3.4 FAU 多种子稳健性</h3>
 
-<figure class="table-wrap">
-<figcaption>表 7 · FAU Aibo 三种子评估（seeds 42, 123, 456）</figcaption>
+<figure class="table-wrap" id="t7">
+<figcaption>表 7 &nbsp;·&nbsp; FAU Aibo 三种子评估（seeds 42, 123, 456）</figcaption>
 <table>
 <thead><tr><th>Seed</th><th>Exp5 WA (%)</th><th>Exp5 UAR (%)</th><th>Exp5b WA (%)</th><th>Exp5b UAR (%)</th></tr></thead>
 <tbody>
@@ -376,18 +343,17 @@ footer {
 </table>
 </figure>
 
-<figure class="img-wrap">
-<img src="figures/fig02_fau_multiseed.png" alt="fig02">
-<figcaption>图 2 · FAU Aibo 三种子对比（Mean ± Std, n = 3）。两种池化 WA 差异（1.31 pp）在一个标准差内, 无统计显著差异。</figcaption>
-</figure>
+<figure class="img-wrap"><img src="figures/fig02_fau_multiseed.png" alt="fig02"><figcaption>图 2 &nbsp;·&nbsp; FAU Aibo 三种子对比（Mean ± Std, n = 3）。两种池化 WA 差异（1.31 pp）在一个标准差内, 无统计显著差异。</figcaption></figure>
 
-<figure class="table-wrap">
-<figcaption>表 8 · 可解释性诊断（Exp2 checkpoint, C-BESD 首条测试样本）</figcaption>
+<h3>3.5 可解释性诊断</h3>
+
+<figure class="table-wrap" id="t8">
+<figcaption>表 8 &nbsp;·&nbsp; 可解释性指标（Exp2 checkpoint, C-BESD 首条测试样本）</figcaption>
 <table>
 <thead><tr><th>指标</th><th>值</th><th>含义</th></tr></thead>
 <tbody>
 <tr><td>APC<sub>wav</sub></td><td><b>0.718</b></td><td>注意力权重与 RMS 能量的 Pearson r（强正相关）</td></tr>
-<tr><td>APC<sub>delta</sub></td><td>−0.144</td><td>韵律注入后注意力与纯声学韵律的冗余降低</td></tr>
+<tr><td>APC<sub>delta</sub></td><td>&minus;0.144</td><td>韵律注入后注意力与纯声学韵律的冗余降低</td></tr>
 <tr><td>Layer argmax</td><td>9 (1-based)</td><td>WavLM 12 层中 softmax 权重最大（0.091）</td></tr>
 <tr><td>Layer entropy</td><td>2.48</td><td>近似均匀分布（ln 12 ≈ 2.48）</td></tr>
 </tbody>
@@ -395,19 +361,17 @@ footer {
 <p class="tnote">APC 仅基于 1 条样本。扩展到全测试集（540 条）可提供更稳健的估计。</p>
 </figure>
 
-<figure class="img-wrap">
-<img src="figures/fig05_layer_weights.png" alt="fig05">
-<figcaption>图 5 · WavLM 12 层可学习融合权重。峰值在第 9 层（9.12%）, 分布接近均匀（entropy = 2.48 ≈ ln 12）。虚线为均匀基线（8.33% / 层）。</figcaption>
-</figure>
+<figure class="img-wrap"><img src="figures/fig05_layer_weights.png" alt="fig05"><figcaption>图 5 &nbsp;·&nbsp; WavLM 12 层可学习融合权重。峰值在第 9 层（9.12%）, 分布接近均匀（entropy = 2.48 ≈ ln 12）。虚线为均匀基线（8.33% / 层）。</figcaption></figure>
+</div>
 
+<!-- ── 4. Discussion ────────────────────────────── -->
+<div class="card" id="discussion">
 <h2>4. 讨论与结论</h2>
 
 <h3>4.1 表演式语料的评估幻觉</h3>
-
 <p>C-BESD 域内 92.78% 的模型零样本迁移至 FAU Aibo 仅剩 19.56%。该发现与成人 SER 文献一致——Kakouros 等人 <b>[2022]</b> 报告的 75.60% IEMOCAP UAR 来自域内评估, Dong 等人 <b>[2026]</b> 发现 11 种 TTA 方法跨语料库效果有限。我们的贡献是将这一系统性局限扩展到<b>儿童</b>语音：继承自成人 SER 的表演式语料评估协议, 系统性地高估了真实场景的儿童 SER 能力, 高估幅度可达 73 pp。</p>
 
 <h3>4.2 韵律作为结构正则化器</h3>
-
 <p>在表演式语料上, 自注意力享有 1.48 pp 的 WA 优势。在自然式语料上, 两者性能相当, 但韵律引导池化收敛更稳定（epoch 3 vs 2）, 且将注意力锚定于可解释的声学事件。我们将其解释为：显式韵律先验在自然式语音中充当<b>结构正则化器</b>——通过将注意力约束于 F0 变化和能量爆发, 模型更不易过拟合环境噪声和录音伪影。在儿科心理健康筛查等安全敏感场景中, 能解释<b>为什么</b>做出预测的模型比仅报告置信度分数的模型更有实际价值。<b>但我们未进行临床验证</b>, 此论点仍属技术层面推断。</p>
 
 <h3>4.3 局限与展望</h3>
@@ -419,30 +383,32 @@ footer {
 </ol>
 
 <p>未来方向包括：引入更多自然式儿童语料验证 FD-Accuracy 框架的广泛适用性；在全测试集上计算 APC 均值；探索对 WavLM 骨干做领域自适应微调以缓解零样本迁移的性能崩溃；将手工韵律提取器（libROSA YIN）替换为可端到端学习的小型网络, 保留可解释性的同时降低推理开销。</p>
+</div>
 
+<!-- ── References ───────────────────────────────── -->
+<div class="card" id="refs">
 <h2>参考文献</h2>
-<ol class="ref-list">
+<ol style="font-size:0.85rem; color:#3a3a3c;">
 <li>S. Chen et al. "WavLM: Large-Scale Self-Supervised Pre-Training for Full Stack Speech Processing." <i>IEEE SPL</i>, 2022.</li>
 <li>S. Steidl. <i>Automatic Classification of Emotion-Related User States in Spontaneous Children's Speech.</i> FAU Aibo, INTERSPEECH Emotion Challenge, 2009.</li>
 <li>C. Busso et al. "IEMOCAP: Interactive Emotional Dyadic Motion Capture Database." <i>LRE</i>, 2008.</li>
 <li>S. Kakouros et al. "Speech-Based Emotion Recognition with Self-Supervised Models Using Attentive Channel-Wise Correlations and Label Smoothing." <i>arXiv:2211.01756</i>, 2022.</li>
 <li>J. Dong, H. Jia, T. Dang. "Test-Time Adaptation for Speech Emotion Recognition." <i>ICASSP</i>, 2026.</li>
 <li>R. Fan et al. "Benchmarking Children's ASR with Supervised and Self-Supervised Speech Foundation Models." <i>INTERSPEECH</i>, 2024.</li>
-<li>A. de Cheveigne &amp; H. Kawahara. "YIN, a Fundamental Frequency Estimator for Speech and Music." <i>JASA</i>, 2002.</li>
+<li>A. de Cheveigné &amp; H. Kawahara. "YIN, a Fundamental Frequency Estimator for Speech and Music." <i>JASA</i>, 2002.</li>
 <li>B. McFee et al. "librosa: Audio and Music Signal Analysis in Python." <i>SciPy</i>, 2015.</li>
 <li>O. C. Phukan et al. "A Comparative Study of Pre-trained Speech and Audio Embeddings for SER." <i>arXiv:2304.11472</i>, 2023.</li>
 <li>O. C. Phukan et al. "Are Paralinguistic Representations All That Is Needed for SER?" <i>INTERSPEECH</i>, 2024.</li>
 <li>E. Lesyk et al. "Empathetic Deep Learning: Transferring Adult SER Models to Children." <i>Human-Centric Intelligent Systems</i>, 2024.</li>
-<li class="pending">[ 需补充 ] C-BESD 数据集原始论文 (Rao et al., IEEE INSPECT 2024, 待核实).</li>
+<li style="color:#aeaeb2;">[ 需补充 ] C-BESD 数据集原始论文 (Rao et al., IEEE INSPECT 2024, 待核实).</li>
 </ol>
-
-</div><!-- /page2 -->
-
 </div>
 
-<footer>
-  Data Freeze 2026-05-27 · AC Protocol ac_suite_2026-05 · verify_experiment_jsons.py 12/12 PASS · Set in Paper Mono
-</footer>
+<div class="footer">
+  Data Freeze 2026-05-27 &nbsp;·&nbsp; AC Protocol ac_suite_2026-05 &nbsp;·&nbsp; verify_experiment_jsons.py 12/12 PASS
+</div>
+
+</div><!-- /main -->
 
 </body>
 </html>
