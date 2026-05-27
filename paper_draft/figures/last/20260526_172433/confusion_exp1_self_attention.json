@@ -1,0 +1,36 @@
+{
+  "checkpoint": "checkpoints/exp1_self_attention/best_model.pt",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "pooling_type": "self_attention",
+  "confusion_matrix": [
+    [
+      107,
+      1,
+      4,
+      3
+    ],
+    [
+      3,
+      131,
+      1,
+      5
+    ],
+    [
+      5,
+      3,
+      128,
+      4
+    ],
+    [
+      5,
+      4,
+      2,
+      134
+    ]
+  ]
+}

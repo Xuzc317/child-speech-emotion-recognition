@@ -1,5 +1,10 @@
 {
-  "fd": 12.330247277540348,
-  "smmd": 0.3688182244910964,
-  "comparison": "C-BESD vs FAU Aibo"
+  "fd": 16.334383099482828,
+  "smmd": 0.41240650381477534,
+  "pair": "c-besd vs crema-d",
+  "description": "C-BESD (child acted, Malay) vs CREMA-D (adult acted, English) — combined age+language+recording shift",
+  "computed_by": "src/extract_diagnostics.py:164 extract_distribution_shift()",
+  "protocol": "ac_suite_2026-05",
+  "dataloaders": "get_dataloaders(['c-besd']) train vs get_dataloaders(['crema-d']) train, 300 samples each, seed=42",
+  "note": "This is NOT C-BESD vs FAU Aibo. FAU Aibo FD needs separate computation."
 }

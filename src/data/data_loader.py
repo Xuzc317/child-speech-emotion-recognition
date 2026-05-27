@@ -89,6 +89,7 @@ def get_cross_corpus_dataloaders(
     batch_size: int = 32,
     num_workers: int = 0,
     seed: int = 42,
+    test_split: str = 'all',
 ) -> Dict[str, DataLoader]:
     """Build dataloaders for cross-corpus zero-shot evaluation.
 
@@ -100,17 +101,19 @@ def get_cross_corpus_dataloaders(
         batch_size: samples per batch
         num_workers: DataLoader worker processes
         seed: random seed
+        test_split: which split of test dataset to use.
+                    'all' = all speakers (default, maximal coverage).
+                    'test' = test-only split (for paper consistency, N=3389 for FAU).
 
     Returns:
         dict with 'train', 'val', 'test' DataLoaders.
-        Note: val uses train_datasets, test uses test_datasets (all speakers).
+        Note: val uses train_datasets, test uses test_datasets.
     """
     processor = StandardAudioProcessor(target_sr=16000)
 
     train_ds = UnifiedSERDataset(train_datasets, split='train', seed=seed, processor=processor)
     val_ds = UnifiedSERDataset(train_datasets, split='val', seed=seed, processor=processor)
-    # For zero-shot test, use ALL speakers from target dataset
-    test_ds = UnifiedSERDataset(test_datasets, split='all', seed=seed, processor=processor)
+    test_ds = UnifiedSERDataset(test_datasets, split=test_split, seed=seed, processor=processor)
 
     return {
         'train': DataLoader(train_ds, batch_size=batch_size, shuffle=True,

@@ -304,6 +304,7 @@ def main():
         'pooling_type': args.pooling_type,
         'train_data': args.train_data,
         'test_data': args.test_data or args.train_data,
+        'seed': int(args.seed),
         'best_val_wa': float(best_val_wa),
         'test_wa': float(test_wa),
         'test_uar': float(test_uar),
@@ -313,6 +314,8 @@ def main():
         'label_smoothing': float(label_smoothing),
         'pooling_dropout': float(pooling_dropout),
         'grad_clip': None if grad_clip is None else float(grad_clip),
+        'output_dir': args.output_dir,
+        'protocol': 'ac_suite_2026-05',
     }
     print(f"RESULT: {json.dumps(results)}")
 

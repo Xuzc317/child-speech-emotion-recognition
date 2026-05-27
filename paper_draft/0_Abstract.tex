@@ -1,0 +1,11 @@
+\begin{abstract}
+Child speech emotion recognition (SER) systems are routinely trained and evaluated on acted corpora, yet deployed in naturalistic settings where vocal expressions are subtle, noisy, and distributionally distinct.
+We study this gap through a distribution-driven pipeline built on frozen WavLM features, learnable layer fusion, and a strictly parameter-matched comparison ($N{=}111{,}105$ trainable parameters per pooling head) between prosody-guided temporal importance pooling and pure self-attention pooling.
+
+Across six controlled experiments on acted child speech (C-BESD), spontaneous child speech (FAU Aibo), and adult speech (IEMOCAP), three findings emerge.
+First, zero-shot transfer from acted to spontaneous child speech collapses to \textbf{18.70\%} weighted accuracy (WA)---below the four-class chance level---despite \textbf{92.78\%} in-domain acted performance, confirming that distribution shift, not architecture, is the dominant failure mode (Fr\'{e}chet distance FD$=$16.33).
+Second, on naturalistic FAU Aibo speech under strong regularization, prosody-guided pooling matches or slightly exceeds self-attention in WA (\textbf{66.36\%} vs.\ 66.18\%), acting as a structural regularizer against environmental noise.
+Third, sacrificing only \textbf{1.48} percentage points on acted C-BESD buys interpretability: attention weights correlate strongly with frame-level energy (APC$_{\text{wav}}{=}0.698$), enabling clinically actionable explanations unavailable from black-box self-attention.
+
+We argue that deployable child SER should be evaluated on spontaneous speech and optimized for explainability, not leaderboard accuracy on acted benchmarks alone.
+\end{abstract}

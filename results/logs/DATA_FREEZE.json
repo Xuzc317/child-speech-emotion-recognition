@@ -1,0 +1,129 @@
+{
+  "frozen_at_utc": "2026-05-26T17:51:24.687694+00:00",
+  "protocol": "ac_suite_2026-05",
+  "source": "run_local_checklist_jobs.py",
+  "git_commit": "cbfa8bab049e4da361d75e71ef64f8812e0c9fc6",
+  "exp1_self_attention.json": {
+    "exp_name": "exp1_self_attention",
+    "pooling_type": "self_attention",
+    "train_data": [
+      "c-besd"
+    ],
+    "test_data": [
+      "c-besd"
+    ],
+    "seed": 42,
+    "best_val_wa": 0.9280205655526992,
+    "test_wa": 0.9277777777777778,
+    "test_uar": 0.9279288926965089,
+    "best_epoch": 30,
+    "reg_profile": "default",
+    "weight_decay": 0.001,
+    "label_smoothing": 0.1,
+    "pooling_dropout": 0.0,
+    "grad_clip": null,
+    "output_dir": "checkpoints/exp1_self_attention",
+    "protocol": "ac_suite_2026-05",
+    "source": "autodl_remote_sync",
+    "matrix_version": "autodl_final_2026-05-19"
+  },
+  "exp2_prosody_guided.json": {
+    "exp_name": "exp2_prosody_guided",
+    "pooling_type": "prosody_guided",
+    "train_data": [
+      "c-besd"
+    ],
+    "test_data": [
+      "c-besd"
+    ],
+    "best_val_wa": 0.9125964010282777,
+    "test_wa": 0.912962962962963,
+    "test_uar": 0.9134584493467551,
+    "best_epoch": 10,
+    "reg_profile": "default",
+    "weight_decay": 0.001,
+    "label_smoothing": 0.1,
+    "pooling_dropout": 0.0,
+    "grad_clip": null,
+    "source": "autodl_remote_sync",
+    "matrix_version": "autodl_final_2026-05-19"
+  },
+  "fau_multiseed_summary.json": {
+    "protocol": "ac_suite_2026-05",
+    "seeds_target": [
+      42,
+      123,
+      456
+    ],
+    "exp5_fau_indomain": {
+      "n_seeds": 3,
+      "seeds": [
+        42,
+        123,
+        456
+      ],
+      "test_wa_mean": 0.6515263969397331,
+      "test_wa_std": 0.011245084475355058,
+      "test_uar_mean": 0.5394866588977282,
+      "test_uar_std": 0.02216648259745463,
+      "runs": [
+        {
+          "exp_name": "exp5_fau_indomain",
+          "seed": 42,
+          "test_wa": 0.6636175863086456,
+          "test_uar": 0.5635103471463822,
+          "best_epoch": 3
+        },
+        {
+          "exp_name": "exp5_fau_indomain_s123",
+          "seed": 123,
+          "test_wa": 0.6365348399246704,
+          "test_uar": 0.5100341660379469,
+          "best_epoch": 6
+        },
+        {
+          "exp_name": "exp5_fau_indomain_s456",
+          "seed": 456,
+          "test_wa": 0.6544267645858833,
+          "test_uar": 0.5449154635088554,
+          "best_epoch": 6
+        }
+      ]
+    },
+    "exp5b_self_attention_fau": {
+      "n_seeds": 3,
+      "seeds": [
+        42,
+        123,
+        456
+      ],
+      "test_wa_mean": 0.6646100337361868,
+      "test_wa_std": 0.007152699248484533,
+      "test_uar_mean": 0.5538921944373506,
+      "test_uar_std": 0.020461096563843397,
+      "runs": [
+        {
+          "exp_name": "exp5b_self_attention_fau",
+          "seed": 42,
+          "test_wa": 0.6618471525523754,
+          "test_uar": 0.5823169398212319,
+          "best_epoch": 2
+        },
+        {
+          "exp_name": "exp5b_self_attention_fau_s123",
+          "seed": 123,
+          "test_wa": 0.657564344005022,
+          "test_uar": 0.5349883298410659,
+          "best_epoch": 4
+        },
+        {
+          "exp_name": "exp5b_self_attention_fau_s456",
+          "seed": 456,
+          "test_wa": 0.6744186046511628,
+          "test_uar": 0.544371313649754,
+          "best_epoch": 11
+        }
+      ]
+    }
+  }
+}

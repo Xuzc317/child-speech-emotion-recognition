@@ -1,0 +1,36 @@
+{
+  "checkpoint": "checkpoints/exp5_fau_indomain/best_model.pt",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "pooling_type": "prosody_guided",
+  "confusion_matrix": [
+    [
+      214,
+      136,
+      208,
+      0
+    ],
+    [
+      88,
+      410,
+      335,
+      0
+    ],
+    [
+      127,
+      254,
+      1617,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ]
+}

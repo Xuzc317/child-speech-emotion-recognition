@@ -1,14 +1,15 @@
 # Data files (large .npy)
 data/*.npy
 
-# Checkpoints
+# Checkpoints — ignore weights, keep structure
 checkpoints/**/*.pth
-checkpoints/
+checkpoints/**/*.pt
 
-# Misc
-nul
-fau_aibo.tar.gz
+# Remote backup
 results_remote/
+
+# Archived external tools (may contain API keys)
+last/papervizagent/
 
 # Python
 __pycache__/
@@ -35,10 +36,8 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 
-# Experiments
-experiments/logs/
+# Agent planning artifacts
+.claude/
 
 # Model cache
 .cache/
-.claude/
-data/*.npz

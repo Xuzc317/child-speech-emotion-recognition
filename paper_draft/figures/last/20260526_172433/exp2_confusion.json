@@ -1,0 +1,36 @@
+{
+  "checkpoint": "checkpoints/exp2_prosody_guided/best_model.pt",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "pooling_type": "prosody_guided",
+  "confusion_matrix": [
+    [
+      107,
+      1,
+      2,
+      5
+    ],
+    [
+      4,
+      131,
+      1,
+      4
+    ],
+    [
+      14,
+      3,
+      118,
+      5
+    ],
+    [
+      3,
+      5,
+      0,
+      137
+    ]
+  ]
+}

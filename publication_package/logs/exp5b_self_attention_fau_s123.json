@@ -1,0 +1,22 @@
+{
+  "exp_name": "exp5b_self_attention_fau_s123",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 123,
+  "best_val_wa": 0.6768223234624146,
+  "test_wa": 0.657564344005022,
+  "test_uar": 0.5349883298410659,
+  "best_epoch": 4,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "output_dir": "checkpoints/exp5b_self_attention_fau_s123",
+  "protocol": "ac_suite_2026-05"
+}

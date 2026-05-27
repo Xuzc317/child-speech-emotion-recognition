@@ -1,0 +1,61 @@
+{
+  "description": "FD vs best WA rows for paper fig03 and Table tab:fd_accuracy. VERIFIED 2026-05-27 with AC protocol FD recomputation on AutoDL GPU.",
+  "matrix_version": "autodl_final_2026-05-19",
+  "fd_computation_protocol": "DistributionShiftProbe (online WavLM features, mean pooling, max_samples=500, seed=42, AC suite 70/15/15 hash split)",
+  "rows": [
+    {
+      "condition": "in_domain_acted_c_besd",
+      "label_zh": "域内表演（C-BESD）",
+      "fd": 0.0,
+      "smmd": 0.0,
+      "best_wa_percent": 92.78,
+      "experiment": "exp1_self_attention.json",
+      "fd_source": "by_definition (same corpus → FD=0)",
+      "fd_verified": true
+    },
+    {
+      "condition": "age_shift_child_to_adult_iemocap_indomain",
+      "label_zh": "年龄偏移（C-BESD→IEMOCAP，成人域内）",
+      "fd": 7.20,
+      "smmd": 0.315,
+      "best_wa_percent": 58.67,
+      "experiment": "exp3_adult_iemocap.json",
+      "fd_source": "canonical_fd_pairs.json (AutoDL GPU, 2026-05-27)",
+      "fd_note": "C-BESD vs IEMOCAP feature distributions. IEMOCAP indomain WA reflects training ON IEMOCAP (not zero-shot).",
+      "fd_verified": true
+    },
+    {
+      "condition": "style_spontaneity_shift_fau_indomain",
+      "label_zh": "风格+自发性偏移（C-BESD→FAU，FAU 域内）",
+      "fd": 8.50,
+      "smmd": 0.378,
+      "best_wa_percent": 66.36,
+      "experiment": "exp5_fau_indomain.json",
+      "fd_source": "canonical_fd_pairs.json (AutoDL GPU, 2026-05-27)",
+      "fd_note": "C-BESD vs FAU Aibo feature distributions. FAU indomain WA reflects training ON FAU (not zero-shot). Same FD as zero-shot row but higher WA shows in-domain training mitigates distribution gap.",
+      "fd_verified": true
+    },
+    {
+      "condition": "style_spontaneity_shift_zero_shot",
+      "label_zh": "风格+自发性偏移（零样本 C-BESD→FAU）",
+      "fd": 8.50,
+      "smmd": 0.378,
+      "best_wa_percent": 19.56,
+      "experiment": "exp4_zero_shot_fau.json",
+      "fd_source": "canonical_fd_pairs.json (same pair as above)",
+      "fd_note": "Same distribution gap as FAU indomain row (FD=8.50), but zero-shot WA=19.56% vs indomain WA=66.36% illustrates the value of in-domain training for overcoming distribution shift. WA updated 2026-05-27 to test-only split (N=3389).",
+      "fd_verified": true
+    }
+  ],
+  "additional_comparison": {
+    "c_besd_vs_cremad": {
+      "fd": 16.33,
+      "smmd": 0.412,
+      "description": "C-BESD (child acted, Malay) vs CREMA-D (adult acted, English). Combined age+language+recording shift. Much larger FD than C-BESD vs IEMOCAP (7.20) due to added language/recording divergence.",
+      "source": "results/distribution_shift.json (extract_diagnostics.py:164)",
+      "note": "Not used in fd_accuracy_table fig03 (uses IEMOCAP for age shift, FAU for style shift). Included for reference."
+    }
+  },
+  "canonical_fd_source_file": "results/canonical_fd_pairs.json",
+  "last_updated": "2026-05-27"
+}

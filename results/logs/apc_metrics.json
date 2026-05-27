@@ -1,5 +1,8 @@
 {
   "pooling_type": "prosody_guided",
-  "apc_wav": 0.6978889458122552,
-  "apc_delta": -0.146712512625111
+  "checkpoint": "checkpoints\\exp2_prosody_guided\\best_model.pt",
+  "seed": 42,
+  "protocol": "ac_suite_2026-05",
+  "apc_wav": 0.7178540825843811,
+  "apc_delta": -0.14355309307575226
 }

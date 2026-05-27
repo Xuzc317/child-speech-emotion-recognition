@@ -7,8 +7,18 @@
   "test_data": [
     "iemocap"
   ],
-  "best_val_wa": 0.574687669744704,
-  "test_wa": 0.6014339940953184,
-  "test_uar": 0.5934392906283736,
-  "best_epoch": 17
+  "seed": 42,
+  "best_val_wa": 0.5741444866920152,
+  "test_wa": 0.5866722901729228,
+  "test_uar": 0.5911058892250335,
+  "best_epoch": 8,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/exp3_adult_iemocap",
+  "protocol": "ac_suite_2026-05",
+  "source": "autodl_remote_sync",
+  "matrix_version": "autodl_final_2026-05-19"
 }

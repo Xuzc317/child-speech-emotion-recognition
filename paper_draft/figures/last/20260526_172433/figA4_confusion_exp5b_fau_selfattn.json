@@ -1,0 +1,36 @@
+{
+  "checkpoint": "checkpoints/exp5b_self_attention_fau/best_model.pt",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "pooling_type": "self_attention",
+  "confusion_matrix": [
+    [
+      244,
+      147,
+      167,
+      0
+    ],
+    [
+      102,
+      434,
+      297,
+      0
+    ],
+    [
+      131,
+      301,
+      1566,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ]
+}

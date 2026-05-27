@@ -1,6 +1,7 @@
-experiment,train_data,test_data,pooling_type,speech_type,test_wa,test_uar,best_val_wa,best_epoch
-exp1_self_attention,C-BESD,C-BESD,self_attention,acted,0.7963,0.7969,0.7866,2
-exp2_prosody_guided,C-BESD,C-BESD,prosody_guided,acted,0.9204,0.9198,0.9075,16
-exp3_adult_iemocap,IEMOCAP,IEMOCAP,prosody_guided,spontaneous,0.6014,0.5934,0.5747,17
-exp4_zero_shot_fau,C-BESD,FAU-Aibo,prosody_guided,spontaneous,0.1668,0.2157,0.9075,16
-exp5_fau_indomain,FAU-Aibo,FAU-Aibo,prosody_guided,spontaneous,0.6887,0.5614,0.6428,2
+experiment,train_data,test_data,pooling_type,reg_profile,test_wa,test_uar,best_val_wa,best_epoch,matrix_version
+exp1_self_attention,c-besd,c-besd,self_attention,default,0.9277777777777778,0.9279288926965089,0.9280205655526992,30,autodl_remote_sync
+exp2_prosody_guided,c-besd,c-besd,prosody_guided,default,0.912962962962963,0.9134584493467551,0.9125964010282777,10,autodl_remote_sync
+exp3_adult_iemocap,iemocap,iemocap,prosody_guided,default,0.5866722901729228,0.5911058892250335,0.5741444866920152,8,autodl_remote_sync
+exp4_zero_shot_fau,c-besd,fau-aibo,prosody_guided,default,0.19563293006786664,0.2383311844547952,0.9125964010282777,10,autodl_remote_sync
+exp5_fau_indomain,fau-aibo,fau-aibo,prosody_guided,fau,0.6636175863086456,0.5635103471463822,0.6403076923076924,3,autodl_remote_sync
+exp5b_self_attention_fau,fau-aibo,fau-aibo,self_attention,fau,0.6618471525523754,0.5823169398212319,0.6341538461538462,2,autodl_remote_sync
