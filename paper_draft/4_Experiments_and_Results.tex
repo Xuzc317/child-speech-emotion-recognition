@@ -31,7 +31,7 @@ Exp & Train & Test & Pooling & Reg. & WA (\%) & UAR (\%) & Epoch \\
 \midrule
 3 & IEMOCAP & IEMOCAP & Prosody    & default & 58.67 & 59.11 & 8 \\
 \midrule
-4 & C-BESD & FAU Aibo & Prosody    & default & 18.70 & 22.75 & 10 \\
+4 & C-BESD & FAU Aibo & Prosody    & default & 19.56 & 23.83 & 10 \\
 \midrule
 5 & FAU Aibo & FAU Aibo & Prosody  & fau & \textbf{66.36} & 56.35 & 3 \\
 5b & FAU Aibo & FAU Aibo & Self-Attn & fau & 66.18 & \textbf{58.23} & 2 \\
@@ -49,7 +49,7 @@ Prosody-guided pooling on adult spontaneous speech (Exp3) yields 58.67\% WA / 59
 This confirms that the prosody pathway captures patterns specific to \textit{children's} vocal characteristics (wider F0 range, higher variability), which do not transfer to adult speech.
 
 \paragraph{Zero-shot cross-domain (C-BESD $\rightarrow$ FAU Aibo).}
-The most striking result is Exp4: a model trained on acted child speech and evaluated directly on spontaneous child speech achieves only \textbf{18.70\%} WA---barely above the 25\% chance baseline for four classes.
+The most striking result is Exp4: a model trained on acted child speech and evaluated directly on spontaneous child speech achieves only \textbf{19.56\%} WA---below the 25\% chance baseline for four classes, on held-out test speakers (N=3389).
 This catastrophic failure demonstrates that acted-speech priors are fundamentally incompatible with naturalistic child vocalizations across language boundaries.
 
 \paragraph{In-domain spontaneous (FAU Aibo).}
@@ -98,7 +98,7 @@ Notably, the label smoothing (0.15) and gradient clipping (1.0) components preve
 
 Three distribution-shift dimensions emerge from the matrix:
 \begin{enumerate}
-\item \textbf{Speech style} (acted $\rightarrow$ spontaneous): 92.78\% $\rightarrow$ 18.70\% zero-shot; 66.36\% in-domain.
+\item \textbf{Speech style} (acted $\rightarrow$ spontaneous): 92.78\% $\rightarrow$ 19.56\% zero-shot; 66.36\% in-domain.
 \item \textbf{Age group} (child $\rightarrow$ adult): 91.30\% $\rightarrow$ 58.67\% (prosody path).
 \item \textbf{Corpus scale}: C-BESD (2,780 samples) supports 30+ training epochs; FAU Aibo (18,216 samples) paradoxically peaks in 2--3 epochs, likely due to high intra-class acoustic variability in spontaneous recordings.
 \end{enumerate}
