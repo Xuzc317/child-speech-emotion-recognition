@@ -7,11 +7,11 @@ The experimental matrix reveals three interlocking findings that, taken together
 \subsection{Pillar 1: The Acted--Spontaneous Chasm and Zero-Shot Collapse}
 \label{ssec:pillar1}
 
-The single most important result in this study is Exp4: a model trained on acted child speech (C-BESD, 92.78\% in-domain WA) achieves only \textbf{18.70\% WA} when evaluated zero-shot on spontaneous child speech (FAU Aibo)---a collapse of 74 percentage points, landing below the 25\% chance level.
+The single most important result in this study is Exp4: a model trained on acted child speech (C-BESD, 92.78\% in-domain WA) achieves only \textbf{19.56\% WA} when evaluated zero-shot on spontaneous child speech (FAU Aibo)---a collapse of 73 percentage points, landing below the 25\% chance level.
 
 This is not a model failure in the conventional sense.
 It is a \textit{distribution-shift failure}: acted speech datasets encode exaggerated, prototypical emotional archetypes that bear little resemblance to the subtle, noisy, overlapping emotional expressions found in naturalistic child--robot interactions.
-The finding is consistent with distribution-shift diagnostics (FD = 16.33, SMMD = 0.41 between C-BESD and FAU Aibo feature spaces) and aligns with recent warnings in the SER literature that acted corpora produce ``dataset-solving'' models rather than emotion-understanding systems~\cite{wagner2023dawn}.
+The finding is consistent with distribution-shift diagnostics: the Fr\'{e}chet distance between C-BESD and FAU Aibo WavLM feature spaces is FD~=~8.50 (SMMD~=~0.378), confirming a substantial acoustic gap between acted and spontaneous child speech that no pooling architecture alone can bridge. This aligns with recent warnings in the SER literature that acted corpora produce ``dataset-solving'' models rather than emotion-understanding systems~\cite{wagner2023dawn}.
 
 \textbf{Implication for the field:} Any child SER method reporting only acted-corpus accuracy is reporting a dataset artifact, not generalizable emotion recognition performance.
 Our zero-shot result is, to our knowledge, the first to quantify the acted$\rightarrow$spontaneous transfer penalty specifically for \textit{children's} speech.
@@ -39,7 +39,7 @@ The 1.48pp WA gap on C-BESD (Exp1 vs.\ Exp2) might appear to favor self-attentio
 We argue this is a \textit{necessary and well-justified trade-off} for explainability, particularly in the sensitive application domains where child SER is most needed: pediatric mental health screening, autism spectrum monitoring, and educational affect detection.
 
 \paragraph{Quantified explainability.}
-Our Attention--Prosody Correlation (APC) analysis yields $\text{APC}_{\text{wav}} = 0.698$ (Pearson $r$ between learned attention weights and frame-level RMS energy), confirming that prosody-guided attention locks onto physically interpretable acoustic events---energy bursts corresponding to emotional emphasis.
+Our Attention--Prosody Correlation (APC) analysis yields $\text{APC}_{\text{wav}} = 0.718$ (Pearson $r$ between learned attention weights and frame-level RMS energy), confirming that prosody-guided attention locks onto physically interpretable acoustic events---energy bursts corresponding to emotional emphasis.
 In contrast, self-attention weights exhibit no such structured correlation with any single acoustic feature, rendering the model a black box.
 
 \paragraph{Clinical deployment argument.}
@@ -48,7 +48,7 @@ A prosody-guided system that says ``this utterance was classified as \textit{ang
 A self-attention system that says ``this utterance was classified as \textit{angry} because of opaque feature interactions across 768 dimensions'' is not.
 
 \paragraph{The acted-dataset accuracy illusion.}
-The 1.48pp advantage of self-attention exists \textit{only} on acted speech---a regime we have shown to be non-transferable to real-world spontaneous conditions (Exp4: 18.70\%).
+The 1.48pp advantage of self-attention exists \textit{only} on acted speech---a regime we have shown to be non-transferable to real-world spontaneous conditions (Exp4: 19.56\%).
 Optimizing for acted-speech leaderboards while sacrificing interpretability produces models that are simultaneously overfit to a toy distribution and unexplainable in deployment.
 This is the worst possible outcome for safety-critical applications.
 
@@ -66,9 +66,9 @@ Across all experimental conditions, performance degrades monotonically with dist
 Condition & FD & Best WA (\%) \\
 \midrule
 In-domain acted (C-BESD) & 0.0 & 92.78 \\
-Age shift (child $\rightarrow$ adult) & 6.87 & 58.67 \\
-Style shift (acted $\rightarrow$ spontaneous, in-domain) & 12.33 & 66.36 \\
-Style + language shift (zero-shot) & 16.33 & 18.70 \\
+Age shift (child $\rightarrow$ adult, C-BESD vs.\ IEMOCAP) & 7.20 & 58.67 \\
+Style shift (acted $\rightarrow$ spontaneous, C-BESD vs.\ FAU, in-domain) & 8.50 & 66.36 \\
+Style + language shift (C-BESD vs.\ FAU, zero-shot) & 8.50 & 19.56 \\
 \bottomrule
 \end{tabular}
 \end{table}
