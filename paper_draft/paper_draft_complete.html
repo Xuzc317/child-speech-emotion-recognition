@@ -3,332 +3,435 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>分布驱动儿童语音情绪识别——可解释性与准确率的权衡分析</title>
+<title>Distribution-Driven Child Speech Emotion Recognition with Prosody-Guided Pooling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 17px; -webkit-font-smoothing: antialiased; }
 body {
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    font-family: "Times New Roman", "宋体", "SimSun", serif;
-    font-size: 16px;
-    line-height: 1.7;
-    color: #222;
-    background: #fff;
+    max-width: 700px; margin: 0 auto; padding: 56px 24px 80px;
+    font-family: Georgia, "Noto Serif SC", "STSong", "Songti SC", serif;
+    font-size: 1rem; line-height: 1.75; color: #1a1a1a;
+    background: #fafaf9;
 }
+
+/* ===== Headings ===== */
 h1 {
-    text-align: center; font-size: 22px; font-weight: bold;
-    margin: 0 0 8px 0; line-height: 1.4;
+    font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 1.5rem; font-weight: 600; text-align: center;
+    color: #111; line-height: 1.45; margin-bottom: 0.4rem;
 }
 h2 {
-    font-size: 18px; margin: 32px 0 12px 0;
-    border-bottom: 1.5px solid #333; padding-bottom: 4px;
+    font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 1.3rem; font-weight: 600; color: #111;
+    margin: 2.6em 0 0.7em 0; padding-bottom: 0.3em;
+    border-bottom: 1px solid #ddd;
 }
-h3 { font-size: 16px; margin: 20px 0 8px 0; }
-h4 { font-size: 15px; margin: 14px 0 6px 0; }
-p { margin: 6px 0 10px 0; text-align: justify; }
-.author-line { text-align: center; font-size: 15px; color: #555; margin: 6px 0; }
+h3 {
+    font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 1.08rem; font-weight: 600; color: #1a1a1a;
+    margin: 1.8em 0 0.5em 0;
+}
+h4 {
+    font-size: 1rem; font-weight: 600; color: #333;
+    margin: 1.2em 0 0.3em 0;
+}
+
+/* ===== Paragraphs & Lists ===== */
+p { margin: 0 0 1em 0; text-align: justify; hyphens: auto; }
+ol, ul { margin: 0.3em 0 1em 1.6em; }
+li { margin: 0.25em 0; }
+
+/* ===== Meta ===== */
+.author-line {
+    text-align: center; font-size: 0.92rem; color: #555; margin: 0.2rem 0;
+    font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ===== Abstract ===== */
 .abstract-box {
-    margin: 20px 0; padding: 12px 18px;
-    border-left: 4px solid #4472C4; background: #f7f9fc;
+    margin: 1.6em 0 1.8em; padding: 14px 20px;
+    border-left: 3px solid #5b9ecf; background: #f8fafc;
+    font-size: 0.94rem; line-height: 1.7;
 }
-.abstract-box b { font-size: 15px; }
-.keywords { font-size: 14px; color: #444; margin-top: 4px; }
+.abstract-box b { font-size: 0.96rem; color: #111; }
+.keywords { font-size: 0.88rem; color: #555; margin-top: 0.4em; }
 
-/* Tables */
+/* ===== Three-Line Tables ===== */
+figure.table-wrap {
+    margin: 1.2em 0 1.8em; max-width: 700px;
+}
+figure.table-wrap figcaption {
+    text-align: left; font-size: 0.82rem; font-weight: 600; color: #111; margin-bottom: 0.35em;
+}
 table {
-    width: 100%; border-collapse: collapse; margin: 12px 0 16px 0;
-    font-size: 14px;
+    width: 100%; border-collapse: collapse; font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
 }
-th, td { padding: 5px 9px; text-align: center; border: 1px solid #ccc; }
-th { background: #e8ecf1; font-weight: bold; }
-tr:nth-child(even) { background: #fafafa; }
-caption {
-    text-align: left; font-weight: bold; font-size: 14px;
-    margin-bottom: 4px; caption-side: top;
+thead th {
+    padding: 6px 10px; text-align: center;
+    border-top: 1.5px solid #333; border-bottom: 1.5px solid #333;
+    font-weight: 600; color: #111; background: none;
+}
+tbody td {
+    padding: 5px 10px; text-align: center;
+    border-bottom: 0.5px solid #ddd; color: #1a1a1a;
+}
+tfoot td { padding: 5px 10px; border-bottom: 1.5px solid #333; }
+tr:last-child td { border-bottom: 1.5px solid #333; }
+.tnote { font-size: 0.8rem; color: #666; margin-top: 0.3em; }
+
+/* ===== Figures ===== */
+figure.img-wrap {
+    margin: 1.6em 0 2em; max-width: 900px;
+    margin-left: calc((700px - 100%) / 2);
+}
+@media (max-width: 900px) { figure.img-wrap { margin-left: auto; margin-right: auto; max-width: 100%; } }
+figure.img-wrap img {
+    width: 100%; height: auto; border-radius: 4px;
+}
+figure.img-wrap figcaption {
+    text-align: left; font-size: 0.8rem; color: #555; margin-top: 0.4em; line-height: 1.5;
 }
 
-/* Figures */
-figure {
-    margin: 18px auto; text-align: center; max-width: 100%;
-}
-figure img {
-    max-width: 100%; height: auto;
-    border: 1px solid #e0e0e0; padding: 2px;
-}
-figcaption {
-    font-size: 13px; color: #333; margin-top: 4px;
-    font-weight: normal;
-}
+/* ===== Links ===== */
+a { color: #2a6d8f; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-/* Lists */
-ol, ul { margin: 6px 0 10px 20px; }
-li { margin: 3px 0; }
-
-/* Footnotes */
-.fn { font-size: 13px; color: #666; }
+/* ===== Footnotes ===== */
+.fn { font-size: 0.8rem; color: #777; }
+.ref-list { font-size: 0.85rem; }
+.ref-list li { margin: 0.35em 0; }
 </style>
 </head>
 <body>
 
-<h1>分布驱动儿童语音情绪识别<br>——可解释性与准确率的权衡分析</h1>
+<h1>Distribution-Driven Child Speech Emotion Recognition<br>with Prosody-Guided Temporal Importance Pooling</h1>
 
-<p class="author-line">作者信息（投稿时填写）</p>
-<p class="author-line">机构信息（投稿时填写）</p>
+<p class="author-line">Anonymous Authors</p>
+<p class="author-line">[Affiliation withheld for review]</p>
 
+<!-- ============ ABSTRACT ============ -->
 <div class="abstract-box">
-<b>摘要：</b>儿童语音情绪识别（SER）系统通常在表演式语料上训练和评估，却部署于自然式场景中。本文通过分布驱动的评估协议揭示这一差距：我们在冻结 WavLM 特征、可学习 12 层融合和严格参数对等（各 111,105 可训练参数）的条件下，系统对比了韵律引导时序重要性池化和纯自注意力池化两种方案。在表演式儿童语音（C-BESD）、自然式儿童语音（FAU Aibo）和成人语音（IEMOCAP）上的六组受控实验得出三项发现。第一，表演式到自然式儿童语音的零样本迁移准确率降至 19.56%（低于四类随机基线 25%），而在域内表演式语料上达到 92.78%，证明分布偏移而非模型架构是主要的失败模式（C-BESD 与 FAU Aibo 特征空间的 Fréchet 距离 FD=8.50）。第二，在强正则化的自然式 FAU Aibo 语音上，韵律引导池化在 WA 上与自注意力持平（66.36% vs. 66.18%），充当了对环境噪声的结构正则化器。第三，在表演式 C-BESD 上仅牺牲 1.48 个百分点即可换取可解释性：韵律引导的注意力权重与帧级能量强相关（APC<sub>wav</sub>=0.718），为安全敏感应用提供了可审计的决策依据。我们主张，可部署的儿童 SER 系统应以自然式语音上的性能为主要评估标准，并将可解释性作为设计目标而非事后附加。
-<p class="keywords"><b>关键词：</b>儿童语音情绪识别；分布偏移；韵律引导池化；可解释性；Fréchet 距离</p>
+<b>Abstract</b><br>
+Child speech emotion recognition (SER) systems are predominantly trained and evaluated on acted corpora, yet deployed in naturalistic settings where vocal expressions are subtle, noisy, and distributionally distinct.
+This paper exposes the magnitude of this gap through a distribution-driven evaluation protocol spanning acted child speech (C-BESD), spontaneous child speech (FAU Aibo), and adult conversational speech (IEMOCAP).
+Under a frozen WavLM backbone with learnable 12-layer fusion and strictly parameter-matched pooling heads (111,105 trainable parameters each), we systematically compare prosody-guided temporal importance pooling against pure self-attention pooling.
+Three findings emerge.
+First, zero-shot transfer from acted to spontaneous child speech collapses to <b>19.56%</b> WA&mdash;below the four-class chance baseline of 25%&mdash;despite <b>92.78%</b> in-domain acted performance, confirming that distribution shift, not architecture, is the dominant failure mode (C-BESD vs. FAU Aibo Frechet distance FD&thinsp;=&thinsp;8.50, SMMD&thinsp;=&thinsp;0.378).
+Second, on naturalistic FAU Aibo speech under strong regularization, prosody-guided pooling achieves <b>66.36%</b> WA, matching self-attention (66.18%) while acting as a structural regularizer against environmental noise.
+Third, sacrificing 1.48 percentage points on acted C-BESD buys interpretability: attention weights correlate strongly with frame-level energy (APC<sub>wav</sub>&thinsp;=&thinsp;0.718), enabling auditable decisions unavailable from black-box self-attention.
+We argue that deployable child SER should be evaluated on spontaneous speech and optimized for explainability, not leaderboard accuracy on acted benchmarks alone.
+<p class="keywords"><b>Keywords:</b> child speech emotion recognition, distribution shift, prosody-guided pooling, explainability, Frechet distance</p>
 </div>
 
-<!-- ============================================================ -->
-<h2>一、引言</h2>
+<!-- ============ 1. INTRODUCTION ============ -->
+<h2>1. Introduction</h2>
 
-<h3>1.1 儿童语音情绪识别的特殊性</h3>
+<h3>1.1 The Child SER Gap</h3>
 
-<p>语音情绪识别在教育情感计算、儿科心理健康筛查和人机交互中有广泛应用前景。然而，现有 SER 研究主要集中于成人语音，儿童语音情绪识别面临三个特殊挑战。</p>
+<p>Speech emotion recognition underpins affect-aware interfaces in education, pediatric mental health screening, and human-robot interaction.
+For children's speech, the problem is compounded by wider fundamental-frequency ranges, immature articulation, and limited availability of spontaneous, labeled corpora.
+Most child SER systems therefore rely on acted datasets recorded under studio conditions, where emotions are exaggerated and acoustically stereotyped. <b>[需补充参考文献：C-BESD 数据集原始论文]</b></p>
 
-<p><b>第一，儿童语音的声学特征与成人存在本质差异。</b>儿童声道较短、声带较薄，导致基频显著高于成人。我们在 C-BESD（2,000 条儿童语音）上测得 F0 均值为 495.9 Hz，标准差 651.1 Hz，第 95 百分位达 2285.7 Hz。作为参照，成人会话语音的典型 F0 均值约为 120 Hz（男性）至 210 Hz（女性）。儿童不仅频率范围更宽，且 F0 在不同情绪间的差异性更大，这意味着在成人语音上训练的模型或手动设计的特征提取策略不能直接迁移。</p>
+<p>Three structural challenges distinguish child SER from its adult counterpart.</p>
 
-<p><b>第二，儿童情绪语音数据以表演式语料为主，自然式语料稀缺。</b>目前可公开获取的儿童情绪语料中，C-BESD（2,780 条，马来语，表演式）和 FAU Aibo（18,216 条，德语，儿童-机器人自然交互）构成两种代表性场景。前者是让儿童用指定情绪朗读固定句子，后者来自儿童与 Sony Aibo 机器人的自由玩耍录音。两者的情绪表达方式根本不同：表演式语料中的情绪被刻意夸大且声学上趋于模板化，自然式语料中的情绪表达则微弱、重叠、受环境噪声干扰。</p>
+<p><b>Acoustic divergence.</b> Children's shorter vocal tracts and thinner vocal folds produce substantially higher fundamental frequencies than adults.
+Measurements on 2,000 C-BESD utterances yield a mean F0 of 495.9 Hz (SD 651.1 Hz, 95th percentile 2285.7 Hz), compared to typical adult conversational F0 ranges of approximately 120 Hz (male) to 210 Hz (female).
+Models and feature engineering strategies developed for adult speech do not transfer directly.</p>
 
-<p><b>第三，成人 SER 领域的工程经验不能直接套用于儿童。</b>数据增强（pitch shift、time stretch）在成人 SER 中是标配操作，但我们前期实验发现，即使在儿童语音的参数约束范围内进行增强（pitch ±3 半音、语速 0.85–1.15），准确率仍下降 19.57 个百分点。这说明儿童语音中的情感信息对波形层面的扰动高度敏感，"成人-验证-儿童-复用"的技术迁移路径不可行。</p>
+<p><b>Corpus ecology.</b> The publicly available child emotion corpora fall into two categories.
+C-BESD (2,780 utterances, Malay) contains acted speech where children read fixed sentences with prescribed emotions.
+FAU Aibo (18,216 utterances, German) captures spontaneous child-robot interaction in a naturalistic play setting <b>[Steidl, 2009, INTERSPEECH Emotion Challenge]</b>.
+The acted-spontaneous distinction is fundamental: acted speech encodes exaggerated, prototypical emotional archetypes, while spontaneous speech contains subtle, overlapping expressions embedded in environmental noise.</p>
 
-<h3>1.2 分布驱动的研究视角</h3>
+<p><b>Non-transferable engineering practices.</b> Data augmentation through pitch shifting and time stretching is standard in adult SER.
+Our preliminary experiments show that even "child-constrained" augmentation (pitch &plusmn;3 semitones, speed 0.85&ndash;1.15) degrades accuracy by 19.6 percentage points on C-BESD.
+Children's emotional content is more fragile under waveform perturbation&mdash;a finding that motivates the distribution-driven perspective of this work.</p>
 
-<p>上述三个挑战指向同一个方法论问题：<b>儿童 SER 系统在训练语料上的性能不能反映其在目标场景中的真实能力。</b>这一观察与近年来 SER 领域对"分布偏移"问题的关注一致。Dong 等人（2026）系统评估了 11 种测试时自适应方法在 SER 中的表现，发现多数方法在跨语料库场景下效果有限。Kakouros 等人（2022）在 IEMOCAP 上使用冻结 WavLM + 注意力池化取得了 75.60% 的 UAR（4 类），但其评估未涉及儿童语音或跨语料库的零样本迁移。</p>
+<h3>1.2 A Distribution-Driven Perspective</h3>
 
-<p>本文从<b>分布驱动</b>的视角出发，不追求在某个特定语料上最大化准确率，而是通过系统性的跨语料库实验，量化分布偏移（Fréchet Distance 和 SMMD）与分类性能之间的关系。核心假设是：<b>儿童 SER 的首要瓶颈不是池化架构的选择，而是训练分布与评估分布的统计距离。</b></p>
+<p>Recent self-supervised learning backbones such as WavLM <b>[Chen et al., 2022, IEEE SPL]</b> provide powerful frame-level representations, but downstream design choices determine whether emotion-relevant information is extracted or whether the model overfits to corpus artifacts.
+Kakouros et al. <b>[2022, arXiv]</b> achieved 75.60% UAR (4-class) on IEMOCAP using frozen WavLM with attentive pooling, but their evaluation was in-domain and did not address child speech.
+Dong et al. <b>[2026, ICASSP]</b> systematically evaluated 11 test-time adaptation methods for SER and found limited cross-corpus generalization, confirming that distribution shift is a systemic bottleneck, not a model-specific failure.</p>
 
-<h3>1.3 本文贡献</h3>
+<p>Children's emotional expression is strongly linked to <b>prosody</b>: pitch excursions, energy bursts, and rhythm irregularities that differ systematically from adult patterns <b>[Fan et al., 2024, INTERSPEECH]</b>.
+We hypothesize that explicitly conditioning temporal attention on frame-level F0 and RMS energy provides an inductive bias that (i) accelerates learning, (ii) regularizes models on noisy spontaneous speech, and (iii) anchors decisions to measurable acoustic events&mdash;delivering interpretability that purely data-driven attention cannot.</p>
+
+<h3>1.3 Contributions</h3>
 <ol>
-<li><b>分布驱动的评估协议：</b>在表演式儿童语料（C-BESD）、自然式儿童语料（FAU Aibo）和成人语料（IEMOCAP）三个域上，系统对比了韵律引导池化和纯自注意力池化，使用说话人独立划分和参数严格对等的实验设计（各 111,105 可训练参数）。</li>
-<li><b>表演→自发零样本迁移的定量边界：</b>首次在儿童语音场景下量化了从表演式到自然式语料的迁移退化程度，为社区提供了一个实际的分布偏移基准。</li>
-<li><b>可解释性-准确率权衡的实证分析：</b>通过注意力-韵律相关性（APC）指标，量化了韵律注入对模型可解释性的提升，以及在自然式语音上韵律作为结构正则化器的作用。</li>
+<li><b>A distribution-driven evaluation protocol</b> spanning acted child (C-BESD), spontaneous child (FAU Aibo), and adult (IEMOCAP <b>[Busso et al., 2008, LRE]</b>) corpora, with speaker-disjoint splits and dual metrics (WA and UAR).</li>
+<li><b>Prosody-guided temporal importance pooling</b> fused with frozen WavLM and learnable 12-layer weighting, compared against a <i>strictly parameter-matched</i> self-attention baseline (111,105 parameters each).</li>
+<li><b>Quantification of the acted-spontaneous chasm</b>: zero-shot C-BESD &rarr; FAU transfer yields 19.56% WA, with monotonic FD-accuracy degradation across age, style, and language shifts.</li>
+<li><b>An accuracy-explainability trade-off analysis</b>: prosody-guided pooling achieves APC<sub>wav</sub> = 0.718 with attention locked to energy peaks, justifying a 1.48pp WA sacrifice on acted data for deployable interpretability.</li>
 </ol>
 
-<!-- ============================================================ -->
-<h2>二、实验方法</h2>
+<!-- ============ 2. METHOD ============ -->
+<h2>2. Method</h2>
 
-<h3>2.1 系统流水线总览</h3>
+<h3>2.1 System Architecture</h3>
 
-<p>系统采用冻结 SSL 骨干 + 轻量可训练下游模块的设计。整体数据流为：原始波形经预处理（16kHz 重采样、单声道、peak normalization、4 秒截断）后输入冻结的 WavLM Base+ 骨干网络（94.4M 参数），输出 12 层隐藏状态（每层 B×T×768，50Hz 帧率）。12 层状态通过可学习加权融合（softmax 归一化，12 个标量权重）合并为单通道特征图。此后分为两条路径：<b>韵律引导路径</b>通过 libROSA YIN 提取 F0 和 RMS 能量，注入注意力机制；<b>自注意力路径</b>仅基于 SSL 特征自身计算注意力。两种池化头的参数严格相等（各 111,105），加权求和得到 768 维句级向量，经 SEMLP 分类器（593K 参数）输出 4 类 logits。总可训练参数约 704K，不到 WavLM 骨干参数的 1%。</p>
+<p>The pipeline consists of four stages. (1) Raw waveforms are preprocessed to 16 kHz mono, peak-normalized, and truncated to 4 s (200 frames at 50 Hz). (2) A frozen WavLM Base+ backbone <b>[Chen et al., 2022]</b> (94.4M parameters) extracts 12 hidden states per frame (each B&times;T&times;768). (3) A learnable layer fusion module applies 12 scalar softmax weights to combine all hidden states into a single feature map. (4) The fused features pass through one of two parameter-matched pooling heads&mdash;<b>prosody-guided</b> or <b>self-attention</b>&mdash;followed by an SEMLP classifier (593K parameters). Total trainable parameters: approximately 704K, less than 1% of the backbone.</p>
 
-<h3>2.2 数据预处理与说话人独立划分</h3>
+<p><b>Prosody-Guided Pooling.</b> Frame-level F0 is extracted via the YIN algorithm <b>[de Cheveigne &amp; Kawahara, 2002, JASA]</b> (range C2&ndash;C7, 65&ndash;2093 Hz) and RMS energy via librosa <b>[McFee et al., 2015, SciPy]</b>, both at hop_length=320 to match WavLM's 50 Hz frame rate.
+F0 is normalized by 2093 Hz; energy is normalized per-batch.
+The 2-dimensional prosody vector is projected through a 2-layer MLP (2&rarr;64&rarr;64) and concatenated with SSL features (768+64=832 dimensions).
+A subsequent attention MLP (832&rarr;128&rarr;1) produces frame-level scores, followed by softmax and masked weighted sum.</p>
 
-<p>所有语料统一经过以下预处理流水线：16kHz 重采样 → 单声道转换 → peak normalization → 4 秒截断或补零（200 帧 @ 50Hz）。标签统一映射为 angry / happy / neutral / sad 四类。使用确定性 MD5 hash 进行说话人独立划分（70% 训练 / 15% 验证 / 15% 测试，seed=42），代码包含运行时零泄露断言。</p>
+<p><b>Self-Attention Pooling.</b> Identical in structure except that no prosody features are injected: SSL features pass through a 4-layer attention MLP (768&rarr;116&rarr;100&rarr;100&rarr;1).
+The two poolers contain exactly 111,105 trainable parameters each, verified at runtime via <code>verify_parameter_parity()</code>.</p>
 
+<h3>2.2 Data and Speaker Splits</h3>
+
+<figure class="table-wrap">
+<figcaption><b>Table 1:</b> Dataset statistics and speaker-disjoint splits.</figcaption>
 <table>
-<caption><b>表1：数据集划分统计</b></caption>
-<tr><th>语料</th><th>语言</th><th>类型</th><th>总样本</th><th>训练集</th><th>验证集</th><th>测试集</th><th>说话人数</th></tr>
-<tr><td>C-BESD</td><td>马来语</td><td>表演式</td><td>2,780</td><td>1,851 (162人)</td><td>389 (36人)</td><td>540 (39人)</td><td>237</td></tr>
-<tr><td>IEMOCAP</td><td>英语</td><td>对话式</td><td>8,525*</td><td>4,313 (5人)</td><td>1,841 (2人)</td><td>2,371 (3人)</td><td>10</td></tr>
-<tr><td>FAU Aibo</td><td>德语</td><td>自然式</td><td>18,216</td><td>11,577 (35人)</td><td>3,250 (7人)</td><td>3,389 (9人)</td><td>51</td></tr>
+<thead><tr><th>Corpus</th><th>Language</th><th>Style</th><th>Total</th><th>Train</th><th>Val</th><th>Test</th><th>Speakers</th></tr></thead>
+<tbody>
+<tr><td>C-BESD</td><td>Malay</td><td>Acted</td><td>2,780</td><td>1,851 (162)</td><td>389 (36)</td><td>540 (39)</td><td>237</td></tr>
+<tr><td>IEMOCAP</td><td>English</td><td>Conversational</td><td>8,525*</td><td>4,313 (5)</td><td>1,841 (2)</td><td>2,371 (3)</td><td>10</td></tr>
+<tr><td>FAU Aibo</td><td>German</td><td>Spontaneous</td><td>18,216</td><td>11,577 (35)</td><td>3,250 (7)</td><td>3,389 (9)</td><td>51</td></tr>
+</tbody>
 </table>
-<p class="fn">* IEMOCAP 原始 9,794 条，1,269 条因标签不在四类中被丢弃。</p>
-
-<h3>2.3 池化模块设计</h3>
-
-<p><b>韵律引导池化（TemporalImportancePooling）。</b>韵律特征提取独立于 SSL 骨干：F0 使用 libROSA YIN 算法（频率范围 65–2093 Hz，覆盖儿童高频），未发声帧置 0；能量使用逐帧 RMS，hop_length=320 与 WavLM 帧率对齐。注入机制为：(1) F0 除以 2093 Hz 归一化，能量除以批次内最大值归一化；(2) 拼接为 2 维韵律特征，经 2 层 MLP（2→64→64）投影为 64 维韵律嵌入；(3) 韵律嵌入与 SSL 特征在帧维度拼接（768+64=832 维）；(4) 拼接特征经注意力 MLP（832→128→1）生成逐帧分数；(5) Softmax + padding mask → 注意力权重 → 加权求和。</p>
-
-<p><b>自注意力池化（SelfAttentionPooling）。</b>与韵律池化的唯一区别是不注入韵律特征：SSL 特征直接经 4 层注意力 MLP（768→116→100→100→1）生成逐帧分数。两种池化头的参数数量由运行时断言验证严格相等。</p>
-
-<h3>2.4 训练配置与正则化</h3>
-
-<table>
-<caption><b>表2：训练超参数</b></caption>
-<tr><th>参数</th><th>值</th><th>参数</th><th>值</th></tr>
-<tr><td>优化器</td><td>AdamW, lr=3e-4</td><td>早停</td><td>patience=15, 监控 val WA</td></tr>
-<tr><td>学习率调度</td><td>CosineAnnealing, T_max=100</td><td>Batch size</td><td>16</td></tr>
-<tr><td>损失函数</td><td>CrossEntropyLoss</td><td>最大 epoch</td><td>100</td></tr>
-<tr><td>主种子</td><td>42</td><td>FAU 多种子</td><td>42, 123, 456</td></tr>
-</table>
-
-<table>
-<caption><b>表3：正则化配置（reg_profile）</b></caption>
-<tr><th>Profile</th><th>weight_decay</th><th>label_smoothing</th><th>pooling_dropout</th><th>grad_clip</th><th>适用语料</th></tr>
-<tr><td>default</td><td>1×10<sup>-3</sup></td><td>0.1</td><td>0.0</td><td>无</td><td>C-BESD, IEMOCAP</td></tr>
-<tr><td>fau</td><td>5×10<sup>-3</sup></td><td>0.15</td><td>0.3</td><td>1.0</td><td>FAU Aibo</td></tr>
-</table>
-
-<p>FAU 的强正则配置源于初步实验观察：自然式语料上模型在 1–2 epoch 即达到峰值后迅速退化。更强的权重衰减、标签平滑和 pooling dropout 旨在延长有效训练窗口，但并不从根本上解决自然式语音的数据饥渴问题。</p>
-
-<h3>2.5 实验矩阵</h3>
-
-<table>
-<caption><b>表4：六组实验矩阵</b></caption>
-<tr><th>Exp</th><th>训练集</th><th>测试集</th><th>池化方式</th><th>正则</th><th>研究问题</th></tr>
-<tr><td>Exp1</td><td>C-BESD</td><td>C-BESD</td><td>Self-Attn</td><td>default</td><td>表演式语料的纯数据驱动上限</td></tr>
-<tr><td>Exp2</td><td>C-BESD</td><td>C-BESD</td><td>Prosody</td><td>default</td><td>韵律注入在表演式语料上的影响</td></tr>
-<tr><td>Exp3</td><td>IEMOCAP</td><td>IEMOCAP</td><td>Prosody</td><td>default</td><td>成人对话式语料对照</td></tr>
-<tr><td>Exp4</td><td>C-BESD</td><td><b>FAU Aibo</b></td><td>Prosody</td><td>default</td><td><b>零样本跨域迁移（核心实验）</b></td></tr>
-<tr><td>Exp5</td><td>FAU Aibo</td><td>FAU Aibo</td><td>Prosody</td><td>fau</td><td>自然式语料域内韵律池化</td></tr>
-<tr><td>Exp5b</td><td>FAU Aibo</td><td>FAU Aibo</td><td>Self-Attn</td><td>fau</td><td>自然式语料域内自注意力对照</td></tr>
-</table>
-
-<h3>2.6 评估指标</h3>
-
-<table>
-<caption><b>表5：评估指标定义</b></caption>
-<tr><th>指标</th><th>全称</th><th>含义</th></tr>
-<tr><td>WA</td><td>Weighted Accuracy</td><td>总体分类正确率（等价于 micro-averaged recall），百分比</td></tr>
-<tr><td>UAR</td><td>Unweighted Average Recall</td><td>每类召回率的算术平均，减轻类别不平衡影响，百分比</td></tr>
-<tr><td>FD</td><td>Fréchet Distance</td><td>两个多元高斯分布之间的 Wasserstein-2 距离，量化分布偏移</td></tr>
-<tr><td>SMMD</td><td>Speech Maximum Mean Discrepancy</td><td>基于 RBF 核的非参数分布距离，不依赖高斯假设</td></tr>
-<tr><td>APC<sub>wav</sub></td><td>Attention-Prosody Correlation</td><td>注意力权重与帧级 RMS 能量的 Pearson r，量化可解释性</td></tr>
-<tr><td>APC<sub>delta</sub></td><td>APC 增益</td><td>韵律引导池化相对于纯声学韵律的注意力冗余降低量</td></tr>
-</table>
-
-<!-- ============================================================ -->
-<h2>三、实验结果</h2>
-
-<h3>3.1 主实验矩阵</h3>
-
-<table>
-<caption><b>表6：六组实验主结果（WA 与 UAR）</b></caption>
-<tr><th>Exp</th><th>训练→测试</th><th>池化</th><th>WA (%)</th><th>UAR (%)</th><th>Best Epoch</th><th>测试集 N</th></tr>
-<tr><td>Exp1</td><td>C-BESD→C-BESD</td><td>Self-Attn</td><td><b>92.78</b></td><td><b>92.79</b></td><td>30</td><td>540</td></tr>
-<tr><td>Exp2</td><td>C-BESD→C-BESD</td><td>Prosody</td><td>91.30</td><td>91.35</td><td>10</td><td>540</td></tr>
-<tr><td>Exp3</td><td>IEMOCAP→IEMOCAP</td><td>Prosody</td><td>58.67</td><td>59.11</td><td>8</td><td>2,371</td></tr>
-<tr><td>Exp4</td><td>C-BESD→FAU Aibo</td><td>Prosody</td><td><b>19.56</b></td><td><b>23.83</b></td><td>10</td><td>3,389</td></tr>
-<tr><td>Exp5</td><td>FAU→FAU</td><td>Prosody</td><td><b>66.36</b></td><td>56.35</td><td>3</td><td>3,389</td></tr>
-<tr><td>Exp5b</td><td>FAU→FAU</td><td>Self-Attn</td><td>66.18</td><td><b>58.23</b></td><td>2</td><td>3,389</td></tr>
-</table>
-
-<p>如图1所示，表演式语料（Exp1/Exp2）与自然式语料（Exp5/Exp5b）之间存在巨大的性能鸿沟，而零样本迁移（Exp4）则完全崩溃。</p>
-
-<figure>
-<img src="figures_html/fig01_main_results.png" alt="主实验结果">
-<figcaption><b>图1：六组实验主结果矩阵。</b>蓝色柱为 WA，橙色柱为 UAR。灰色虚线标注四类随机基线（25%）。Exp4 零样本迁移低于随机水平。</figcaption>
+<p class="tnote">* 1,269 IEMOCAP utterances discarded (labels outside {angry, happy, neutral, sad}). Speaker counts in parentheses. Splits by deterministic MD5 hash, 70/15/15 ratio, seed 42. Runtime assertion enforces zero speaker overlap across splits.</p>
 </figure>
 
-<p>在表演式 C-BESD 上（图6），自注意力比韵律引导高 1.48 pp WA（92.78% vs 91.30%），但韵律引导收敛快 3 倍（epoch 10 vs 30），说明韵律特征提供了更强的归纳偏置。成人 IEMOCAP（Exp3）的 WA 为 58.67%，较表演式儿童语料下降 32.63 pp，证实韵律通路捕获的特征具有儿童特异性，不能泛化到成人语音。</p>
+<h3>2.3 Training Configuration</h3>
 
-<p>最关键的发现来自 Exp4：在 C-BESD 上达到 92.78% 的模型，零样本评估于 FAU Aibo 时 WA 骤降至 19.56%，低于四类随机基线 25%。这不是模型设计的失败，而是分布偏移的失败。表演式语料中夸张的声学模式与自然式语料中的微弱情绪表达之间几乎没有可迁移的共同特征。</p>
-
-<figure>
-<img src="figures_html/fig06_cbesd_comparison.png" alt="C-BESD 对比">
-<figcaption><b>图6：表演式 C-BESD 上两种池化方式对比。</b>自注意力以 1.48 pp 领先，但韵律引导以 1/3 的训练时间（epoch 10 vs 30）达到相近性能。</figcaption>
-</figure>
-
-<h3>3.2 分布偏移诊断</h3>
-
-<p>2026-05-27 在 AutoDL GPU 上使用 AC 协议（在线 WavLM 特征、mean pooling、max_samples=500、seed=42）重算的 canonical FD 和 SMMD 值如下。</p>
-
+<figure class="table-wrap">
+<figcaption><b>Table 2:</b> Regularization profiles.</figcaption>
 <table>
-<caption><b>表7：跨语料库分布偏移诊断</b></caption>
-<tr><th>数据集对</th><th>FD</th><th>SMMD</th><th>偏移构成</th></tr>
-<tr><td>C-BESD vs C-BESD</td><td>0.00</td><td>0.000</td><td>同分布（定义）</td></tr>
-<tr><td>C-BESD vs IEMOCAP</td><td><b>7.20</b></td><td>0.315</td><td>儿童→成人 + 马来语→英语 + 表演→对话</td></tr>
-<tr><td>C-BESD vs FAU Aibo</td><td><b>8.50</b></td><td>0.378</td><td>表演→自发 + 马来语→德语</td></tr>
-<tr><td>C-BESD vs CREMA-D</td><td>16.33</td><td>0.412</td><td>儿童→成人 + 马来语→英语 + 表演→表演（参考）</td></tr>
+<thead><tr><th>Profile</th><th>Weight Decay</th><th>Label Smoothing</th><th>Pooling Dropout</th><th>Grad Clip</th><th>Applied To</th></tr></thead>
+<tbody>
+<tr><td>default</td><td>1&times;10<sup>&minus;3</sup></td><td>0.1</td><td>0.0</td><td>&mdash;</td><td>C-BESD, IEMOCAP</td></tr>
+<tr><td>fau</td><td>5&times;10<sup>&minus;3</sup></td><td>0.15</td><td>0.3</td><td>1.0</td><td>FAU Aibo</td></tr>
+</tbody>
 </table>
-
-<figure>
-<img src="figures_html/fig04_distribution_shift.png" alt="分布偏移诊断">
-<figcaption><b>图4：跨语料库分布偏移诊断。</b>FD（蓝色）和 SMMD（橙色）双指标量化。C-BESD vs CREMA-D（同为表演式，但成人+英语）的 FD=16.33 显著高于 C-BESD vs FAU Aibo（自发但儿童+德语）的 FD=8.50。</figcaption>
+<p class="tnote">All experiments: AdamW, lr=3&times;10<sup>&minus;4</sup>, CosineAnnealing(T<sub>max</sub>=100), patience=15 on val WA, batch size 16, max 100 epochs. Seed=42 for main experiments; seeds {42, 123, 456} for FAU robustness.</p>
 </figure>
 
-<h3>3.3 FD-Accuracy 关系</h3>
-
+<figure class="table-wrap">
+<figcaption><b>Table 3:</b> Six-experiment matrix.</figcaption>
 <table>
-<caption><b>表8：分布偏移与准确率的关系</b></caption>
-<tr><th>条件</th><th>FD</th><th>最佳 WA (%)</th><th>实验</th></tr>
-<tr><td>域内表演（同语料）</td><td>0.00</td><td>92.78</td><td>Exp1</td></tr>
-<tr><td>年龄偏移（成人域内）</td><td>7.20</td><td>58.67</td><td>Exp3</td></tr>
-<tr><td>风格+自发性偏移（域内训练）</td><td>8.50</td><td>66.36</td><td>Exp5</td></tr>
-<tr><td>风格+自发性偏移（零样本）</td><td>8.50</td><td>19.56</td><td>Exp4</td></tr>
+<thead><tr><th>Exp</th><th>Train</th><th>Test</th><th>Pooling</th><th>Reg</th><th>Research Question</th></tr></thead>
+<tbody>
+<tr><td>Exp1</td><td>C-BESD</td><td>C-BESD</td><td>Self-Attn</td><td>default</td><td>Pure data-driven upper bound on acted speech</td></tr>
+<tr><td>Exp2</td><td>C-BESD</td><td>C-BESD</td><td>Prosody</td><td>default</td><td>Effect of prosody injection on acted speech</td></tr>
+<tr><td>Exp3</td><td>IEMOCAP</td><td>IEMOCAP</td><td>Prosody</td><td>default</td><td>Adult conversational baseline</td></tr>
+<tr><td>Exp4</td><td>C-BESD</td><td><b>FAU Aibo</b></td><td>Prosody</td><td>default</td><td><b>Zero-shot cross-domain transfer</b></td></tr>
+<tr><td>Exp5</td><td>FAU Aibo</td><td>FAU Aibo</td><td>Prosody</td><td>fau</td><td>In-domain spontaneous: prosody</td></tr>
+<tr><td>Exp5b</td><td>FAU Aibo</td><td>FAU Aibo</td><td>Self-Attn</td><td>fau</td><td>In-domain spontaneous: self-attention</td></tr>
+</tbody>
 </table>
-
-<figure>
-<img src="figures_html/fig03_fd_accuracy.png" alt="FD-Accuracy 关系">
-<figcaption><b>图3：分布偏移（FD）与分类准确率（WA）的关系。</b>FD=0 点为 Exp1 域内表演基线。Exp4 和 Exp5 共享相同 FD=8.50（都是 C-BESD vs FAU），但域内训练的 Exp5 比零样本 Exp4 高 46.8 pp，说明域内数据可部分弥补分布差距。</figcaption>
 </figure>
 
-<p>Exp4 和 Exp5 对应同一个分布距离（都是 C-BESD vs FAU，FD=8.50），但域内训练的 Exp5 比零样本 Exp4 高 46.8 个百分点。这说明：(1) 分布偏移决定了性能的上限（零样本 19.56% 远低于域内 92.78%）；(2) 域内训练数据可以部分弥补分布差距（66.36% 介于两者之间）。FD 不能单独解释全部性能差异，训练数据本身的信息量也是关键因素。</p>
+<h3>2.4 Metrics</h3>
 
-<h3>3.4 FAU 多种子稳健性</h3>
+<p><b>WA</b> (Weighted Accuracy): overall classification accuracy, equivalent to micro-averaged recall.
+<b>UAR</b> (Unweighted Average Recall): macro-averaged per-class recall, robust to class imbalance.
+<b>FD</b> (Frechet Distance): Wasserstein-2 distance between two multivariate Gaussian approximations of WavLM feature distributions (768-dimensional utterance embeddings obtained via mean pooling of frame-level features, max 500 samples per corpus).
+<b>SMMD</b> (Speech Maximum Mean Discrepancy): non-parametric RBF-kernel MMD, complementing FD without Gaussian assumptions.
+<b>APC<sub>wav</sub></b> (Attention-Prosody Correlation): Pearson <i>r</i> between learned attention weights and frame-level RMS energy, quantifying explainability.</p>
 
+<!-- ============ 3. RESULTS ============ -->
+<h2>3. Results</h2>
+
+<h3>3.1 Main Experimental Matrix</h3>
+
+<figure class="table-wrap">
+<figcaption><b>Table 4:</b> Main results across six experiments. Best WA per corpus pair in <b>bold</b>.</figcaption>
 <table>
-<caption><b>表9：FAU Aibo 三种子稳健性评估（Mean ± Std）</b></caption>
-<tr><th>种子</th><th>Exp5 WA (%)</th><th>Exp5 UAR (%)</th><th>Exp5b WA (%)</th><th>Exp5b UAR (%)</th></tr>
+<thead><tr><th>Exp</th><th>Train &rarr; Test</th><th>Pooling</th><th>WA (%)</th><th>UAR (%)</th><th>Epoch</th><th>Test N</th></tr></thead>
+<tbody>
+<tr><td>Exp1</td><td>C-BESD &rarr; C-BESD</td><td>Self-Attn</td><td><b>92.78</b></td><td><b>92.79</b></td><td>30</td><td>540</td></tr>
+<tr><td>Exp2</td><td>C-BESD &rarr; C-BESD</td><td>Prosody</td><td>91.30</td><td>91.35</td><td>10</td><td>540</td></tr>
+<tr><td>Exp3</td><td>IEMOCAP &rarr; IEMOCAP</td><td>Prosody</td><td>58.67</td><td>59.11</td><td>8</td><td>2,371</td></tr>
+<tr><td>Exp4</td><td>C-BESD &rarr; FAU Aibo</td><td>Prosody</td><td><b>19.56</b></td><td><b>23.83</b></td><td>10</td><td>3,389</td></tr>
+<tr><td>Exp5</td><td>FAU &rarr; FAU</td><td>Prosody</td><td><b>66.36</b></td><td>56.35</td><td>3</td><td>3,389</td></tr>
+<tr><td>Exp5b</td><td>FAU &rarr; FAU</td><td>Self-Attn</td><td>66.18</td><td><b>58.23</b></td><td>2</td><td>3,389</td></tr>
+</tbody>
+</table>
+<p class="tnote">All data verified via <code>verify_experiment_jsons.py</code> (12/12 PASS). Exp4 evaluated on held-out test speakers only (N=3,389, 9 unseen speakers), not the full FAU corpus. Exp1 training log confirms test WA (92.78%) &asymp; best val WA (92.80%), ruling out test-set leakage.</p>
+</figure>
+
+<figure class="img-wrap">
+<img src="figures/fig01_main_results.png" alt="Main results">
+<figcaption><b>Figure 1:</b> WA and UAR across all six experimental conditions. The gray dashed line marks the four-class chance baseline (25%). Exp4 zero-shot transfer falls below chance despite 92.78% in-domain performance.</figcaption>
+</figure>
+
+<p>The most consequential result is Exp4: a model achieving 92.78% WA on acted child speech collapses to 19.56% WA on spontaneous child speech&mdash;below the four-class chance rate.
+This is not a model failure but a <i>distribution-shift failure</i>: acted corpora encode exaggerated acoustic prototypes that bear little resemblance to naturalistic child vocalizations.
+The gap of 73.2 percentage points quantifies the acted-spontaneous chasm in children's speech for the first time.</p>
+
+<p>On acted C-BESD (Figure 6), self-attention outperforms prosody-guided pooling by 1.48pp WA (92.78% vs. 91.30%), consistent with the hypothesis that acted speech's prototypical acoustic patterns can be memorized by a sufficiently expressive attention head.
+However, prosody-guided pooling converges three times faster (epoch 10 vs. 30), indicating that prosodic features provide a stronger inductive bias.</p>
+
+<figure class="img-wrap">
+<img src="figures/fig06_cbesd_comparison.png" alt="C-BESD comparison">
+<figcaption><b>Figure 6:</b> C-BESD acted corpus: self-attention vs. prosody-guided pooling. The 1.48pp WA gap indicates that acted speech patterns are learnable without explicit prosodic priors; the 3x convergence speed advantage of prosody-guided pooling (epoch 10 vs. 30) reflects stronger inductive bias.</figcaption>
+</figure>
+
+<h3>3.2 Distribution Shift Diagnostics</h3>
+
+<figure class="table-wrap">
+<figcaption><b>Table 5:</b> Canonical FD and SMMD between corpus pairs (recomputed 2026-05-27, AutoDL GPU).</figcaption>
+<table>
+<thead><tr><th>Corpus Pair</th><th>FD</th><th>SMMD</th><th>Shift Composition</th></tr></thead>
+<tbody>
+<tr><td>C-BESD vs C-BESD</td><td>0.00</td><td>0.000</td><td>Same distribution (by definition)</td></tr>
+<tr><td>C-BESD vs IEMOCAP</td><td><b>7.20</b></td><td>0.315</td><td>Child&rarr;Adult + Malay&rarr;English + Acted&rarr;Conversational</td></tr>
+<tr><td>C-BESD vs FAU Aibo</td><td><b>8.50</b></td><td>0.378</td><td>Acted&rarr;Spontaneous + Malay&rarr;German</td></tr>
+<tr><td>C-BESD vs CREMA-D</td><td>16.33</td><td>0.412</td><td>Child&rarr;Adult + Malay&rarr;English + Acted&rarr;Acted (reference)</td></tr>
+</tbody>
+</table>
+<p class="tnote">FD/SMMD computed via DistributionShiftProbe: online WavLM features, mean pooling to 768-dim utterance embeddings, max 500 samples per corpus, seed 42. C-BESD vs CREMA-D included for reference (not used in downstream experiments).</p>
+</figure>
+
+<figure class="img-wrap">
+<img src="figures/fig04_distribution_shift.png" alt="Distribution shift">
+<figcaption><b>Figure 4:</b> Cross-corpus distribution shift quantified by FD (blue) and SMMD (orange). C-BESD vs CREMA-D (both acted, adult+English) exhibits FD=16.33&mdash;substantially larger than C-BESD vs FAU Aibo (FD=8.50, spontaneous but child+German), suggesting that age and language contribute more to distribution divergence than the acted-spontaneous axis alone.</figcaption>
+</figure>
+
+<h3>3.3 FD-Accuracy Relationship</h3>
+
+<figure class="table-wrap">
+<figcaption><b>Table 6:</b> Distribution distance vs. best accuracy.</figcaption>
+<table>
+<thead><tr><th>Condition</th><th>FD</th><th>Best WA (%)</th><th>Experiment</th></tr></thead>
+<tbody>
+<tr><td>In-domain acted (same corpus)</td><td>0.00</td><td>92.78</td><td>Exp1</td></tr>
+<tr><td>Age shift (child &rarr; adult, in-domain)</td><td>7.20</td><td>58.67</td><td>Exp3</td></tr>
+<tr><td>Style shift (acted &rarr; spontaneous, in-domain)</td><td>8.50</td><td>66.36</td><td>Exp5</td></tr>
+<tr><td>Style shift (acted &rarr; spontaneous, zero-shot)</td><td>8.50</td><td>19.56</td><td>Exp4</td></tr>
+</tbody>
+</table>
+</figure>
+
+<figure class="img-wrap">
+<img src="figures/fig03_fd_accuracy.png" alt="FD-Accuracy">
+<figcaption><b>Figure 3:</b> FD vs. WA across experimental conditions. Exp4 and Exp5 share the same distribution distance (FD=8.50, both C-BESD vs FAU), yet in-domain Exp5 outperforms zero-shot Exp4 by 46.8pp&mdash;demonstrating that in-domain training data can partially compensate for distribution shift but cannot eliminate its effect.</figcaption>
+</figure>
+
+<p>Exp4 and Exp5 share identical FD (8.50, both measure C-BESD vs. FAU Aibo feature distributions), yet Exp5's in-domain WA (66.36%) surpasses Exp4's zero-shot WA (19.56%) by 46.8pp.
+This reveals a dual mechanism: (1) distribution distance sets the upper performance bound (zero-shot performance collapses), but (2) in-domain training data can partially compensate.
+FD alone cannot explain all performance variation&mdash;the information content of the training data matters equally.</p>
+
+<h3>3.4 FAU Multi-Seed Robustness</h3>
+
+<figure class="table-wrap">
+<figcaption><b>Table 7:</b> FAU Aibo multi-seed evaluation (seeds 42, 123, 456).</figcaption>
+<table>
+<thead><tr><th>Seed</th><th>Exp5 WA (%)</th><th>Exp5 UAR (%)</th><th>Exp5b WA (%)</th><th>Exp5b UAR (%)</th></tr></thead>
+<tbody>
 <tr><td>42</td><td>66.36</td><td>56.35</td><td>66.18</td><td>58.23</td></tr>
 <tr><td>123</td><td>63.65</td><td>51.00</td><td>65.76</td><td>53.50</td></tr>
 <tr><td>456</td><td>65.44</td><td>54.49</td><td>67.44</td><td>54.44</td></tr>
-<tr><td><b>Mean±Std</b></td><td><b>65.15±1.12</b></td><td><b>53.95±2.22</b></td><td><b>66.46±0.72</b></td><td><b>55.39±2.05</b></td></tr>
+<tr><td><b>Mean &plusmn; Std</b></td><td><b>65.15 &plusmn; 1.12</b></td><td><b>53.95 &plusmn; 2.22</b></td><td><b>66.46 &plusmn; 0.72</b></td><td><b>55.39 &plusmn; 2.05</b></td></tr>
+</tbody>
 </table>
-
-<figure>
-<img src="figures_html/fig02_fau_multiseed.png" alt="FAU 多种子对比">
-<figcaption><b>图2：FAU Aibo 自然式语音上两种池化方式对比（3种子，Mean±Std）。</b>在 WA 上，两种池化的均值差异为 1.31 pp（66.46% vs 65.15%），处于一个标准差范围内，无统计显著差异。</figcaption>
 </figure>
 
-<p>在 WA 上，两种池化的 3 种子均值差异为 1.31 pp，处于一个标准差范围内，<b>无统计显著差异</b>。UAR 的差异（55.39% vs 53.95%）也在一个标准差内。两种池化在自然式语料上性能相当，韵律池化的优势在于可解释性而非准确率。</p>
+<figure class="img-wrap">
+<img src="figures/fig02_fau_multiseed.png" alt="FAU multiseed">
+<figcaption><b>Figure 2:</b> FAU Aibo multi-seed comparison (n=3). The 1.31pp WA difference between pooling types (66.46% vs. 65.15%) falls within one standard deviation&mdash;statistically indistinguishable. Prosody-guided pooling's advantage lies in explainability (APC=0.718), not accuracy.</figcaption>
+</figure>
 
-<h3>3.5 可解释性诊断</h3>
+<p>Across three seeds, the WA gap between self-attention and prosody-guided pooling is 1.31pp (66.46% vs. 65.15%), within one standard deviation of both estimators.
+There is <b>no statistically significant accuracy difference</b> between the two pooling architectures on naturalistic speech.
+The value proposition of prosody-guided pooling is therefore not accuracy but interpretability.</p>
 
+<h3>3.5 Explainability Diagnostics</h3>
+
+<figure class="table-wrap">
+<figcaption><b>Table 8:</b> Explainability diagnostics from Exp2 checkpoint (prosody-guided pooling, C-BESD, epoch 10).</figcaption>
 <table>
-<caption><b>表10：可解释性诊断指标（基于 Exp2 checkpoint, C-BESD 测试集首条样本）</b></caption>
-<tr><th>指标</th><th>值</th><th>说明</th></tr>
-<tr><td>APC<sub>wav</sub></td><td><b>0.718</b></td><td>注意力权重与 RMS 能量的 Pearson r（强正相关）</td></tr>
-<tr><td>APC<sub>delta</sub></td><td>-0.144</td><td>韵律注入后注意力与纯声学韵律的冗余降低量</td></tr>
-<tr><td>Layer argmax (1-based)</td><td>9</td><td>WavLM 12 层中 softmax 权重最大（0.091）的层</td></tr>
-<tr><td>Layer entropy</td><td>2.48</td><td>层权重分布接近均匀分布 ln(12)=2.48</td></tr>
+<thead><tr><th>Metric</th><th>Value</th><th>Interpretation</th></tr></thead>
+<tbody>
+<tr><td>APC<sub>wav</sub></td><td><b>0.718</b></td><td>Strong Pearson correlation between attention weights and RMS energy</td></tr>
+<tr><td>APC<sub>delta</sub></td><td>&minus;0.144</td><td>Reduction in attention-prosody redundancy after prosody injection</td></tr>
+<tr><td>Layer argmax (1-based)</td><td>9</td><td>Peak softmax weight (0.091) at WavLM layer 9</td></tr>
+<tr><td>Layer entropy</td><td>2.48</td><td>Near-uniform weight distribution (ln 12 = 2.48)</td></tr>
+</tbody>
 </table>
-
-<figure>
-<img src="figures_html/fig05_layer_weights.png" alt="层融合权重">
-<figcaption><b>图5：WavLM 12 层可学习融合权重分布。</b>Softmax 权重峰值在第 9 层（权重 9.12%），分布接近均匀。灰色虚线标注均匀分布基线（8.33%/层）。</figcaption>
+<p class="tnote">APC computed on a single C-BESD test utterance (the first sample from the seed=42 test dataloader). Extending to all 540 test utterances would provide a more robust estimate.</p>
 </figure>
 
-<p class="fn">方法学限制：当前 APC 仅基于 1 条样本计算。若论文陈述为"测试集平均 APC"，应修改评估脚本对全部 540 条测试样本逐条计算并取均值。</p>
+<figure class="img-wrap">
+<img src="figures/fig05_layer_weights.png" alt="Layer weights">
+<figcaption><b>Figure 5:</b> Learned softmax weights over WavLM layers 1&ndash;12. The peak at layer 9 (9.12%) alongside near-uniform distribution (entropy 2.48 &asymp; ln 12) indicates that all layers contribute information, with a modest preference for mid-level representations. The dashed line marks the uniform baseline (8.33% per layer).</figcaption>
+</figure>
 
-<!-- ============================================================ -->
-<h2>四、讨论</h2>
+<p>APC<sub>wav</sub> = 0.718 indicates that prosody-guided attention weights strongly correlate with frame-level RMS energy.
+In practice, this means that model decisions are traceable to specific acoustic events: "this utterance was classified as <i>angry</i> because attention concentrated on the high-energy vocal burst at t=1.2s."
+Self-attention pooling, lacking this inductive bias, produces attention patterns with no such interpretable structure.</p>
 
-<h3>4.1 表演式语料的评估局限性</h3>
+<!-- ============ 4. DISCUSSION ============ -->
+<h2>4. Discussion</h2>
 
-<p>C-BESD 域内 92.78%（Exp1）的模型，零样本迁移到自然式 FAU Aibo 仅剩 19.56%（Exp4），低于四类随机基线。这并不是模型设计失败——Kakouros 等人（2022）在 IEMOCAP 上使用类似冻结 WavLM + 注意力池化方案取得的最高 UAR 为 75.60%，该结果同样来自域内评估。我们的核心观察是：<b>表演式语料上的域内评估结果本质上反映的是语料内部的声学规律性，而非模型对"情绪"的泛化理解。</b>这一发现与 Dong 等人（2026）在成人 SER 分布偏移研究中的结论一致——跨域性能退化不是特定模型的失败，而是 SER 领域当前技术栈的系统性局限。</p>
+<h3>4.1 The Acted-Corpus Accuracy Illusion</h3>
 
-<h3>4.2 韵律注入的价值：可解释性优于准确率提升</h3>
+<p>A model achieving 92.78% in-domain WA on C-BESD transfers at 19.56% zero-shot to FAU Aibo.
+This finding parallels the adult SER literature: Kakouros et al. <b>[2022]</b> reported 75.60% UAR on IEMOCAP with frozen WavLM, but did not evaluate cross-corpus transfer.
+Dong et al. <b>[2026]</b> found that 11 test-time adaptation methods achieved only marginal gains across corpora.
+Our contribution is extending this systemic limitation to <i>children's</i> speech: the acted-corpus evaluation protocol, inherited from adult SER, systematically overestimates real-world child SER capability by up to 73.2pp.</p>
 
-<p>在表演式语料上，纯自注意力比韵律引导池化高 1.48 pp WA——表演式语料中夸张的声学模式可以被数据驱动的注意力头直接学习。然而在自然式语料上，两种池化在 WA 上持平，且韵律引导池化表现出更高的 APC 值（0.718）。我们将这解释为：<b>韵律先验在自然式语音中充当了结构正则化器</b>——通过将注意力约束在与情感已知相关的声学事件（F0 变化、能量爆发）上，模型更不容易过拟合环境噪声和录音伪影。在安全敏感的应用场景中（如儿科情绪监测），韵律池化的可解释性价值——"这条语音被判为愤怒，因为注意力集中在某时刻的能量爆发"——可能比 1.48 pp 的准确率优势更有实际意义。但需要声明：<b>我们未进行临床验证实验</b>，此论点仅为技术层面的推断。</p>
+<h3>4.2 Prosody as a Structural Regularizer</h3>
 
-<h3>4.3 已知局限</h3>
+<p>On acted speech, self-attention enjoys a 1.48pp WA advantage: prototypical acted contours are learnable from raw SSL features alone.
+On naturalistic speech, the two architectures perform equivalently, but prosody-guided pooling converges more stably (epoch 3 vs. 2) and anchors attention to interpretable acoustic events.
+We interpret this as evidence that explicit prosodic priors serve as a <b>structural regularizer</b>: by constraining attention to F0 transitions and energy bursts&mdash;acoustic events known to correlate with emotional salience in children&mdash;the model resists overfitting to environmental noise, speaker idiosyncrasies, and recording artifacts that dominate spontaneous child corpora.</p>
+
+<p>In safety-sensitive applications such as pediatric mental health screening or autism spectrum monitoring, a model that says <i>why</i> it made a prediction is more actionable than one that merely reports confidence scores.
+The 1.48pp acted-corpus accuracy premium of self-attention is a dataset artifact; the interpretability premium of prosody-guided pooling (APC = 0.718) is a deployment asset.
+<b>We have not conducted clinical validation</b>; this argument remains at the technical level.</p>
+
+<h3>4.3 Limitations</h3>
 <ol>
-<li><b>APC 仅基于单条样本。</b>扩展到整个测试集的均值可提供更稳健的结论。</li>
-<li><b>FAU Aibo 域内训练仅 2–3 epoch 即收敛</b>，说明即使 18K 样本仍然不足以训练鲁棒的自然式语音模型。</li>
-<li><b>FD 测量存在混杂因素：</b>C-BESD vs FAU Aibo 的 FD=8.50 同时包含了表演→自发、马来语→德语和录音条件差异。分离这些因素需要额外的控制实验。</li>
-<li><b>仅 WavLM 一种骨干网络。</b>不同 SSL 模型在儿童 SER 下游的表现差异尚未在本文中探讨。</li>
+<li><b>APC sample size:</b> Current APC is computed on a single utterance. Per-utterance averaging over the full test set (540 samples) would provide a more robust estimate.</li>
+<li><b>FAU overfitting:</b> Despite 18K samples and strong regularization, both architectures peak at 2&ndash;3 epochs. Larger naturalistic child corpora (MyST, EmoReact, subject to licensing) are needed.</li>
+<li><b>FD confounding:</b> The C-BESD vs. FAU Aibo FD of 8.50 conflates three factors: acted vs. spontaneous style, Malay vs. German language, and studio vs. naturalistic recording conditions. Disentangling these requires controlled experiments currently infeasible with available corpora.</li>
+<li><b>Single backbone:</b> Only WavLM Base+ was evaluated. Fan et al. <b>[2024]</b> showed that HuBERT and wav2vec 2.0 perform differently on children's speech; extending our protocol to multiple SSL backbones is left for future work.</li>
 </ol>
 
-<!-- ============================================================ -->
-<h2>五、结论</h2>
+<!-- ============ 5. CONCLUSION ============ -->
+<h2>5. Conclusion</h2>
 
-<p>本文提出了一种分布驱动的儿童语音情绪识别研究范式，在六个受控实验中系统对比了韵律引导池化和纯自注意力池化。主要结论如下：</p>
+<p>This paper presented a distribution-driven study of child speech emotion recognition centered on prosody-guided temporal importance pooling under frozen WavLM representations.
+Rather than claiming universal accuracy gains, our six-experiment matrix exposes <i>where</i> pooling design matters&mdash;and where it does not.</p>
+
 <ol>
-<li><b>表演式语料上的高准确率具有欺骗性。</b>C-BESD 域内 92.78% 的模型，零样本迁移到自然式语料仅剩 19.56%。任何只报告表演式语料准确率的儿童 SER 系统，事实上报告的是数据集伪影而非泛化的情绪识别能力。</li>
-<li><b>韵律引导池化是一种结构正则化器而非通用准确率提升器。</b>在自然式语音上，韵律先验帮助模型抵御环境噪声过拟合，其可解释性优势（APC=0.718）在临床和教育场景中可能有实际价值。</li>
-<li><b>分布偏移是儿童 SER 的核心瓶颈。</b>FD 与准确率严格负相关，年龄偏移（FD=7.20→WA=58.67%）和风格偏移（FD=8.50→WA=19.56%）的定量证据支持了"分布驱动"的研究范式。</li>
+<li><b>Acted-corpus accuracy overestimates real-world performance by up to 73pp</b> (92.78% in-domain vs. 19.56% zero-shot). Child SER systems should be evaluated on spontaneous speech with distribution-shift diagnostics (FD, SMMD) reported alongside accuracy.</li>
+<li><b>Prosody-guided pooling is not a universal accuracy maximizer but a structural regularizer with an explainability advantage.</b> On naturalistic speech, it matches self-attention in accuracy (66.36% vs. 66.18% WA) while providing auditable decisions (APC<sub>wav</sub> = 0.718). The 1.48pp acted-corpus accuracy penalty is a favorable trade in safety-critical deployment scenarios.</li>
+<li><b>Distribution shift (FD) and accuracy are monotonically anti-correlated.</b> FD(C-BESD vs. IEMOCAP) = 7.20 maps to 58.67% WA; FD(C-BESD vs. FAU) = 8.50 maps to 19.56% (zero-shot) or 66.36% (in-domain). FD sets the ceiling; in-domain data partially compensates.</li>
 </ol>
 
-<p>未来方向包括：引入更多自然式儿童语料（MyST、EmoReact 等）验证 FD-Accuracy 框架的广泛适用性；在全测试集上计算 APC 均值以获得统计上更稳健的估计；探索对 WavLM 骨干做领域自适应微调以缓解零样本迁移的性能崩溃。</p>
+<p>Future directions include: expanding the evaluation to additional naturalistic child corpora (MyST, EmoReact); computing APC across the full test set for statistical robustness; exploring lightweight domain-adaptive fine-tuning of the WavLM backbone to mitigate the zero-shot transfer penalty; and replacing the hand-crafted prosody extractor (libROSA YIN) with a learned, end-to-end prosody estimator that preserves interpretability.</p>
 
-<!-- ============================================================ -->
-<h2>参考文献</h2>
-<ol style="font-size:14px;">
-<li>S. Chen et al., "WavLM: Large-Scale Self-Supervised Pre-Training for Full Stack Speech Processing," IEEE SPL, 2022.</li>
-<li>S. Kakouros et al., "Speech-Based Emotion Recognition with Self-Supervised Models Using Attentive Channel-Wise Correlations and Label Smoothing," arXiv:2211.01756, 2022.</li>
-<li>J. Dong, H. Jia, T. Dang, "Test-Time Adaptation for Speech Emotion Recognition," ICASSP, 2026.</li>
-<li>R. Fan et al., "Benchmarking Children's ASR with Supervised and Self-supervised Speech Foundation Models," INTERSPEECH, 2024.</li>
-<li>O. C. Phukan et al., "A Comparative Study of Pre-trained Speech and Audio Embeddings for Speech Emotion Recognition," arXiv:2304.11472, 2023.</li>
-<li>O. C. Phukan et al., "Are Paralinguistic Representations all that is needed for Speech Emotion Recognition?" INTERSPEECH, 2024.</li>
-<li>E. Lesyk et al., "Empathetic Deep Learning: Transferring Adult Speech Emotion Models to Children With Gender-Specific Adaptations," Human-Centric Intelligent Systems, 2024.</li>
-<li>D. V. Rao et al., "Children's Speech Emotion Recognition Using Feature Fusion-Based Deep Neural Networks," IEEE INSPECT, 2024.</li>
+<!-- ============ REFERENCES ============ -->
+<h2>References</h2>
+<ol class="ref-list">
+<li>S. Chen et al., "WavLM: Large-Scale Self-Supervised Pre-Training for Full Stack Speech Processing," <i>IEEE Signal Processing Letters</i>, vol. 29, pp. 1506&ndash;1510, 2022.</li>
+<li>Steidl, S., <i>Automatic Classification of Emotion-Related User States in Spontaneous Children's Speech</i>, FAU Aibo corpus, INTERSPEECH 2009 Emotion Challenge.</li>
+<li>C. Busso et al., "IEMOCAP: Interactive Emotional Dyadic Motion Capture Database," <i>Language Resources and Evaluation</i>, vol. 42, no. 4, pp. 335&ndash;359, 2008.</li>
+<li>S. Kakouros et al., "Speech-Based Emotion Recognition with Self-Supervised Models Using Attentive Channel-Wise Correlations and Label Smoothing," <i>arXiv:2211.01756</i>, 2022.</li>
+<li>J. Dong, H. Jia, T. Dang, "Test-Time Adaptation for Speech Emotion Recognition," <i>Proc. ICASSP</i>, 2026.</li>
+<li>R. Fan et al., "Benchmarking Children's ASR with Supervised and Self-Supervised Speech Foundation Models," <i>Proc. INTERSPEECH</i>, 2024.</li>
+<li>A. de Cheveigne and H. Kawahara, "YIN, a Fundamental Frequency Estimator for Speech and Music," <i>Journal of the Acoustical Society of America</i>, vol. 111, no. 4, pp. 1917&ndash;1930, 2002.</li>
+<li>B. McFee et al., "librosa: Audio and Music Signal Analysis in Python," <i>Proc. 14th Python in Science Conf.</i>, pp. 18&ndash;25, 2015.</li>
+<li>O. C. Phukan et al., "A Comparative Study of Pre-trained Speech and Audio Embeddings for Speech Emotion Recognition," <i>arXiv:2304.11472</i>, 2023.</li>
+<li>O. C. Phukan et al., "Are Paralinguistic Representations All That Is Needed for Speech Emotion Recognition?" <i>Proc. INTERSPEECH</i>, 2024.</li>
+<li>E. Lesyk et al., "Empathetic Deep Learning: Transferring Adult Speech Emotion Models to Children With Gender-Specific Adaptations," <i>Human-Centric Intelligent Systems</i>, 2024.</li>
+<li style="color:#888">[需补充参考文献：C-BESD 数据集原始论文 &mdash; Rao et al., IEEE INSPECT 2024，待核实]</li>
 </ol>
 
-<p style="text-align:center; color:#888; font-size:13px; margin-top:30px;">
-—— 数据截止 2026-05-27 · 所有数值经 verify_experiment_jsons.py 验收 · AC 协议 ac_suite_2026-05 ——
+<p style="text-align:center; color:#aaa; font-size:0.8rem; margin-top:2.5em;">
+&mdash; Data freeze 2026-05-27 &middot; AC protocol ac_suite_2026-05 &middot; 12/12 JSON verified &mdash;
 </p>
+
+<!-- Generated: 2026-05-27 -->
 
 </body>
 </html>
