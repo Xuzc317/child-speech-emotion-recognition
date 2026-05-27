@@ -1,0 +1,22 @@
+{
+  "exp_name": "exp5_fau_indomain_s123",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 123,
+  "best_val_wa": 0.6759681093394078,
+  "test_wa": 0.6365348399246704,
+  "test_uar": 0.5100341660379469,
+  "best_epoch": 6,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "output_dir": "checkpoints/exp5_fau_indomain_s123",
+  "protocol": "ac_suite_2026-05"
+}

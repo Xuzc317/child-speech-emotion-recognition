@@ -10,7 +10,7 @@ Two regularization profiles are used.
 The \textit{default} profile (weight decay $10^{-3}$, label smoothing 0.1, no pooling dropout) is applied to acted corpora (C-BESD, IEMOCAP) to preserve baseline comparability.
 The \textit{fau} profile (weight decay $5\times10^{-3}$, label smoothing 0.15, pooling dropout 0.3, gradient clipping 1.0) is applied to spontaneous FAU Aibo experiments, targeting the rapid overfitting observed in preliminary runs.
 
-All splits are speaker-disjoint (70/15/15, deterministic SHA-256 hash).
+All splits are speaker-disjoint (70/15/15, deterministic MD5 hash).
 
 % ────────────────────────────────────────────────────────────
 \subsection{Main Results}
@@ -55,6 +55,37 @@ This catastrophic failure demonstrates that acted-speech priors are fundamentall
 \paragraph{In-domain spontaneous (FAU Aibo).}
 Under the stronger \textit{fau} regularization profile, prosody-guided pooling narrowly leads in WA (\textbf{66.36\%} vs.\ 66.18\%, $\Delta$=+0.18pp), while self-attention achieves higher UAR (58.23\% vs.\ 56.35\%).
 Both models peak within 2--3 epochs despite 100 available, confirming that rapid overfitting on naturalistic child speech remains the primary bottleneck, independent of pooling architecture.
+
+
+% ────────────────────────────────────────────────────────────
+\subsection{Confusion Structure on C-BESD}
+\label{ssec:confusion_cbesd}
+
+Figure~\ref{fig:cm_exp1} and Figure~\ref{fig:cm_exp2} show test-set confusion matrices for the two pooling variants on acted child speech (seed=42, speaker-disjoint split).
+Self-attention (Exp1) achieves higher diagonal dominance on \textit{happy} and \textit{neutral}; prosody-guided pooling (Exp2) remains competitive with faster convergence (epoch 10 vs.\ 30).
+Additional matrices for IEMOCAP, zero-shot FAU, and in-domain FAU are provided in the appendix (Figures~\ref{fig:cm_a1}--\ref{fig:cm_a4}).
+
+\begin{figure}[t]
+  \centering
+  \begin{minipage}{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig07_confusion_exp1_selfattn.pdf}
+    \caption{Exp1: Self-attention on C-BESD.}
+    \label{fig:cm_exp1}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig08_confusion_exp2_prosody.pdf}
+    \caption{Exp2: Prosody-guided on C-BESD.}
+    \label{fig:cm_exp2}
+  \end{minipage}
+\end{figure}
+
+\subsection{FAU Multi-Seed Robustness}
+\label{ssec:fau_multiseed}
+
+On spontaneous FAU Aibo we report mean$\pm$std over seeds $\{42,123,456\}$ under the \textit{fau} regularization profile (see \texttt{fau\_multiseed\_summary.json}).
+This complements the single-seed main table (Exp5/5b) without replacing it.
 
 % ────────────────────────────────────────────────────────────
 \subsection{Convergence and Regularization Effects}

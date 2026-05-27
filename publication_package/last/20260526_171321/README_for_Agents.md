@@ -27,20 +27,22 @@ professional paper figures. Designed for agents like PaperVizAgent or K-Dense.
 - All subplots share X-axis labeled "Time (s)"
 
 ### 2. experiment_results.csv
-**Description:** Aggregated results from the 4-experiment ablation matrix.
+**Description:** Aggregated results from the 6-experiment matrix (AutoDL final, `autodl_final_2026-05-19`).
 
 **Columns:**
 | Column | Meaning |
 |--------|---------|
-| `experiment` | Exp identifier (exp1/exp2/exp3/exp4) |
+| `experiment` | Exp identifier (exp1–exp5b) |
 | `train_data` | Training corpus name |
 | `test_data` | Test corpus name |
 | `pooling_type` | self_attention or prosody_guided |
+| `reg_profile` | default (acted) or fau (spontaneous FAU) |
 | `test_wa` | Test Weighted Accuracy (0-1) |
 | `test_uar` | Test Unweighted Average Recall (0-1) |
-| `best_val_wa` | Best validation WA during training |
+| `best_val_wa` | Best validation WA (null if not synced from remote) |
 | `best_epoch` | Epoch of best validation WA |
 | `speech_type` | acted or spontaneous |
+| `matrix_version` | Provenance tag |
 
 ### 3. layer_weights.json
 **Description:** Learned WavLM layer fusion weights after softmax.
@@ -70,9 +72,11 @@ Located in `logs/` subdirectory. Each file contains:
 
 | Comparison | ΔWA | Meaning |
 |------------|-----|---------|
-| Exp2 - Exp1 | +12.41pp | Prosody benefit on acted child speech |
-| Exp4 - Exp2 | TBD | Spontaneous vs acted degradation |
-| Exp3 WA vs Exp2 WA | -31.90pp | Adult vs child domain gap |
+| Exp1 - Exp2 | +1.48pp | Self-Attn higher on acted C-BESD (memorization) |
+| Exp2 - Exp3 | +32.63pp | Child acted vs adult spontaneous (prosody path) |
+| Exp1 in-domain vs Exp4 zero-shot | −74.08pp | Acted→spontaneous cross-domain collapse |
+| Exp5 - Exp5b | +0.18pp | Prosody WA lead on FAU (fau reg) |
+| Exp5b UAR - Exp5 UAR | +1.88pp | Self-Attn UAR lead on FAU |
 
 ## APC Metrics (for XAI figure annotation)
 

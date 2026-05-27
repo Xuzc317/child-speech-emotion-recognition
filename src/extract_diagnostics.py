@@ -10,6 +10,7 @@ import os
 import sys
 import json
 import torch
+import torch.nn.functional as F
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,6 +24,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 os.makedirs('results/logs', exist_ok=True)
 
 
+def _interpolate_1d(x, target_len):
+    """(B, T, 1) → (B, target_len, 1), same as train.py."""
+    x = x.permute(0, 2, 1)
+    x = F.interpolate(x, size=target_len, mode='linear', align_corners=False)
+    return x.permute(0, 2, 1)
+
+
 # ── Reconstruction wrapper for diagnostics ─────────────────
 
 class DiagnosticWrapper(torch.nn.Module):
@@ -30,7 +38,7 @@ class DiagnosticWrapper(torch.nn.Module):
 
     def __init__(self, checkpoint_path):
         super().__init__()
-        ckpt = torch.load(checkpoint_path, map_location=device)
+        ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
         config = ckpt['config']
 
         self.pooling_type = config['pooling_type']
@@ -51,6 +59,9 @@ class DiagnosticWrapper(torch.nn.Module):
             {k.replace('pooler.', ''): v for k, v in state.items()
              if k.startswith('pooler.')}
         )
+        self.layer_fusion.to(device)
+        self.pooler.to(device)
+        self.eval()
 
     def forward_with_attention(self, waveform):
         """Return fused features + attention weights + prosody features."""
@@ -63,6 +74,10 @@ class DiagnosticWrapper(torch.nn.Module):
             f0_np, rms_np = extract_prosody(wav_np, sr=16000, hop_length=320)
             f0 = torch.from_numpy(f0_np).float().unsqueeze(0).unsqueeze(-1).to(device)
             energy = torch.from_numpy(rms_np).float().unsqueeze(0).unsqueeze(-1).to(device)
+            T = fused.shape[1]
+            if f0.shape[1] != T:
+                f0 = _interpolate_1d(f0, T)
+                energy = _interpolate_1d(energy, T)
             f0_n = f0 / 2093.0
             energy_n = energy / energy.max(dim=1, keepdim=True).values.clamp(min=1e-8)
             prosody = torch.cat([f0_n, energy_n], dim=-1)

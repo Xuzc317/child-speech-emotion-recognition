@@ -7,8 +7,22 @@
   "test_data": [
     "fau-aibo"
   ],
-  "best_val_wa": 0.9074550128534704,
-  "test_wa": 0.16677646025472112,
-  "test_uar": 0.21570347244141208,
-  "best_epoch": 16
+  "seed": 42,
+  "best_val_wa": 0.9125964010282777,
+  "test_wa": 0.19563293006786664,
+  "test_uar": 0.2383311844547952,
+  "best_epoch": 10,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/exp4_zero_shot_fau",
+  "protocol": "ac_suite_2026-05",
+  "source": "autodl_remote_sync",
+  "matrix_version": "autodl_final_2026-05-19",
+  "test_split": "test",
+  "test_n": 3389,
+  "test_split_note": "Re-evaluated 2026-05-27 with test_split='test' (was split='all'=18216). Speaker-independent test speakers only.",
+  "original_test_wa_all_split": 0.19563293006786664
 }

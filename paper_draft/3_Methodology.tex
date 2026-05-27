@@ -1,0 +1,138 @@
+\section{Methodology}
+\label{sec:methodology}
+
+We propose a distribution-driven framework for child speech emotion recognition (SER) that replaces the conventional mean-pooling paradigm with \textbf{Prosody-Guided Temporal Importance Pooling}---an attention mechanism explicitly conditioned on frame-level acoustic prosody.
+The complete pipeline consists of four stages: (1)~a frozen self-supervised backbone, (2)~learnable layer fusion, (3)~prosody-guided or self-attention pooling, and (4)~an SE-MLP classifier.
+
+% ────────────────────────────────────────────────────────────
+\subsection{Frozen SSL Backbone}
+\label{ssec:backbone}
+
+We adopt WavLM Base+~\cite{chen2022wavlm} (94M parameters) as a frozen feature extractor.
+Given a raw waveform $\mathbf{x} \in \mathbb{R}^{T_{\text{wav}}}$ sampled at 16\,kHz, the model produces 13 hidden-state tensors: one input-embedding layer plus 12 transformer layers, each of shape $(T, 768)$ at a 50\,Hz frame rate (hop size 320 samples $=$ 20\,ms).
+All backbone parameters are frozen throughout training; no gradient flows into the SSL model.
+
+% ────────────────────────────────────────────────────────────
+\subsection{Learnable Weighted Layer Fusion}
+\label{ssec:layer_fusion}
+
+Different transformer layers encode different levels of abstraction---lower layers capture acoustic detail, upper layers capture higher-level semantic and emotional content~\cite{pasad2021layer}.
+Rather than selecting a single layer, we learn a weighted combination:
+\begin{equation}
+\mathbf{H} = \sum_{l=1}^{12} w_l \cdot \mathbf{H}^{(l)}, \quad \text{where} \quad w_l = \frac{\exp(\alpha_l)}{\sum_{j=1}^{12}\exp(\alpha_j)},
+\label{eq:layer_fusion}
+\end{equation}
+and $\{\alpha_l\}_{l=1}^{12}$ are trainable scalar parameters initialized to $1/12$.
+Layer 0 (input embeddings) is discarded, retaining only the 12 transformer layers.
+This introduces only \textbf{12 trainable parameters}, negligible compared to the pooling and classifier heads.
+
+% ────────────────────────────────────────────────────────────
+\subsection{Prosody-Guided Temporal Importance Pooling}
+\label{ssec:prosody_pooling}
+
+\paragraph{Motivation.}
+Children's emotional speech exhibits wider F0 excursions (250--400\,Hz vs.\ adult 80--200\,Hz), irregular rhythm, and higher energy variability than adult speech~\cite{fan2024children}.
+Standard attention pooling computes frame importance solely from the SSL feature space, lacking an explicit mechanism to prioritize prosodically salient frames.
+We hypothesize that injecting frame-level prosodic signals as an inductive bias will (a)~accelerate convergence by reducing the search space of useful attention patterns, and (b)~improve interpretability by anchoring attention to physically measurable acoustic events.
+
+\paragraph{Prosody extraction.}
+For each utterance, we extract frame-aligned F0 and RMS energy using librosa~\cite{mcfee2015librosa}:
+\begin{itemize}
+\item \textbf{F0}: Computed via the YIN algorithm (fmin~$=$~65\,Hz, fmax~$=$~2093\,Hz to cover children's high F0 range), hop length 320 samples. Unvoiced frames receive $\text{F0}=0$.
+\item \textbf{RMS energy}: Root mean square energy with the same hop length.
+\end{itemize}
+Both features are aligned to the SSL frame rate (50\,Hz) via linear interpolation when minor length mismatches occur.
+
+\paragraph{Normalization.}
+F0 is normalized by dividing by the fmax ceiling: $\hat{f}_t = f_t / 2093$.
+Energy is normalized per-utterance by dividing by the maximum frame energy: $\hat{e}_t = e_t / \max_{\tau}\{e_\tau\}$.
+This produces two signals in $[0, 1]$ that are concatenated into a 2-dimensional prosody vector per frame.
+
+\paragraph{Architecture.}
+The prosody vector is projected to a 64-dimensional embedding through a two-layer MLP:
+\begin{equation}
+\mathbf{p}_t = \text{Linear}_{64 \to 64}\bigl(\text{ReLU}(\text{Linear}_{2 \to 64}([\hat{f}_t, \hat{e}_t]))\bigr).
+\label{eq:prosody_proj}
+\end{equation}
+This embedding is concatenated with the SSL frame feature $\mathbf{h}_t \in \mathbb{R}^{768}$ to form an 832-dimensional joint representation, which is passed through a fusion attention head:
+\begin{equation}
+\alpha_t = \frac{\exp\bigl(\text{Linear}_{128 \to 1}(\tanh(\text{Linear}_{832 \to 128}([\mathbf{h}_t; \mathbf{p}_t])))\bigr)}{\sum_{\tau=1}^{T} \exp\bigl(\text{Linear}_{128 \to 1}(\tanh(\text{Linear}_{832 \to 128}([\mathbf{h}_\tau; \mathbf{p}_\tau])))\bigr)}.
+\label{eq:attn_weights}
+\end{equation}
+The final utterance representation is the attention-weighted sum:
+\begin{equation}
+\mathbf{u} = \sum_{t=1}^{T} \alpha_t \cdot \mathbf{h}_t \in \mathbb{R}^{768}.
+\label{eq:pooled}
+\end{equation}
+Note that only the SSL features $\mathbf{h}_t$ are summed; the prosody embedding influences attention weights but does not alter the feature space.
+
+\paragraph{Optional dropout.}
+For spontaneous speech experiments that exhibit rapid overfitting (Section~\ref{ssec:main_results}), dropout layers ($p=0.3$) are inserted after the ReLU in the prosody projection and after the Tanh in the fusion head.
+This is controlled by a \texttt{reg\_profile} hyperparameter (see Section~\ref{sec:experiments_results}).
+
+% ────────────────────────────────────────────────────────────
+\subsection{Self-Attention Pooling (Ablation Baseline)}
+\label{ssec:self_attn_pooling}
+
+To isolate the contribution of prosodic injection, we design a strictly parameter-matched baseline.
+Self-Attention Pooling computes attention weights using \emph{only} the SSL features, without any prosody input:
+\begin{equation}
+\alpha_t^{\text{SA}} = \text{softmax}_t\bigl(\text{Linear}_{100 \to 1}(\tanh(\text{Linear}_{100 \to 100}(\text{ReLU}(\text{Linear}_{116 \to 100}(\text{ReLU}(\text{Linear}_{768 \to 116}(\mathbf{h}_t)))))))\bigr).
+\label{eq:self_attn}
+\end{equation}
+The 4-layer MLP dimensions (768$\to$116$\to$100$\to$100$\to$1) are chosen specifically so that the total parameter count equals \textbf{111,105}---identical to the prosody-guided variant.
+
+\paragraph{Parameter parity proof.}
+\begin{align}
+\text{Prosody-Guided:} \quad & \underbrace{(2 \times 64 + 64)}_{\text{proj}_1} + \underbrace{(64 \times 64 + 64)}_{\text{proj}_2} + \underbrace{(832 \times 128 + 128)}_{\text{attn}_1} + \underbrace{(128 \times 1 + 1)}_{\text{attn}_2} = 111{,}105 \nonumber \\
+\text{Self-Attention:} \quad & \underbrace{(768 \times 116 + 116)}_{\text{layer}_1} + \underbrace{(116 \times 100 + 100)}_{\text{layer}_2} + \underbrace{(100 \times 100 + 100)}_{\text{layer}_3} + \underbrace{(100 \times 1 + 1)}_{\text{layer}_4} = 111{,}105 \nonumber
+\end{align}
+This strict parity ensures that any performance difference between the two pooling variants is attributable \emph{solely} to the prosodic inductive bias, not to differences in model capacity.
+
+% ────────────────────────────────────────────────────────────
+\subsection{SE-MLP Classifier}
+\label{ssec:classifier}
+
+The pooled representation $\mathbf{u} \in \mathbb{R}^{768}$ is classified by a 4-layer SE-MLP (Squeeze-and-Excitation MLP,~${\sim}$593K parameters):
+\begin{equation}
+768 \xrightarrow{\text{Linear+BN+ReLU+Drop}} 512 \xrightarrow{\text{SE-gate}} 512 \xrightarrow{\text{Linear+BN+ReLU+Drop}} 256 \xrightarrow{\text{Linear+ReLU+Drop}} 128 \xrightarrow{\text{Linear}} C,
+\end{equation}
+where $C=4$ (angry, happy, neutral, sad).
+The SE block applies channel-wise gating via a bottleneck ($512 \to 32 \to 512$) with sigmoid activation.
+
+% ────────────────────────────────────────────────────────────
+\subsection{Training Configuration}
+\label{ssec:training}
+
+\paragraph{Optimization.}
+AdamW optimizer with learning rate $3 \times 10^{-4}$ and cosine annealing schedule.
+Maximum 100 epochs with early stopping (patience 15).
+All experiments use seed 42 for reproducibility.
+
+\paragraph{Regularization profiles.}
+We define two profiles to address the distinct overfitting regimes of acted versus spontaneous speech:
+\begin{itemize}
+\item \textbf{Default} (acted corpora: C-BESD, IEMOCAP): weight decay $10^{-3}$, label smoothing $0.1$, no pooling dropout, no gradient clipping.
+\item \textbf{FAU} (spontaneous FAU Aibo): weight decay $5 \times 10^{-3}$, label smoothing $0.15$, pooling dropout $0.3$, gradient clipping at norm $1.0$.
+\end{itemize}
+The stronger FAU profile was motivated by preliminary runs where both pooling variants peaked at epoch~1 with rapid subsequent degradation.
+
+\paragraph{Speaker-disjoint splitting.}
+All datasets are split into train/validation/test at the \textit{speaker level} using deterministic MD5 hashing: each speaker ID is hashed to $[0, 1)$ and assigned to train (70\%), validation (15\%), or test (15\%) by threshold.
+This guarantees zero speaker overlap across splits and full reproducibility across machines.
+
+\paragraph{Metrics.}
+We report weighted accuracy (WA) as the primary metric and unweighted average recall (UAR) to account for class imbalance.
+
+% ────────────────────────────────────────────────────────────
+\subsection{Explainability: Attention--Prosody Correlation (APC)}
+\label{ssec:apc}
+
+To quantify the interpretability of prosody-guided attention, we define the Attention--Prosody Correlation (APC) metric.
+For each test utterance, we compute the Pearson correlation between the learned attention weight vector $\boldsymbol{\alpha} \in \mathbb{R}^T$ and a prosodic reference signal:
+\begin{itemize}
+\item $\text{APC}_{\text{wav}}$: correlation with frame-level RMS energy (measures whether attention tracks vocal intensity).
+\item $\text{APC}_{\delta}$: correlation with frame-level $|\Delta\text{F0}|$ (measures whether attention tracks pitch transitions).
+\end{itemize}
+Values are averaged across all test utterances.
+A high $\text{APC}_{\text{wav}}$ indicates that the model's decision-making is grounded in physically interpretable acoustic events, enabling post-hoc clinical explanation.

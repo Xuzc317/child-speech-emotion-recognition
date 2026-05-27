@@ -7,8 +7,18 @@
   "test_data": [
     "fau-aibo"
   ],
-  "best_val_wa": 0.6427692307692308,
-  "test_wa": 0.6886802810715854,
-  "test_uar": 0.5614478461990479,
-  "best_epoch": 2
+  "seed": 42,
+  "best_val_wa": 0.6403076923076924,
+  "test_wa": 0.6636175863086456,
+  "test_uar": 0.5635103471463822,
+  "best_epoch": 3,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "output_dir": "checkpoints/exp5_fau_indomain",
+  "protocol": "ac_suite_2026-05",
+  "source": "autodl_remote_sync",
+  "matrix_version": "autodl_final_2026-05-19"
 }

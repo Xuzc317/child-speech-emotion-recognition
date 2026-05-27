@@ -1,0 +1,24 @@
+{
+  "exp_name": "exp4_zero_shot_fau",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.9125964010282777,
+  "test_wa": 0.18697848045674131,
+  "test_uar": 0.22752839026330646,
+  "best_epoch": 10,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/exp4_zero_shot_fau",
+  "protocol": "ac_suite_2026-05",
+  "source": "autodl_remote_sync",
+  "matrix_version": "autodl_final_2026-05-19"
+}
