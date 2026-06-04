@@ -1,0 +1,14 @@
+{
+  "checkpoint": "/root/checkpoints/exp5/best_model.pt",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "seed": 42,
+  "test_wa": 0.2550359712230216,
+  "test_uar": 0.255783202484676,
+  "test_n": 2780,
+  "type": "zero_shot"
+}
