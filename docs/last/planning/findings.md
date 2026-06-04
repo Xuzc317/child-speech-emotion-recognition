@@ -3,7 +3,7 @@
 ## Codebase-Stand (Initialanalyse)
 
 ### Architektur (bestätigt)
-- Frozen WavLM Base+ → `WavLMLayerFusion` (12 Layer) → Pooling (111,105 Params) → `SEMLP`
+- Frozen WavLM Base (wavlm-base-sv) → `WavLMLayerFusion` (12 Layer) → Pooling (111,105 Params) → `SEMLP`
 - Training: `src/train.py` (online WavLM, nicht legacy `train_ssl.py`)
 
 ### Regularisierung (Lücke)

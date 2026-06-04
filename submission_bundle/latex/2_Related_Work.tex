@@ -1,0 +1,18 @@
+\section{Related Work}
+\label{sec:related_work}
+
+\paragraph{Self-supervised speech representations for SER.}
+WavLM, HuBERT, and emotion-specialized models (e.g., emotion2vec) provide frame-level embeddings that have largely replaced hand-crafted features in SER~\cite{chen2022wavlm,wagner2023dawn}.
+Layer-wise analysis shows that mid-to-upper transformer layers often carry the most emotion-discriminative information~\cite{pasad2021layer}, motivating learnable layer fusion rather than fixed layer selection.
+
+\paragraph{Temporal pooling and attention.}
+Attention-based pooling aggregates frame sequences into utterance-level vectors but typically operates only in the SSL feature space.
+Our prosody-guided variant injects frame-aligned F0 and energy as an explicit prior, related in spirit to knowledge-guided attention in paralinguistics but implemented with strict parameter parity against a self-attention ablation.
+
+\paragraph{Child speech and corpus bias.}
+Child SER datasets remain scarce; C-BESD and FAU Aibo represent contrasting regimes (acted vs.\ spontaneous).
+Prior work reports strong in-domain acted performance but rarely quantifies cross-style transfer at scale.
+We complement parametric Fr\'{e}chet distance (FD) with kernel-based speech MMD (SMMD) to characterize distribution shift non-parametrically.
+
+\paragraph{Explainability in affective computing.}
+Post-hoc saliency maps are common, but correlation between learned attention and physical prosody (our APC metric) offers a lightweight, deployment-friendly interpretability probe suitable for clinical review workflows.

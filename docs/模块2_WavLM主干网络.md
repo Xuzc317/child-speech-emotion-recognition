@@ -10,7 +10,7 @@ Refactored the WavLM feature extraction module to extract **all 12 hidden layers
 Waveform (B, T_wav)
     │
     ▼
-WavLM Base+ (frozen, 94M params, output_hidden_states=True)
+WavLM Base (wavlm-base-sv, frozen, 94M params, output_hidden_states=True)
     │
     ├── hidden_states[0]  : input embeddings      (B, T, 768)
     ├── hidden_states[1]  : transformer layer  1  (B, T, 768)

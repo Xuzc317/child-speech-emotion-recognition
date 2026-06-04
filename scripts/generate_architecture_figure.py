@@ -33,7 +33,7 @@ def main():
     gap = 0.35
 
     _box(ax, (0.2, y_main), 1.0, h, "Waveform\n16 kHz", "#E8E8E8")
-    _box(ax, (1.5, y_main), 1.3, h, "WavLM Base+\n(frozen)", "#D4E4F7")
+    _box(ax, (1.5, y_main), 1.3, h, "WavLM Base\n(wavlm-base-sv)\n(frozen)", "#D4E4F7")
     _box(ax, (3.1, y_main), 1.2, h, "Layer Fusion\n12 weights", "#C5E0B4")
     _box(ax, (4.6, y_main), 1.5, h, "Frame feats\n(B,T,768)", "#F5F5F5")
 

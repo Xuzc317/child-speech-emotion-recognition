@@ -1,0 +1,15 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a distribution-driven study of child speech emotion recognition centered on prosody-guided temporal importance pooling under frozen WavLM representations.
+Rather than claiming universal accuracy gains, our six-experiment matrix exposes \textit{where} pooling design matters---and where it does not.
+
+On acted C-BESD, self-attention marginally outperforms prosody-guided pooling (+1.48pp WA), consistent with memorization of prototypical acted contours.
+On spontaneous FAU Aibo, prosody-guided pooling holds its ground (66.36\% vs.\ 66.18\% WA) and offers a more stable optimization trajectory under strong regularization.
+Most critically, zero-shot transfer from acted to spontaneous child speech fails at 18.70\% WA, demonstrating that acted-corpus leaderboards are poor proxies for real-world child SER.
+
+For deployment in pediatric and educational settings, we recommend reporting spontaneous-speech performance, distribution-shift diagnostics (FD/SMMD), and attention--prosody correlation alongside accuracy.
+The 1.48pp acted-accuracy cost of interpretability (APC$_{\text{wav}}{=}0.698$) is a favorable trade when model decisions must be justified to clinicians or caregivers.
+
+\paragraph{Future work.}
+Promising directions include: (i)~domain-adaptive fine-tuning on spontaneous child corpora (MyST, EmoReact); (ii)~multi-seed evaluation and confidence intervals on FAU Aibo; (iii)~learnable end-to-end prosody estimators that preserve interpretability; and (iv)~recovery of full training checkpoints to validate layer-fusion analyses and confusion-structure diagnostics.

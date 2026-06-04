@@ -11,7 +11,7 @@
 
 | 项 | 值 |
 |----|-----|
-| SSL | WavLM Base+，冻结 |
+| SSL | WavLM Base (wavlm-base-sv)，冻结 |
 | 优化 | AdamW，lr=3e-4，CosineAnnealing，max 100 epochs |
 | 早停 | patience=15（验证集 WA） |
 | batch_size | 16 |

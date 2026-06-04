@@ -4,7 +4,7 @@
 \subsection{Experimental Protocol}
 
 We evaluate on a unified four-class emotion space (\textit{angry / happy / neutral / sad}) using weighted accuracy (WA) and unweighted average recall (UAR).
-The backbone is frozen WavLM Base+ with a learnable 12-layer weighted sum, followed by one of two parameter-matched pooling heads (\textbf{111,105 parameters each}), and an SEMLP classifier ($\sim$590K parameters).
+The backbone is frozen WavLM Base (\texttt{wavlm-base-sv}) with a learnable 12-layer weighted sum, followed by one of two parameter-matched pooling heads (\textbf{111,105 parameters each}), and an SEMLP classifier ($\sim$590K parameters).
 
 Two regularization profiles are used.
 The \textit{default} profile (weight decay $10^{-3}$, label smoothing 0.1, no pooling dropout) is applied to acted corpora (C-BESD, IEMOCAP) to preserve baseline comparability.

@@ -12,7 +12,7 @@
 \label{sec:setup}
 
 \subsection{Backbone Architecture}
-We use WavLM Base+ \cite{chen2022wavlm} (94M parameters) as a frozen feature extractor.
+We use WavLM Base~\cite{chen2022wavlm} (\texttt{microsoft/wavlm-base-sv}, 94M parameters) as a frozen feature extractor.
 The model outputs all 12 hidden layers at 50~Hz frame rate (768-dimensional).
 A \textbf{Learnable Weighted Sum} (WavLMLayerFusion) fuses the 12 layers via
 softmax-normalized weights, producing a single $(T, 768)$ representation.

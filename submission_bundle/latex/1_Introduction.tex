@@ -1,0 +1,37 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Speech emotion recognition (SER) underpins affect-aware interfaces in education, pediatric healthcare, and human--robot interaction.
+For \textit{children's} speech, the problem is compounded by wider fundamental-frequency ranges, immature articulation, and limited availability of spontaneous, labeled corpora.
+Most child SER systems therefore rely on acted datasets recorded under studio conditions, where emotions are exaggerated and acoustically stereotyped.
+
+This practice creates a silent validity crisis.
+A model that achieves high accuracy on acted child speech may learn dataset-specific prototypes rather than generalizable emotional cues.
+When such models encounter spontaneous child vocalizations---as in the FAU Aibo child--robot corpus---performance can collapse catastrophically.
+Yet the field continues to report in-domain acted accuracy as the primary success metric.
+
+\subsection{Motivation: Distribution Shift as the Central Variable}
+
+Recent self-supervised learning (SSL) backbones such as WavLM~\cite{chen2022wavlm} provide powerful frame-level representations, but downstream design choices (pooling, adaptation, regularization) still determine whether emotion-relevant information is extracted or whether the model overfits to corpus artifacts.
+Mean pooling discards temporal structure; unconstrained self-attention pooling can attend to arbitrary feature dimensions without physical interpretability.
+
+Children's emotional expression is strongly linked to \textit{prosody}: pitch excursions, energy bursts, and rhythm irregularities that differ systematically from adult speech~\cite{fan2024children}.
+We hypothesize that explicitly conditioning temporal attention on frame-level F0 and RMS energy provides an inductive bias that (i)~accelerates learning, (ii)~regularizes models on noisy spontaneous speech, and (iii)~anchors decisions to measurable acoustic events.
+
+\subsection{Contributions}
+
+This paper makes four contributions:
+
+\begin{enumerate}
+\item \textbf{A distribution-driven evaluation protocol} spanning acted child (C-BESD), spontaneous child (FAU Aibo), and adult (IEMOCAP) corpora, with speaker-disjoint splits and dual metrics (WA and UAR).
+\item \textbf{Prosody-guided temporal importance pooling} fused with frozen WavLM and learnable 12-layer weighting, compared against a strictly parameter-matched self-attention baseline (111,105 parameters each).
+\item \textbf{Quantification of the acted--spontaneous chasm}: zero-shot C-BESD$\rightarrow$FAU transfer yields only 18.70\% WA (vs.\ 92.78\% in-domain), with monotonic FD--accuracy degradation across age, style, and language shifts.
+\item \textbf{An accuracy--explainability trade-off analysis}: prosody-guided pooling achieves APC$_{\text{wav}}{=}0.698$ with attention locked to energy peaks, justifying a 1.48pp WA sacrifice on acted data for deployable interpretability in safety-critical applications.
+\end{enumerate}
+
+\subsection{Paper Organization}
+
+Section~\ref{sec:methodology} describes the model architecture and training protocol.
+Section~\ref{sec:experiments_results} presents the full experimental matrix.
+Section~\ref{sec:analysis_discussion} interprets results through three pillars: distribution-shift failure, prosody as structural regularization, and explainability.
+Section~\ref{sec:conclusion} summarizes implications and future work.

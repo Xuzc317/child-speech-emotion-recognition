@@ -105,7 +105,7 @@ python src/extract_diagnostics.py
 
 ## Model Configuration
 
-- **Backbone**: WavLM Base+ (frozen, 94M params)
+- **Backbone**: WavLM Base (wavlm-base-sv, frozen, 94M params)
 - **Layer Fusion**: WavLMLayerFusion (12 learnable weights)
 - **Pooling**: Configurable (self_attention or prosody_guided), 111,105 params each
 - **Classifier**: SEMLP (4-class, ~590K params)

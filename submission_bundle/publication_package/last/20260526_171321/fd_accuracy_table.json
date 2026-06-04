@@ -1,0 +1,40 @@
+{
+  "description": "FD vs best WA rows used in paper_draft/5_Analysis_and_Discussion.tex Table tab:fd_accuracy",
+  "matrix_version": "autodl_final_2026-05-19",
+  "rows": [
+    {
+      "condition": "in_domain_acted_c_besd",
+      "label_zh": "域内表演（C-BESD）",
+      "fd": 0.0,
+      "best_wa_percent": 92.78,
+      "experiment": "exp1_self_attention.json",
+      "fd_source": "by_definition_same_corpus"
+    },
+    {
+      "condition": "age_shift_child_to_adult",
+      "label_zh": "年龄偏移（儿童→成人）",
+      "fd": 6.87,
+      "best_wa_percent": 58.67,
+      "experiment": "exp3_adult_iemocap.json",
+      "fd_source": "experiments/v5_622/unified_fd_results.json (Age Child vs Adult)"
+    },
+    {
+      "condition": "style_shift_acted_to_spontaneous_indomain",
+      "label_zh": "风格偏移（表演→自发，FAU 域内）",
+      "fd": 12.33,
+      "best_wa_percent": 66.36,
+      "experiment": "exp5_fau_indomain.json",
+      "fd_source": "results/distribution_shift.json (C-BESD vs FAU Aibo features)"
+    },
+    {
+      "condition": "style_language_zero_shot",
+      "label_zh": "风格+语言（零样本 C-BESD→FAU）",
+      "fd": 16.33,
+      "best_wa_percent": 18.7,
+      "experiment": "exp4_zero_shot_fau.json",
+      "fd_source": "paper_draft/Methods_and_Results_Skeleton.tex; recompute with src/evaluation/distribution_metrics.py when features available"
+    }
+  ],
+  "smmd_c_besd_vs_fau": 0.41,
+  "smmd_note": "Narrative value from paper; local distribution_shift.json has smmd=0.369 for same pair — document both if recomputing"
+}

@@ -1,0 +1,38 @@
+{
+  "generated_by": "scripts/generate_paper_figures.py",
+  "data_sources": [
+    "publication_package/experiment_results.csv",
+    "publication_package/fd_accuracy_table.json",
+    "publication_package/xai_raw_data.npz",
+    "publication_package/logs/apc_metrics.json"
+  ],
+  "figures": [
+    {
+      "file": "fig00_system_architecture",
+      "use": "System pipeline (see generate_architecture_figure.py)"
+    },
+    {
+      "file": "fig01_main_matrix_wa_uar",
+      "use": "Main results overview"
+    },
+    {
+      "file": "fig02_fau_prosody_vs_selfattn",
+      "use": "Pillar 2: naturalistic FAU"
+    },
+    {
+      "file": "fig03_fd_vs_accuracy",
+      "use": "Unified distribution-shift framework"
+    },
+    {
+      "file": "fig04_xai_saliency_triple",
+      "use": "Pillar 3: explainability"
+    },
+    {
+      "file": "fig05_cbesd_selfattn_vs_prosody",
+      "use": "Acted C-BESD trade-off"
+    }
+  ],
+  "missing": [
+    "fig_layer_fusion_weights (needs checkpoint export)"
+  ]
+}

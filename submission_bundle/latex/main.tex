@@ -1,0 +1,86 @@
+% Distribution-Driven Child SER — compile-ready master file
+% Build: cd paper_draft && pdflatex main && bibtex main && pdflatex main && pdflatex main
+% Or: latexmk -pdf main.tex
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{microtype}
+
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\title{Distribution-Driven Child Speech Emotion Recognition:\\
+Prosody-Guided Pooling under Acted vs.\ Spontaneous Regimes}
+
+\author{Anonymous Authors\\
+\small INTERSPEECH / ICASSP 2026 submission draft}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\input{0_Abstract.tex}
+
+\input{1_Introduction.tex}
+\input{2_Related_Work.tex}
+\input{3_Methodology.tex}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/fig06_layer_fusion_weights.pdf}
+  \caption{Learned softmax weights over WavLM layers 1--12 (peak at Layer 8).}
+  \label{fig:layer_weights}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig00_system_architecture.pdf}
+  \caption{System overview: frozen WavLM, learnable 12-layer fusion, parameter-matched pooling (111,105 params), and SE-MLP classifier. Prosody path uses frame-level F0 and RMS; self-attention path uses SSL features only.}
+  \label{fig:architecture}
+\end{figure}
+
+\input{4_Experiments_and_Results.tex}
+\input{5_Analysis_and_Discussion.tex}
+\input{6_Conclusion.tex}
+
+
+\appendix
+\section{Supplementary Confusion Matrices}
+\label{app:confusion}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.72\linewidth]{figures/figA1_confusion_exp3_iemocap.pdf}
+  \caption{Exp3: IEMOCAP in-domain (prosody-guided).}
+  \label{fig:cm_a1}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.72\linewidth]{figures/figA2_confusion_exp4_zero_shot.pdf}
+  \caption{Exp4: Zero-shot C-BESD$\rightarrow$FAU Aibo.}
+  \label{fig:cm_a2}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.72\linewidth]{figures/figA3_confusion_exp5_fau_prosody.pdf}
+  \caption{Exp5: FAU in-domain (prosody-guided).}
+  \label{fig:cm_a3}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.72\linewidth]{figures/figA4_confusion_exp5b_fau_selfattn.pdf}
+  \caption{Exp5b: FAU in-domain (self-attention).}
+  \label{fig:cm_a4}
+\end{figure}
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
