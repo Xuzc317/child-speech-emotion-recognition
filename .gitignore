@@ -41,3 +41,4 @@ Thumbs.db
 
 # Model cache
 .cache/
+data/last/fau_aibo.tar.gz
