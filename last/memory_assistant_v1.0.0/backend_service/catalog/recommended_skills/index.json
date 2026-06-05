@@ -1,0 +1,39 @@
+{
+  "folder": "recommended_skills",
+  "updated_at": "2026-04-24T18:50:40.564821+00:00",
+  "items": [
+    {
+      "id": "rec:anthropic_skills:Internal-comms",
+      "title": "Internal-comms",
+      "kind": "skill",
+      "folder": "rec_anthropic_skills_Internal-comms",
+      "json": "rec_anthropic_skills_Internal-comms/skill.json",
+      "recommendation_json": "rec_anthropic_skills_Internal-comms/recommendation.json",
+      "skill_md": "rec_anthropic_skills_Internal-comms/SKILL.md",
+      "forms_md": "rec_anthropic_skills_Internal-comms/forms.md",
+      "reference_md": "rec_anthropic_skills_Internal-comms/reference.md"
+    },
+    {
+      "id": "rec:english_rewriter",
+      "title": "English Rewriter",
+      "kind": "skill",
+      "folder": "rec_english_rewriter",
+      "json": "rec_english_rewriter/skill.json",
+      "recommendation_json": "rec_english_rewriter/recommendation.json",
+      "skill_md": "rec_english_rewriter/SKILL.md",
+      "forms_md": "rec_english_rewriter/forms.md",
+      "reference_md": "rec_english_rewriter/reference.md"
+    },
+    {
+      "id": "rec:paper_summary",
+      "title": "读文献总结",
+      "kind": "skill",
+      "folder": "rec_paper_summary",
+      "json": "rec_paper_summary/skill.json",
+      "recommendation_json": "rec_paper_summary/recommendation.json",
+      "skill_md": "rec_paper_summary/SKILL.md",
+      "forms_md": "rec_paper_summary/forms.md",
+      "reference_md": "rec_paper_summary/reference.md"
+    }
+  ]
+}

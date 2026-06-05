@@ -1,0 +1,14 @@
+{
+  "api_provider": "openai_compat",
+  "api_key": "sk-e267cf9d172e48ce8b7af7a02fd910a7",
+  "api_base_url": "https://api.deepseek.com/v1",
+  "api_model": "deepseek-chat",
+  "storage_path": "C:\\Users\\59892\\Desktop\\memory_assistant_v1.0.0\\backend_service\\.state\\wiki",
+  "keep_updated": false,
+  "realtime_update": false,
+  "detailed_injection": false,
+  "last_sync_at": "2026-05-03T06:57:48.885155+00:00",
+  "backend_url": "http://127.0.0.1:8765",
+  "saved_skill_ids": [],
+  "dismissed_skill_ids": []
+}

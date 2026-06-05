@@ -1,0 +1,36 @@
+# Audio files (too large, stored elsewhere)
+*.wav
+*.mp3
+*.flac
+
+# Large numpy arrays
+*.npy
+*.npz
+*.h5
+*.hdf5
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data directories (intermediate outputs)
+data/features/
+data/annotations/
+data/unified_trainset/
+
+# Claude
+.claude/
+
+# Jupyter
+.ipynb_checkpoints/
