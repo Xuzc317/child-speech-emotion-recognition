@@ -1,0 +1,22 @@
+{
+  "exp_name": "exp3_prosody_s123",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 123,
+  "best_val_wa": 0.6275252525252525,
+  "test_wa": 0.7379472140762463,
+  "test_uar": 0.7363675621764444,
+  "best_epoch": 7,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/exp3_prosody_s123",
+  "protocol": "ac_suite_2026-05"
+}
