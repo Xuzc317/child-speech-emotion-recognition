@@ -1,0 +1,40 @@
+{
+  "checkpoint": "/root/checkpoints/exp5/best_model.pt",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 42,
+  "test_wa": 0.24363636363636362,
+  "test_uar": 0.2774397699492928,
+  "test_n": 8525,
+  "confusion_matrix": [
+    [
+      77,
+      289,
+      2551,
+      0
+    ],
+    [
+      124,
+      378,
+      2130,
+      0
+    ],
+    [
+      31,
+      73,
+      1622,
+      0
+    ],
+    [
+      6,
+      33,
+      1211,
+      0
+    ]
+  ],
+  "type": "zero_shot"
+}

@@ -1,0 +1,40 @@
+{
+  "checkpoint": "/root/checkpoints/exp2_prosody_s456/best_model.pt",
+  "dataset": [
+    "c-besd"
+  ],
+  "split": "test",
+  "confusion_matrix": [
+    [
+      111,
+      1,
+      2,
+      1
+    ],
+    [
+      2,
+      138,
+      0,
+      0
+    ],
+    [
+      1,
+      1,
+      137,
+      1
+    ],
+    [
+      1,
+      0,
+      0,
+      144
+    ]
+  ],
+  "classes": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "total": 540
+}
