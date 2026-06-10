@@ -200,14 +200,17 @@ def create_pooling(pooling_type: str = 'prosody_guided', ssl_dim: int = 768, dro
         AssertionError: if parameter counts don't match
         ValueError: if pooling_type is unknown
     """
-    if pooling_type == 'prosody_guided':
+    if pooling_type == 'mean':
+        # Mean pooling handled directly in SERModel.forward()
+        pooler = nn.Identity()
+    elif pooling_type == 'prosody_guided':
         pooler = TemporalImportancePooling(ssl_dim=ssl_dim, dropout=dropout)
     elif pooling_type == 'self_attention':
         pooler = SelfAttentionPooling(ssl_dim=ssl_dim, dropout=dropout)
     else:
         raise ValueError(
             f"Unknown pooling_type '{pooling_type}'. "
-            f"Must be 'prosody_guided' or 'self_attention'."
+            f"Must be 'mean', 'prosody_guided', or 'self_attention'."
         )
 
     return pooler

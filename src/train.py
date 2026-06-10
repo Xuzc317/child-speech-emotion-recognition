@@ -62,7 +62,14 @@ class SERModel(nn.Module):
             mask = torch.arange(T, device=device).unsqueeze(0) < lengths.unsqueeze(1)
 
         # M3: Pool with or without prosody
-        if self.pooling_type == 'prosody_guided':
+        if self.pooling_type == 'mean':
+            # Simple mean pooling over time dimension (mask-aware)
+            if mask is not None:
+                fused_m = fused * mask.unsqueeze(-1).float()
+                pooled = fused_m.sum(dim=1) / mask.sum(dim=1, keepdim=True).float().clamp(min=1)
+            else:
+                pooled = fused.mean(dim=1)
+        elif self.pooling_type == 'prosody_guided':
             f0, energy = _extract_prosody_batch(waveforms)
             f0 = f0.to(device)
             energy = energy.to(device)
@@ -179,7 +186,7 @@ def main():
     parser.add_argument('--train_data', nargs='+', default=['c-besd'])
     parser.add_argument('--test_data', nargs='+', default=None)
     parser.add_argument('--pooling_type', default='prosody_guided',
-                        choices=['prosody_guided', 'self_attention'])
+                        choices=['mean', 'prosody_guided', 'self_attention'])
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=3e-4)
