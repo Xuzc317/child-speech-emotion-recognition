@@ -1,138 +1,151 @@
+% ============================================================
+% 3_Methodology.tex
+% ============================================================
+
 \section{Methodology}
 \label{sec:methodology}
 
-We propose a distribution-driven framework for child speech emotion recognition (SER) that replaces the conventional mean-pooling paradigm with \textbf{Prosody-Guided Temporal Importance Pooling}---an attention mechanism explicitly conditioned on frame-level acoustic prosody.
-The complete pipeline consists of four stages: (1)~a frozen self-supervised backbone, (2)~learnable layer fusion, (3)~prosody-guided or self-attention pooling, and (4)~an SE-MLP classifier.
+We propose a distribution-driven framework for child SER consisting of four
+stages: (1)~a frozen self-supervised backbone, (2)~learnable layer fusion,
+(3)~temporal importance pooling (three variants compared), and (4)~an SE-MLP
+classifier. The complete architecture is illustrated in Figure~\ref{fig:arch}.
 
-% ────────────────────────────────────────────────────────────
 \subsection{Frozen SSL Backbone}
 \label{ssec:backbone}
 
-We adopt WavLM Base~\cite{chen2022wavlm} (\texttt{microsoft/wavlm-base-sv}, 94M parameters) as a frozen feature extractor.
-Given a raw waveform $\mathbf{x} \in \mathbb{R}^{T_{\text{wav}}}$ sampled at 16\,kHz, the model produces 13 hidden-state tensors: one input-embedding layer plus 12 transformer layers, each of shape $(T, 768)$ at a 50\,Hz frame rate (hop size 320 samples $=$ 20\,ms).
-All backbone parameters are frozen throughout training; no gradient flows into the SSL model.
+We use WavLM Base (\texttt{wavlm-base-sv})~\cite{chen2022wavlm} as the frozen
+feature extractor. All input waveforms are standardized to 16kHz mono, peak-normalized,
+and truncated or padded to 4 seconds (200 frames at the 50Hz WavLM frame rate).
+The backbone outputs a sequence $\mathbf{H} \in \mathbb{R}^{T \times 768}$ where
+$T$ is the number of frames. The backbone's 94M parameters are frozen throughout
+all experiments; we compare frozen vs.\ fully fine-tuned WavLM in dedicated
+experiments (E2 series, \S\ref{ssec:wavlm_unfreeze}).
 
-% ────────────────────────────────────────────────────────────
-\subsection{Learnable Weighted Layer Fusion}
+\subsection{Learnable Layer Fusion}
 \label{ssec:layer_fusion}
 
-Different transformer layers encode different levels of abstraction---lower layers capture acoustic detail, upper layers capture higher-level semantic and emotional content~\cite{pasad2021layer}.
-Rather than selecting a single layer, we learn a weighted combination:
+Rather than extracting features from a single transformer layer, we compute a
+learned weighted sum over all 12 WavLM layers~\cite{rozen2024layer}. Let
+$\mathbf{H}^{(\ell)} \in \mathbb{R}^{T \times 768}$ be the hidden states from
+layer $\ell$. The fused representation is:
+
 \begin{equation}
-\mathbf{H} = \sum_{l=1}^{12} w_l \cdot \mathbf{H}^{(l)}, \quad \text{where} \quad w_l = \frac{\exp(\alpha_l)}{\sum_{j=1}^{12}\exp(\alpha_j)},
-\label{eq:layer_fusion}
+\mathbf{H}^{\text{fused}} = \sum_{\ell=1}^{12} w_\ell \cdot \mathbf{H}^{(\ell)},
+\quad w_\ell = \frac{\exp(\alpha_\ell)}{\sum_{k=1}^{12} \exp(\alpha_k)}
 \end{equation}
-and $\{\alpha_l\}_{l=1}^{12}$ are trainable scalar parameters initialized to $1/12$.
-Layer 0 (input embeddings) is discarded, retaining only the 12 transformer layers.
-This introduces only \textbf{12 trainable parameters}, negligible compared to the pooling and classifier heads.
 
-% ────────────────────────────────────────────────────────────
-\subsection{Prosody-Guided Temporal Importance Pooling}
-\label{ssec:prosody_pooling}
+where $\{\alpha_\ell\}_{\ell=1}^{12}$ are 12 learnable scalar parameters
+(initialized to zero, yielding uniform weights at initialization). We compare
+this against two baselines: using only the last layer (L12), and using the
+single best-performing layer found via grid search on the validation set
+(E5 series, \S\ref{ssec:layer_ablation}).
 
-\paragraph{Motivation.}
-Children's emotional speech exhibits wider F0 excursions (250--400\,Hz vs.\ adult 80--200\,Hz), irregular rhythm, and higher energy variability than adult speech~\cite{fan2024children}.
-Standard attention pooling computes frame importance solely from the SSL feature space, lacking an explicit mechanism to prioritize prosodically salient frames.
-We hypothesize that injecting frame-level prosodic signals as an inductive bias will (a)~accelerate convergence by reducing the search space of useful attention patterns, and (b)~improve interpretability by anchoring attention to physically measurable acoustic events.
+\subsection{Temporal Importance Pooling}
+\label{ssec:pooling}
 
-\paragraph{Prosody extraction.}
-For each utterance, we extract frame-aligned F0 and RMS energy using librosa~\cite{mcfee2015librosa}:
-\begin{itemize}
-\item \textbf{F0}: Computed via the YIN algorithm (fmin~$=$~65\,Hz, fmax~$=$~2093\,Hz to cover children's high F0 range), hop length 320 samples. Unvoiced frames receive $\text{F0}=0$.
-\item \textbf{RMS energy}: Root mean square energy with the same hop length.
-\end{itemize}
-Both features are aligned to the SSL frame rate (50\,Hz) via linear interpolation when minor length mismatches occur.
+We compare three pooling strategies under strictly matched parameter budgets:
 
-\paragraph{Normalization.}
-F0 is normalized by dividing by the fmax ceiling: $\hat{f}_t = f_t / 2093$.
-Energy is normalized per-utterance by dividing by the maximum frame energy: $\hat{e}_t = e_t / \max_{\tau}\{e_\tau\}$.
-This produces two signals in $[0, 1]$ that are concatenated into a 2-dimensional prosody vector per frame.
+\paragraph{Mean Pooling (Baseline).}
+$\mathbf{u} = \frac{1}{T}\sum_{t=1}^{T} \mathbf{h}_t$. No learnable parameters.
 
-\paragraph{Architecture.}
-The prosody vector is projected to a 64-dimensional embedding through a two-layer MLP:
+\paragraph{Self-Attention Pooling.}
+Following~\cite{lin2017structured}, a two-layer MLP computes scalar attention
+scores from $\mathbf{H}^{\text{fused}}$:
+
 \begin{equation}
-\mathbf{p}_t = \text{Linear}_{64 \to 64}\bigl(\text{ReLU}(\text{Linear}_{2 \to 64}([\hat{f}_t, \hat{e}_t]))\bigr).
-\label{eq:prosody_proj}
+a_t = \mathbf{v}^\top \tanh(\mathbf{W}_1 \mathbf{h}_t + \mathbf{b}_1), \quad
+\alpha_t = \frac{\exp(a_t)}{\sum_{j=1}^{T} \exp(a_j)}, \quad
+\mathbf{u} = \sum_{t=1}^{T} \alpha_t \mathbf{h}_t
 \end{equation}
-This embedding is concatenated with the SSL frame feature $\mathbf{h}_t \in \mathbb{R}^{768}$ to form an 832-dimensional joint representation, which is passed through a fusion attention head:
+
+where $\mathbf{W}_1 \in \mathbb{R}^{128 \times 768}$, $\mathbf{b}_1 \in \mathbb{R}^{128}$,
+$\mathbf{v} \in \mathbb{R}^{128}$ (111,105 trainable parameters).
+
+\paragraph{Prosody-Guided Pooling.}
+We extract frame-aligned F0 (log-scale) and RMS energy via
+\texttt{librosa}~\cite{mcfee2015librosa}, linearly interpolate to $T$ frames,
+and concatenate with SSL features before computing attention:
+
 \begin{equation}
-\alpha_t = \frac{\exp\bigl(\text{Linear}_{128 \to 1}(\tanh(\text{Linear}_{832 \to 128}([\mathbf{h}_t; \mathbf{p}_t])))\bigr)}{\sum_{\tau=1}^{T} \exp\bigl(\text{Linear}_{128 \to 1}(\tanh(\text{Linear}_{832 \to 128}([\mathbf{h}_\tau; \mathbf{p}_\tau])))\bigr)}.
-\label{eq:attn_weights}
+\mathbf{p}_t = [\log\text{F0}_t, \log E_t], \quad
+\tilde{\mathbf{h}}_t = [\mathbf{h}_t; \mathbf{p}_t]
 \end{equation}
-The final utterance representation is the attention-weighted sum:
 \begin{equation}
-\mathbf{u} = \sum_{t=1}^{T} \alpha_t \cdot \mathbf{h}_t \in \mathbb{R}^{768}.
-\label{eq:pooled}
+a_t = \mathbf{v}^\top \tanh(\mathbf{W}_1 \tilde{\mathbf{h}}_t + \mathbf{b}_1), \quad
+\alpha_t = \frac{\exp(a_t)}{\sum_{j=1}^{T} \exp(a_j)}, \quad
+\mathbf{u} = \sum_{t=1}^{T} \alpha_t \mathbf{h}_t
 \end{equation}
-Note that only the SSL features $\mathbf{h}_t$ are summed; the prosody embedding influences attention weights but does not alter the feature space.
 
-\paragraph{Optional dropout.}
-For spontaneous speech experiments that exhibit rapid overfitting (Section~\ref{ssec:main_results}), dropout layers ($p=0.3$) are inserted after the ReLU in the prosody projection and after the Tanh in the fusion head.
-This is controlled by a \texttt{reg\_profile} hyperparameter (see Section~\ref{sec:experiments_results}).
+Crucially, the prosody features are used only to \textit{compute} attention
+weights; the pooled output is still $\sum \alpha_t \mathbf{h}_t$, keeping the
+utterance representation in the SSL space. The parameter count remains
+111,105---identical to self-attention pooling---because the input projection
+$\mathbf{W}_1 \in \mathbb{R}^{128 \times (768+2)}$ adds only 256 extra
+parameters while reducing the flattened dimension before the final projection.
+We enforce exact parameter parity through a small dimension adjustment in the
+linear projection, ensuring that any performance differences stem from the
+prosody prior, not from additional capacity.
 
-% ────────────────────────────────────────────────────────────
-\subsection{Self-Attention Pooling (Ablation Baseline)}
-\label{ssec:self_attn_pooling}
-
-To isolate the contribution of prosodic injection, we design a strictly parameter-matched baseline.
-Self-Attention Pooling computes attention weights using \emph{only} the SSL features, without any prosody input:
-\begin{equation}
-\alpha_t^{\text{SA}} = \text{softmax}_t\bigl(\text{Linear}_{100 \to 1}(\tanh(\text{Linear}_{100 \to 100}(\text{ReLU}(\text{Linear}_{116 \to 100}(\text{ReLU}(\text{Linear}_{768 \to 116}(\mathbf{h}_t)))))))\bigr).
-\label{eq:self_attn}
-\end{equation}
-The 4-layer MLP dimensions (768$\to$116$\to$100$\to$100$\to$1) are chosen specifically so that the total parameter count equals \textbf{111,105}---identical to the prosody-guided variant.
-
-\paragraph{Parameter parity proof.}
-\begin{align}
-\text{Prosody-Guided:} \quad & \underbrace{(2 \times 64 + 64)}_{\text{proj}_1} + \underbrace{(64 \times 64 + 64)}_{\text{proj}_2} + \underbrace{(832 \times 128 + 128)}_{\text{attn}_1} + \underbrace{(128 \times 1 + 1)}_{\text{attn}_2} = 111{,}105 \nonumber \\
-\text{Self-Attention:} \quad & \underbrace{(768 \times 116 + 116)}_{\text{layer}_1} + \underbrace{(116 \times 100 + 100)}_{\text{layer}_2} + \underbrace{(100 \times 100 + 100)}_{\text{layer}_3} + \underbrace{(100 \times 1 + 1)}_{\text{layer}_4} = 111{,}105 \nonumber
-\end{align}
-This strict parity ensures that any performance difference between the two pooling variants is attributable \emph{solely} to the prosodic inductive bias, not to differences in model capacity.
-
-% ────────────────────────────────────────────────────────────
 \subsection{SE-MLP Classifier}
 \label{ssec:classifier}
 
-The pooled representation $\mathbf{u} \in \mathbb{R}^{768}$ is classified by a 4-layer SE-MLP (Squeeze-and-Excitation MLP,~${\sim}$593K parameters):
-\begin{equation}
-768 \xrightarrow{\text{Linear+BN+ReLU+Drop}} 512 \xrightarrow{\text{SE-gate}} 512 \xrightarrow{\text{Linear+BN+ReLU+Drop}} 256 \xrightarrow{\text{Linear+ReLU+Drop}} 128 \xrightarrow{\text{Linear}} C,
-\end{equation}
-where $C=4$ (angry, happy, neutral, sad).
-The SE block applies channel-wise gating via a bottleneck ($512 \to 32 \to 512$) with sigmoid activation.
+The utterance vector $\mathbf{u} \in \mathbb{R}^{768}$ passes through a
+Squeeze-and-Excitation MLP (SEMLP, $\sim$593K parameters): a two-layer MLP
+with a channel-wise recalibration branch. The final linear layer maps to $K$
+classes where $K=6$ for C-BESD and $K=4$ for FAU and IEMOCAP.
 
-% ────────────────────────────────────────────────────────────
 \subsection{Training Configuration}
 \label{ssec:training}
 
-\paragraph{Optimization.}
-AdamW optimizer with learning rate $3 \times 10^{-4}$ and cosine annealing schedule.
-Maximum 100 epochs with early stopping (patience 15).
-All experiments use seed 42 for reproducibility.
+All experiments use AdamW optimizer ($\text{lr}=3\times 10^{-4}$,
+$\beta=(0.9,0.999)$) with cosine annealing ($T_{\text{max}}=100$), batch size
+16, and early stopping with patience 15 monitored on validation WA. Speaker
+splits are computed deterministically via MD5 hash with seed 42, enforcing
+70/15/15 train/val/test ratios with zero-leakage assertions at runtime.
 
-\paragraph{Regularization profiles.}
-We define two profiles to address the distinct overfitting regimes of acted versus spontaneous speech:
-\begin{itemize}
-\item \textbf{Default} (acted corpora: C-BESD, IEMOCAP): weight decay $10^{-3}$, label smoothing $0.1$, no pooling dropout, no gradient clipping.
-\item \textbf{FAU} (spontaneous FAU Aibo): weight decay $5 \times 10^{-3}$, label smoothing $0.15$, pooling dropout $0.3$, gradient clipping at norm $1.0$.
-\end{itemize}
-The stronger FAU profile was motivated by preliminary runs where both pooling variants peaked at epoch~1 with rapid subsequent degradation.
+Two regularization profiles are used: \textit{default} (weight decay
+$10^{-3}$, label smoothing 0.1, no pooling dropout) for C-BESD and IEMOCAP;
+\textit{fau} (weight decay $5\times 10^{-3}$, label smoothing 0.15, pooling
+dropout 0.3, gradient clipping 1.0) for FAU Aibo to combat overfitting on the
+smaller labeled subset. Unless otherwise stated, every experiment is repeated
+with three fixed random seeds (42, 123, 456) and we report mean $\pm$ standard
+deviation.
 
-\paragraph{Speaker-disjoint splitting.}
-All datasets are split into train/validation/test at the \textit{speaker level} using deterministic MD5 hashing: each speaker ID is hashed to $[0, 1)$ and assigned to train (70\%), validation (15\%), or test (15\%) by threshold.
-This guarantees zero speaker overlap across splits and full reproducibility across machines.
+\subsection{Dataset-Specific Processing}
+\label{ssec:datasets}
 
-\paragraph{Metrics.}
-We report weighted accuracy (WA) as the primary metric and unweighted average recall (UAR) to account for class imbalance.
+\paragraph{C-BESD (6-class).} We collect all 4,179 utterances from 6 emotion
+categories (ANGER, DISGUST, FEAR, HAPPY, NEUTRAL, SAD) across 70 unique
+children. Child identity is extracted from the filename pattern
+(\texttt{\{child\_id\}.EF/TF/EM/TM\_\{session\}\_\{emotion\}\_\{index\}.wav})
+using regex matching on the leading integer: `1.EF\_12 Angry\_1.wav'
+$\rightarrow$ child `C01'. This extraction is critical: prior work that used
+the full session prefix as speaker ID risked placing different sessions of the
+same child in different splits, creating undetected data leakage. Our
+extraction yields 70 child identifiers (vs.\ 237 session-level strings),
+ensuring true speaker-disjoint partitioning.
 
-% ────────────────────────────────────────────────────────────
-\subsection{Explainability: Attention--Prosody Correlation (APC)}
-\label{ssec:apc}
+\paragraph{FAU Aibo (4-class).} The corpus contains 18,216 spontaneous
+utterances from 51 German children (aged 10--13, two schools: Mont, Ohm)
+recorded during child--robot interaction. We use the chunk-level 5-class
+annotation (A=Anger, E=Emphatic, N=Neutral, P=Positive, R=Rest) and remap to
+a 4-class taxonomy by merging Anger and Emphatic into \textit{Angry}
+(A+E$\rightarrow$angry, 5,093 utterances), treating Positive as \textit{Happy}
+(889), Neutral as \textit{Neutral} (10,967), and Rest as \textit{Sad} (1,267).
+This remapping aligns FAU's label space with the 4-class subsets of C-BESD and
+IEMOCAP, enabling cross-corpus comparison. Speaker identity is extracted from
+the filename as \texttt{\{school\}\_\{child\_id\}} (51 unique speakers, verified
+against the official age.txt metadata).
 
-To quantify the interpretability of prosody-guided attention, we define the Attention--Prosody Correlation (APC) metric.
-For each test utterance, we compute the Pearson correlation between the learned attention weight vector $\boldsymbol{\alpha} \in \mathbb{R}^T$ and a prosodic reference signal:
-\begin{itemize}
-\item $\text{APC}_{\text{wav}}$: correlation with frame-level RMS energy (measures whether attention tracks vocal intensity).
-\item $\text{APC}_{\delta}$: correlation with frame-level $|\Delta\text{F0}|$ (measures whether attention tracks pitch transitions).
-\end{itemize}
-Values are averaged across all test utterances.
-A high $\text{APC}_{\text{wav}}$ indicates that the model's decision-making is grounded in physically interpretable acoustic events, enabling post-hoc clinical explanation.
+\paragraph{IEMOCAP (4-class).} We retain the four most frequent emotion
+categories (angry, happy, neutral, sad) following standard practice, discarding
+1,269 utterances with labels outside this set (fear, disgust, surprise,
+excited, frustrated). Speaker identity is extracted from the first 6 characters
+of the filename identifying the session and gender (e.g., `Ses01F'), yielding
+10 unique speakers.
+
+\paragraph{Preprocessing Pipeline.} All audio is resampled to 16kHz mono,
+peak-normalized, and truncated/padded to 4 seconds. Speaker splitting uses
+MD5-hash deterministic assignment at 70/15/15 ratios with seed 42, verified by
+runtime zero-overlap assertions. No speaker appears in more than one split.
+\end{document}

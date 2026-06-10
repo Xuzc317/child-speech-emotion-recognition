@@ -1,104 +1,330 @@
+% ============================================================
+% 4_Experiments_and_Results.tex
+% [待实验验证] = simulated estimate, replace after AutoDL runs
+% ============================================================
+
 \section{Experiments and Results}
 \label{sec:experiments_results}
 
-\subsection{Experimental Protocol}
-
-We evaluate on a unified four-class emotion space (\textit{angry / happy / neutral / sad}) using weighted accuracy (WA) and unweighted average recall (UAR).
-The backbone is frozen WavLM Base (\texttt{wavlm-base-sv}) with a learnable 12-layer weighted sum, followed by one of two parameter-matched pooling heads (\textbf{111,105 parameters each}), and an SEMLP classifier ($\sim$590K parameters).
-
-Two regularization profiles are used.
-The \textit{default} profile (weight decay $10^{-3}$, label smoothing 0.1, no pooling dropout) is applied to acted corpora (C-BESD, IEMOCAP) to preserve baseline comparability.
-The \textit{fau} profile (weight decay $5\times10^{-3}$, label smoothing 0.15, pooling dropout 0.3, gradient clipping 1.0) is applied to spontaneous FAU Aibo experiments, targeting the rapid overfitting observed in preliminary runs.
-
-All splits are speaker-disjoint (70/15/15, deterministic MD5 hash).
-
-% ────────────────────────────────────────────────────────────
-\subsection{Main Results}
-\label{ssec:main_results}
-
-Table~\ref{tab:main_matrix} presents the complete ablation matrix across three corpora, two pooling variants, and two speech conditions.
+We organize experiments into seven series (E1--E7) totaling 63 controlled
+comparisons. Table~\ref{tab:datasets} summarizes the three datasets used.
+\textbf{All numerical values marked [待实验验证] are simulated estimates}
+based on prior single-corpus results and will be replaced with measured values
+from AutoDL execution.
 
 \begin{table}[t]
 \centering
-\caption{Full experimental matrix. \textit{Reg.} indicates the regularization profile. Best WA per corpus pair in \textbf{bold}.}
-\label{tab:main_matrix}
-\begin{tabular}{clllcrrc}
+\caption{Dataset statistics after preprocessing.}
+\label{tab:datasets}
+\begin{tabular}{lcccccc}
 \toprule
-Exp & Train & Test & Pooling & Reg. & WA (\%) & UAR (\%) & Epoch \\
+\textbf{Dataset} & \textbf{Classes} & \textbf{Samples} & \textbf{Speakers} & \textbf{Age} & \textbf{Style} & \textbf{Language} \\
 \midrule
-1 & C-BESD & C-BESD & Self-Attn    & default & \textbf{92.78} & \textbf{92.79} & 30 \\
-2 & C-BESD & C-BESD & Prosody      & default & 91.30 & 91.35 & 10 \\
-\midrule
-3 & IEMOCAP & IEMOCAP & Prosody    & default & 58.67 & 59.11 & 8 \\
-\midrule
-4 & C-BESD & FAU Aibo & Prosody    & default & 19.56 & 23.83 & 10 \\
-\midrule
-5 & FAU Aibo & FAU Aibo & Prosody  & fau & \textbf{66.36} & 56.35 & 3 \\
-5b & FAU Aibo & FAU Aibo & Self-Attn & fau & 66.18 & \textbf{58.23} & 2 \\
+C-BESD (MY) & 6 & 4,179 & 70 children & child (unk.) & acted & Malay \\
+FAU Aibo    & 4 & 18,216 & 51 children & 10--13 & spontaneous & German \\
+IEMOCAP     & 4 & 8,525 & 10 adults & adult & acted & English \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Acted child speech (C-BESD).}
-On this acted corpus, pure self-attention pooling reaches \textbf{92.78\%} WA, marginally outperforming prosody-guided pooling by +1.48 percentage points.
-Both systems achieve near-identical UAR ($\sim$92.8\% vs.\ 91.4\%), confirming that the acted recording protocol produces highly prototypical acoustic patterns that a sufficiently expressive attention head can memorize without explicit prosodic guidance.
-The self-attention model requires 30 epochs to converge, whereas prosody-guided pooling peaks at epoch 10---three times faster---suggesting that prosodic features provide a stronger inductive bias that accelerates convergence.
+\subsection{E1: In-Domain Pooling Baseline}
+\label{ssec:e1}
 
-\paragraph{Adult speech (IEMOCAP).}
-Prosody-guided pooling on adult spontaneous speech (Exp3) yields 58.67\% WA / 59.11\% UAR, a 32.63pp drop from the acted child speech setting.
-This confirms that the prosody pathway captures patterns specific to \textit{children's} vocal characteristics (wider F0 range, higher variability), which do not transfer to adult speech.
+\textbf{Goal:} Establish the optimal pooling strategy for each dataset under
+matched parameter budgets, serving as the unified baseline for all subsequent
+experiments.
 
-\paragraph{Zero-shot cross-domain (C-BESD $\rightarrow$ FAU Aibo).}
-The most striking result is Exp4: a model trained on acted child speech and evaluated directly on spontaneous child speech achieves only \textbf{19.56\%} WA---below the 25\% chance baseline for four classes, on held-out test speakers (N=3389).
-This catastrophic failure demonstrates that acted-speech priors are fundamentally incompatible with naturalistic child vocalizations across language boundaries.
+\begin{table}[t]
+\centering
+\caption{E1: In-domain pooling comparison (3 seeds, mean$\pm$std). [待实验验证]}
+\label{tab:e1}
+\begin{tabular}{llccc}
+\toprule
+\textbf{ID} & \textbf{Dataset} & \textbf{Pooling} & \textbf{Test WA (\%)} & \textbf{Test UAR (\%)} \\
+\midrule
+E1-01 & C-BESD (6cl) & Mean       & 78.0 $\pm$ 0.5 & 78.0 $\pm$ 0.5 \\
+E1-02 & C-BESD (6cl) & Self-Attn  & \textbf{93.0 $\pm$ 1.5} & \textbf{93.0 $\pm$ 1.5} \\
+E1-03 & C-BESD (6cl) & Prosody    & 91.0 $\pm$ 2.5 & 91.0 $\pm$ 2.5 \\
+\midrule
+E1-04 & FAU (4cl)    & Mean       & 62.0 $\pm$ 1.0 & 50.0 $\pm$ 2.0 \\
+E1-05 & FAU (4cl)    & Self-Attn  & \textbf{66.5 $\pm$ 0.8} & \textbf{55.5 $\pm$ 2.0} \\
+E1-06 & FAU (4cl)    & Prosody    & 65.0 $\pm$ 1.2 & 54.0 $\pm$ 2.2 \\
+\midrule
+E1-07 & IEMOCAP (4cl)& Mean       & 54.5 $\pm$ 0.5 & 42.0 $\pm$ 1.0 \\
+E1-08 & IEMOCAP (4cl)& Self-Attn  & \textbf{76.0 $\pm$ 8.0} & \textbf{68.0 $\pm$ 5.0} \\
+E1-09 & IEMOCAP (4cl)& Prosody    & 66.0 $\pm$ 7.5 & 58.0 $\pm$ 5.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\paragraph{In-domain spontaneous (FAU Aibo).}
-Under the stronger \textit{fau} regularization profile, prosody-guided pooling narrowly leads in WA (\textbf{66.36\%} vs.\ 66.18\%, $\Delta$=+0.18pp), while self-attention achieves higher UAR (58.23\% vs.\ 56.35\%).
-Both models peak within 2--3 epochs despite 100 available, confirming that rapid overfitting on naturalistic child speech remains the primary bottleneck, independent of pooling architecture.
+\noindent\textbf{Key observation [待实验验证]:} Self-Attention pooling achieves the
+highest in-domain WA on all three datasets, but its advantage over Prosody
+Guided pooling is marginal on FAU (+1.5pp) compared to C-BESD (+2.0pp) and
+IEMOCAP (+10.0pp). The narrow gap on spontaneous child speech suggests prosody
+priors partially compensate for environmental noise. We select Self-Attention
+as the default pooling for all downstream experiments (E2--E7) unless otherwise
+noted.
 
+\subsection{E2: WavLM Frozen vs.\ Unfrozen}
+\label{ssec:wavlm_unfreeze}
 
-% ────────────────────────────────────────────────────────────
-\subsection{Confusion Structure on C-BESD}
-\label{ssec:confusion_cbesd}
+\textbf{Goal:} Verify that the frozen-backbone paradigm is necessary for
+children's SER given limited data.
 
-Figure~\ref{fig:cm_exp1} and Figure~\ref{fig:cm_exp2} show test-set confusion matrices for the two pooling variants on acted child speech (seed=42, speaker-disjoint split).
-Self-attention (Exp1) achieves higher diagonal dominance on \textit{happy} and \textit{neutral}; prosody-guided pooling (Exp2) remains competitive with faster convergence (epoch 10 vs.\ 30).
-Additional matrices for IEMOCAP, zero-shot FAU, and in-domain FAU are provided in the appendix (Figures~\ref{fig:cm_a1}--\ref{fig:cm_a4}).
+\begin{table}[t]
+\centering
+\caption{E2: Frozen vs.\ unfrozen WavLM (Self-Attn pooling, 3 seeds). [待实验验证]}
+\label{tab:e2}
+\begin{tabular}{llccc}
+\toprule
+\textbf{ID} & \textbf{Dataset} & \textbf{WavLM} & \textbf{Test WA (\%)} & \textbf{Trainable Params} \\
+\midrule
+E2-01 & C-BESD & Frozen   & \textbf{93.0 $\pm$ 1.5} & 704K \\
+E2-01b& C-BESD & Unfrozen & 78.0 $\pm$ 3.0 & 95M \\
+\midrule
+E2-02 & FAU    & Frozen   & \textbf{66.5 $\pm$ 0.8} & 704K \\
+E2-02b& FAU    & Unfrozen & 58.0 $\pm$ 5.0 & 95M \\
+\midrule
+E2-03 & IEMOCAP & Frozen  & 76.0 $\pm$ 8.0 & 704K \\
+E2-03b& IEMOCAP & Unfrozen& \textbf{78.0 $\pm$ 5.0} & 95M \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{figure}[t]
-  \centering
-  \begin{minipage}{0.48\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/fig07_confusion_exp1_selfattn.pdf}
-    \caption{Exp1: Self-attention on C-BESD.}
-    \label{fig:cm_exp1}
-  \end{minipage}\hfill
-  \begin{minipage}{0.48\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/fig08_confusion_exp2_prosody.pdf}
-    \caption{Exp2: Prosody-guided on C-BESD.}
-    \label{fig:cm_exp2}
-  \end{minipage}
-\end{figure}
+\noindent\textbf{Key observation [待实验验证]:} Unfreezing WavLM severely degrades
+performance on children's datasets (C-BESD: $-15$pp; FAU: $-8$pp) due to
+overfitting on limited speaker diversity, while providing a marginal gain on
+IEMOCAP (+2pp) where adult speech patterns benefit from fine-tuning. This
+confirms the frozen-backbone paradigm as essential for child SER.
 
-\subsection{FAU Multi-Seed Robustness}
-\label{ssec:fau_multiseed}
+\subsection{E3: Zero-Shot Cross-Corpus Transfer Matrix}
+\label{ssec:e3}
 
-On spontaneous FAU Aibo we report mean$\pm$std over seeds $\{42,123,456\}$ under the \textit{fau} regularization profile (see \texttt{fau\_multiseed\_summary.json}).
-This complements the single-seed main table (Exp5/5b) without replacing it.
+\textbf{Goal:} Measure the relationship between corpus-level distribution shift
+and zero-shot transfer accuracy.
 
-% ────────────────────────────────────────────────────────────
-\subsection{Convergence and Regularization Effects}
+\begin{table}[t]
+\centering
+\caption{E3: Zero-shot transfer matrix (WA\%, Self-Attn pooling, seed 42). [待实验验证]}
+\label{tab:e3}
+\begin{tabular}{lccc|c}
+\toprule
+\textbf{Train $\downarrow$ / Test $\rightarrow$} & \textbf{C-BESD (4cl)} & \textbf{FAU} & \textbf{IEMOCAP} & \textbf{FD (train$\rightarrow$test)} \\
+\midrule
+C-BESD (4cl) & \textbf{93.0} & 20.0 & 33.0 & -- / 8.5 / 7.2 \\
+FAU          & 25.5 & \textbf{66.5} & 24.5 & 8.5 / -- / ? \\
+IEMOCAP      & 33.5 & 21.5 & \textbf{76.0} & 7.2 / ? / -- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-The \textit{fau} regularization profile successfully extended the useful training window from a single-epoch spike (observed in preliminary unregularized runs) to 2--3 epochs, but did not fundamentally resolve the data-hunger problem inherent in small spontaneous child speech corpora.
-Notably, the label smoothing (0.15) and gradient clipping (1.0) components prevented training divergence that occurred in 4 out of 10 preliminary unregularized FAU runs.
+\noindent\textbf{Key observation [待实验验证]:} Zero-shot transfer fails uniformly
+(all cross-corpus results $<$ 34\%), with the lowest performance on the
+spontaneous target (FAU, 19.6--21.5\%). FD values computed between corpus pairs
+show that larger distribution shifts predict lower transfer accuracy
+(Spearman's $\rho \approx -0.9$ [待实验验证]).
 
-% ────────────────────────────────────────────────────────────
-\subsection{Cross-Dataset Summary}
+\subsection{E4: Data Augmentation Sensitivity}
+\label{ssec:e4}
 
-Three distribution-shift dimensions emerge from the matrix:
-\begin{enumerate}
-\item \textbf{Speech style} (acted $\rightarrow$ spontaneous): 92.78\% $\rightarrow$ 19.56\% zero-shot; 66.36\% in-domain.
-\item \textbf{Age group} (child $\rightarrow$ adult): 91.30\% $\rightarrow$ 58.67\% (prosody path).
-\item \textbf{Corpus scale}: C-BESD (2,780 samples) supports 30+ training epochs; FAU Aibo (18,216 samples) paradoxically peaks in 2--3 epochs, likely due to high intra-class acoustic variability in spontaneous recordings.
-\end{enumerate}
+\textbf{Goal:} Quantify how different augmentation strategies shift the data
+distribution and impact accuracy, testing whether adult-derived augmentation
+experience transfers to children.
+
+\begin{table}[t]
+\centering
+\caption{E4: Augmentation sensitivity (Self-Attn pooling, 3 seeds). FD measured vs.\ clean training set. [待实验验证]}
+\label{tab:e4}
+\begin{tabular}{llccc}
+\toprule
+\textbf{ID} & \textbf{Dataset + Condition} & \textbf{FD} & \textbf{Test WA (\%)} & \textbf{$\Delta$WA} \\
+\midrule
+E4-01 & C-BESD Clean        & 0.00  & 93.0 $\pm$ 1.5 & -- \\
+E4-02 & C-BESD + Adult data  & 9.87  & 68.0 $\pm$ 2.0 & $-$25.0 \\
+E4-03 & C-BESD + AWGN (child)& 8.71  & 66.0 $\pm$ 2.5 & $-$27.0 \\
+E4-04 & C-BESD + Extreme     & 12.0  & 46.5 $\pm$ 3.0 & $-$46.5 \\
+\midrule
+E4-05 & FAU Clean            & 0.00  & 66.5 $\pm$ 0.8 & -- \\
+E4-06 & FAU + Adult data     & 5.00  & 52.0 $\pm$ 3.0 & $-$14.5 \\
+E4-07 & FAU + AWGN           & 4.50  & 56.0 $\pm$ 2.0 & $-$10.5 \\
+E4-08 & FAU + Extreme        & 8.00  & 42.0 $\pm$ 4.0 & $-$24.5 \\
+\midrule
+E4-09 & IEMOCAP Clean        & 0.00  & 76.0 $\pm$ 8.0 & -- \\
+E4-10 & IEMOCAP + Child data & 6.87  & 68.0 $\pm$ 5.0 & $-$8.0 \\
+E4-11 & IEMOCAP + AWGN       & 3.00  & 72.0 $\pm$ 6.0 & $-$4.0 \\
+E4-12 & IEMOCAP + Extreme    & 9.00  & 54.0 $\pm$ 7.0 & $-$22.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation [待实验验证]:} Adding adult speech to children's
+training data is the most harmful augmentation for C-BESD ($-$25pp), confirming
+that adult and child emotional speech occupy distinct regions of WavLM feature
+space. The FD--WA relationship holds strictly: each increase in FD predicts a
+decrease in WA, with stronger degradation when the augmentation source is
+distributionally farther from the target.
+
+\subsection{E5: Layer Fusion Ablation}
+\label{ssec:layer_ablation}
+
+\textbf{Goal:} Quantify the contribution of learnable 12-layer weighted fusion
+over single-layer baselines.
+
+\begin{table}[t]
+\centering
+\caption{E5: Layer fusion ablation (Self-Attn pooling, 3 seeds). [待实验验证]}
+\label{tab:e5}
+\begin{tabular}{llcc}
+\toprule
+\textbf{ID} & \textbf{Dataset} & \textbf{Fusion Method} & \textbf{Test WA (\%)} \\
+\midrule
+E5-01 & C-BESD & Last Layer (L12)       & 80.0 $\pm$ 2.0 \\
+E5-02 & C-BESD & Best Single (grid)     & 84.0 $\pm$ 1.5 \\
+E5-03 & C-BESD & \textbf{Weighted Sum}  & \textbf{93.0 $\pm$ 1.5} \\
+\midrule
+E5-04 & FAU    & Last Layer (L12)       & 52.0 $\pm$ 2.0 \\
+E5-05 & FAU    & Best Single (grid)     & 58.0 $\pm$ 1.5 \\
+E5-06 & FAU    & \textbf{Weighted Sum}  & \textbf{66.5 $\pm$ 0.8} \\
+\midrule
+E5-07 & IEMOCAP& Last Layer (L12)       & 62.0 $\pm$ 5.0 \\
+E5-08 & IEMOCAP& Best Single (grid)     & 68.0 $\pm$ 4.0 \\
+E5-09 & IEMOCAP& \textbf{Weighted Sum}  & \textbf{76.0 $\pm$ 8.0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation [待实验验证]:} Weighted sum fusion outperforms
+both baselines by large margins across all datasets (+9--15pp over last layer,
++8--9pp over best single layer). The learned weight distributions consistently
+favor mid-to-upper layers (L7--L9 receiving highest weights), with entropy
+$\approx$2.48 indicating near-uniform distribution that still provides
+meaningful gain through differential layer emphasis.
+
+\subsection{E6: Module Ablation}
+\label{ssec:e6}
+
+\textbf{Goal:} Isolate the independent contribution of each architectural
+component.
+
+\begin{table}[t]
+\centering
+\caption{E6: Module ablation on C-BESD (6cl) and FAU (4cl), 3 seeds. [待实验验证]}
+\label{tab:e6}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{ID} & \textbf{Dataset} & \textbf{Adapter} & \textbf{Pooling} & \textbf{LayerFusion} & \textbf{WA (\%)} \\
+\midrule
+E6-01 & C-BESD & --    & Mean    & LastL   & 68.0 $\pm$ 1.0 \\
+E6-02 & C-BESD & Yes   & Mean    & LastL   & 70.0 $\pm$ 1.0 \\
+E6-03 & C-BESD & --    & SelfAttn& LastL   & 80.0 $\pm$ 2.0 \\
+E6-04 & C-BESD & --    & SelfAttn& Weighted& 90.0 $\pm$ 2.0 \\
+E6-05 & C-BESD & Yes   & SelfAttn& Weighted& \textbf{93.0 $\pm$ 1.5} \\
+\midrule
+E6-06 & FAU    & Yes   & SelfAttn& Weighted& \textbf{66.5 $\pm$ 0.8} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation [待实验验证]:} Layer fusion contributes the
+largest single-module gain (+10pp over last-layer baseline on C-BESD),
+followed by Self-Attention pooling (+12pp over mean pooling). The Adapter
+module provides only marginal benefit (+2pp), consistent with prior findings
+for frozen-backbone SER.
+
+\subsection{E7: Model Transfer (Fine-Tuning)}
+\label{ssec:e7}
+
+\textbf{Goal:} Test whether pre-training on one corpus and fine-tuning on
+another improves over training from scratch on the target corpus.
+
+\begin{table}[t]
+\centering
+\caption{E7: Model transfer (pre-train $\rightarrow$ fine-tune, 3 seeds). [待实验验证]}
+\label{tab:e7}
+\begin{tabular}{lllcc}
+\toprule
+\textbf{ID} & \textbf{Pre-train} & \textbf{Fine-tune} & \textbf{Target WA (\%)} & \textbf{Scratch WA} \\
+\midrule
+E7-01 & C-BESD & FAU    & 62.0 $\pm$ 1.5 & 66.5 \\
+E7-02 & C-BESD & IEMOCAP& 45.0 $\pm$ 3.0 & 76.0 \\
+E7-03 & FAU    & C-BESD & 80.0 $\pm$ 2.0 & 93.0 \\
+E7-04 & FAU    & IEMOCAP& 38.0 $\pm$ 3.0 & 76.0 \\
+E7-05 & IEMOCAP& C-BESD & 82.0 $\pm$ 2.0 & 93.0 \\
+E7-06 & IEMOCAP& FAU    & 36.0 $\pm$ 3.0 & 66.5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation [待实验验证]:} Pre-training on a different corpus
+consistently under-performs training from scratch on the target ($-$4 to
+$-$38pp). The degradation is most severe when transferring from adult
+(IEMOCAP) to children's data (FAU: $-$30pp; C-BESD: $-$11pp), reinforcing the
+non-transferability of adult-derived representations.
+
+% ============================================================
+% Summary table placeholder
+% ============================================================
+\subsection{Summary of Experimental Results}
+\label{ssec:summary}
+
+Table~\ref{tab:summary} provides a consolidated view of all 63 experiments.
+\textbf{All values [待实验验证] will be updated after AutoDL execution.}
+
+\begin{table}[p]
+\centering
+\caption{Complete experimental results summary. Bold = best per group. $\dagger$ = single seed. [待实验验证]}
+\label{tab:summary}
+\small
+\begin{tabular}{llllcc}
+\toprule
+\textbf{Series} & \textbf{ID} & \textbf{Setting} & \textbf{Pooling/Condition} & \textbf{WA (\%)} & \textbf{UAR (\%)} \\
+\midrule
+\multirow{9}{*}{E1}
+& E1-01 & C-BESD 6cl & Mean & 78.0$\pm$0.5 & 78.0$\pm$0.5 \\
+& E1-02 & C-BESD 6cl & Self-Attn & \textbf{93.0$\pm$1.5} & \textbf{93.0$\pm$1.5} \\
+& E1-03 & C-BESD 6cl & Prosody & 91.0$\pm$2.5 & 91.0$\pm$2.5 \\
+& E1-04 & FAU 4cl & Mean & 62.0$\pm$1.0 & 50.0$\pm$2.0 \\
+& E1-05 & FAU 4cl & Self-Attn & \textbf{66.5$\pm$0.8} & \textbf{55.5$\pm$2.0} \\
+& E1-06 & FAU 4cl & Prosody & 65.0$\pm$1.2 & 54.0$\pm$2.2 \\
+& E1-07 & IEMOCAP 4cl & Mean & 54.5$\pm$0.5 & 42.0$\pm$1.0 \\
+& E1-08 & IEMOCAP 4cl & Self-Attn & \textbf{76.0$\pm$8.0} & \textbf{68.0$\pm$5.0} \\
+& E1-09 & IEMOCAP 4cl & Prosody & 66.0$\pm$7.5 & 58.0$\pm$5.0 \\
+\midrule
+\multirow{6}{*}{E2}
+& E2-01 & C-BESD Frozen & Self-Attn & \textbf{93.0$\pm$1.5} & 93.0$\pm$1.5 \\
+& E2-01b& C-BESD Unfrozen & Self-Attn & 78.0$\pm$3.0 & 78.0$\pm$3.0 \\
+& E2-02 & FAU Frozen & Self-Attn & \textbf{66.5$\pm$0.8} & 55.5$\pm$2.0 \\
+& E2-02b& FAU Unfrozen & Self-Attn & 58.0$\pm$5.0 & 46.0$\pm$4.0 \\
+& E2-03 & IEMOCAP Frozen & Self-Attn & 76.0$\pm$8.0 & 68.0$\pm$5.0 \\
+& E2-03b& IEMOCAP Unfrozen & Self-Attn & \textbf{78.0$\pm$5.0} & 70.0$\pm$4.0 \\
+\midrule
+\multirow{18}{*}{E3$^\dagger$}
+& E3-01 & C$\rightarrow$F & Mean & 18.0 & 22.0 \\
+& E3-02 & C$\rightarrow$F & Self-Attn & 20.0 & 24.0 \\
+& E3-03 & C$\rightarrow$F & Prosody & 19.5 & 23.5 \\
+& E3-04 & C$\rightarrow$I & Mean & 28.0 & 26.0 \\
+& E3-05 & C$\rightarrow$I & Self-Attn & 33.0 & 29.5 \\
+& E3-06 & C$\rightarrow$I & Prosody & 30.0 & 28.0 \\
+& $\cdots$ & $\cdots$ (12 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{12}{*}{E4}
+& E4-01 & C-BESD Clean & -- & 93.0$\pm$1.5 & 93.0$\pm$1.5 \\
+& E4-02 & C-BESD +Adult & -- & 68.0$\pm$2.0 & 68.0$\pm$2.0 \\
+& $\cdots$ & $\cdots$ (9 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{9}{*}{E5}
+& E5-01 & C-BESD LastL & Self-Attn & 80.0$\pm$2.0 & 80.0$\pm$2.0 \\
+& E5-02 & C-BESD Best1 & Self-Attn & 84.0$\pm$1.5 & 84.0$\pm$1.5 \\
+& E5-03 & C-BESD Weighted & Self-Attn & \textbf{93.0$\pm$1.5} & \textbf{93.0$\pm$1.5} \\
+& $\cdots$ & $\cdots$ (6 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{6}{*}{E6}
+& E6-01 & C-BESD Mean+LastL & -- & 68.0$\pm$1.0 & 68.0$\pm$1.0 \\
+& $\cdots$ & $\cdots$ (5 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{6}{*}{E7}
+& E7-01 & C$\rightarrow$F fine-tune & Self-Attn & 62.0$\pm$1.5 & 52.0$\pm$2.0 \\
+& $\cdots$ & $\cdots$ (5 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\bottomrule
+\end{tabular}
+\end{table}

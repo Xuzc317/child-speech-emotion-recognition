@@ -1,37 +1,70 @@
+% ============================================================
+% 1_Introduction.tex — Version 3 (general-to-specific), Technical Challenge Version 1
+% [待实验验证] = simulated estimate
+% ============================================================
+
 \section{Introduction}
 \label{sec:introduction}
 
-Speech emotion recognition (SER) underpins affect-aware interfaces in education, pediatric healthcare, and human--robot interaction.
-For \textit{children's} speech, the problem is compounded by wider fundamental-frequency ranges, immature articulation, and limited availability of spontaneous, labeled corpora.
-Most child SER systems therefore rely on acted datasets recorded under studio conditions, where emotions are exaggerated and acoustically stereotyped.
+Speech emotion recognition (SER) enables affect-aware applications in
+education, pediatric healthcare, and child--robot interaction. For children's
+speech specifically, accurate emotion detection could support early screening
+of developmental conditions, adaptive tutoring systems, and emotionally
+intelligent companion robots~\cite{batliner2011fau}. However, the vast majority
+of SER research is conducted on adult speech corpora, and the findings are
+assumed to generalize downward to pediatric populations---an assumption that
+remains largely untested.
 
-This practice creates a silent validity crisis.
-A model that achieves high accuracy on acted child speech may learn dataset-specific prototypes rather than generalizable emotional cues.
-When such models encounter spontaneous child vocalizations---as in the FAU Aibo child--robot corpus---performance can collapse catastrophically.
-Yet the field continues to report in-domain acted accuracy as the primary success metric.
+This problem is particularly challenging due to three compounding factors.
+\textbf{First}, children's vocal productions differ systematically from those
+of adults: higher and more variable fundamental frequency, immature
+articulatory control, and distinct prosodic patterns~\cite{lee1999acoustics}.
+\textbf{Second}, the largest available child speech emotion corpora are acted
+rather than spontaneous, raising questions about ecological
+validity~\cite{batliner2011fau,schuller2009interspeech}. \textbf{Third}, the
+interaction between corpus-level statistical distribution and downstream SER
+accuracy has not been systematically measured or used as a design constraint.
 
-\subsection{Motivation: Distribution Shift as the Central Variable}
+Traditional approaches to children's SER have largely adopted architectures and
+training protocols from adult SER without modification. Representative methods
+use hand-crafted features (MFCC, eGeMAPS) with SVM or CNN classifiers, or more
+recently, frozen self-supervised learning (SSL) representations with linear
+probing~\cite{wagner2023dawn,chen2022wavlm}. While these methods achieve
+reasonable in-domain accuracy on acted corpora, they share a common blind spot:
+the statistical mismatch between training and deployment distributions is
+neither measured nor mitigated. Recent work on distribution shift
+quantification using Fr\'{e}chet Distance in feature space has shown promise in
+computer vision~\cite{heusel2017gans} and has been extended to speech
+domains~\cite{le2024dist}, but has not been applied to child SER as a
+diagnostic or design tool.
 
-Recent self-supervised learning (SSL) backbones such as WavLM~\cite{chen2022wavlm} provide powerful frame-level representations, but downstream design choices (pooling, adaptation, regularization) still determine whether emotion-relevant information is extracted or whether the model overfits to corpus artifacts.
-Mean pooling discards temporal structure; unconstrained self-attention pooling can attend to arbitrary feature dimensions without physical interpretability.
-
-Children's emotional expression is strongly linked to \textit{prosody}: pitch excursions, energy bursts, and rhythm irregularities that differ systematically from adult speech~\cite{fan2024children}.
-We hypothesize that explicitly conditioning temporal attention on frame-level F0 and RMS energy provides an inductive bias that (i)~accelerates learning, (ii)~regularizes models on noisy spontaneous speech, and (iii)~anchors decisions to measurable acoustic events.
-
-\subsection{Contributions}
-
-This paper makes four contributions:
+In this paper, we argue that distribution awareness should be a first-class
+design principle---not an afterthought---in children's SER. We make the
+following contributions:
 
 \begin{enumerate}
-\item \textbf{A distribution-driven evaluation protocol} spanning acted child (C-BESD), spontaneous child (FAU Aibo), and adult (IEMOCAP) corpora, with speaker-disjoint splits and dual metrics (WA and UAR).
-\item \textbf{Prosody-guided temporal importance pooling} fused with frozen WavLM and learnable 12-layer weighting, compared against a strictly parameter-matched self-attention baseline (111,105 parameters each).
-\item \textbf{Quantification of the acted--spontaneous chasm}: zero-shot C-BESD$\rightarrow$FAU transfer yields only 19.56\% WA (vs.\ 92.78\% in-domain), with monotonic FD--accuracy degradation across age, style, and language shifts.
-\item \textbf{An accuracy--explainability trade-off analysis}: prosody-guided pooling achieves APC$_{\text{wav}}{=}0.718$ with attention locked to energy peaks, justifying a 1.48pp WA sacrifice on acted data for deployable interpretability in safety-critical applications.
+\item \textbf{A unified experimental framework} spanning three datasets
+  (C-BESD 6-class acted children, FAU Aibo 4-class spontaneous children,
+  IEMOCAP 4-class acted adults), all under strict speaker-disjoint 70/15/15
+  partitioning verified for zero leakage. We document the dataset-specific
+  preprocessing decisions required for this unification, including the FAU
+  Aibo 5-to-4-class remapping (A+E$\rightarrow$Angry, P$\rightarrow$Happy,
+  R$\rightarrow$Sad) and C-BESD child-ID extraction from filenames.
+
+\item \textbf{A systematic 63-experiment comparison} covering three pooling
+  strategies (mean, self-attention, prosody-guided), WavLM frozen vs.\
+  unfrozen, 12-layer fusion vs.\ single-layer baselines, data augmentation
+  sensitivity across four conditions, zero-shot cross-corpus transfer
+  ($3\times3$ matrix), and fine-tuning model transfer.
+
+\item \textbf{Empirical discovery of four regularities}:
+  (i)~FD-size strictly monotonic negative correlation with WA;
+  (ii)~child-specific prosody pooling efficacy (direction reversal between
+  children and adults); (iii)~non-transferability of adult augmentation
+  experience; (iv)~consistent mid-to-upper WavLM layer preference across
+  corpora.
+
+\item \textbf{Open-source release} of all experimental configurations, model
+  weights, and evaluation scripts to facilitate reproducible child SER
+  research.
 \end{enumerate}
-
-\subsection{Paper Organization}
-
-Section~\ref{sec:methodology} describes the model architecture and training protocol.
-Section~\ref{sec:experiments_results} presents the full experimental matrix.
-Section~\ref{sec:analysis_discussion} interprets results through three pillars: distribution-shift failure, prosody as structural regularization, and explainability.
-Section~\ref{sec:conclusion} summarizes implications and future work.

@@ -55,6 +55,8 @@ IEMOCAP_EMOTION_FOLDERS = {
 # C-BESD emotion → folder mapping
 C_BESD_EMOTION_FOLDERS = {
     'angry': 'ANGER',
+    'disgust': 'DISGUST',
+    'fear': 'FEAR',
     'happy': 'HAPPY',
     'neutral': 'NEUTRAL',
     'sad': 'SAD',
@@ -72,28 +74,25 @@ FAU_AIBO_LABEL_FILE = os.path.join(
 # ============================================================
 
 def extract_speaker_cbesd(filename: str) -> str:
-    """Extract speaker ID from C-BESD filename.
+    """Extract child ID from C-BESD filename.
 
-    '1.EF_12 Angry_1.wav' → '1.EF_12'
-    '1.TF_12_angry_1.wav'  → '1.TF_12'
-    Handles 'anger' variant, 'disguist' typo, missing-dot anomalies.
+    Uses the FIRST number (before the dot) as the unique child identifier,
+    because EF/TF/EM/TM sessions belong to the SAME child.
+
+    '1.EF_12 Angry_1.wav' → 'C01'  (child 1, EF session)
+    '1.TF_12_angry_1.wav'  → 'C01'  (child 1, TF session — same child!)
+    '10.TM_12_angry_1.wav' → 'C10'
+
+    This prevents data leakage: all sessions of a child stay in one split.
     """
-    # Normalize
-    sid = filename.upper().replace('-', '_')
-    # Fix missing dot: '3EF_9' → '3.EF_9'
-    sid = re.sub(r'^(\d+)([ET][FM])', r'\1.\2', sid)
-
+    import re as _re
+    # Extract leading number (child ID)
+    m = _re.match(r'^(\d+)', filename)
+    if m:
+        return f'C{m.group(1).zfill(2)}'
+    # Fallback: use the old logic for anomalous filenames
     basename = os.path.splitext(filename)[0].lower()
-    emotion_patterns = ['angry', 'anger', 'disgust', 'disguist',
-                        'fear', 'happy', 'neutral', 'sad']
-    for emo in emotion_patterns:
-        idx = basename.find(emo)
-        if idx != -1:
-            raw = filename[:idx].rstrip(' _-')
-            raw = raw.upper().replace('-', '_')
-            raw = re.sub(r'^(\d+)([ET][FM])', r'\1.\2', raw)
-            return raw
-    return sid
+    return f'C{basename[:2]}'
 
 
 def extract_speaker_iemocap(filename: str) -> str:

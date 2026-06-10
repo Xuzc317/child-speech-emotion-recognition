@@ -1,18 +1,61 @@
+% ============================================================
+% 2_Related_Work.tex
+% ============================================================
+
 \section{Related Work}
 \label{sec:related_work}
 
-\paragraph{Self-supervised speech representations for SER.}
-WavLM, HuBERT, and emotion-specialized models (e.g., emotion2vec) provide frame-level embeddings that have largely replaced hand-crafted features in SER~\cite{chen2022wavlm,wagner2023dawn}.
-Layer-wise analysis shows that mid-to-upper transformer layers often carry the most emotion-discriminative information~\cite{pasad2021layer}, motivating learnable layer fusion rather than fixed layer selection.
+\subsection{Self-Supervised Speech Representations for SER}
 
-\paragraph{Temporal pooling and attention.}
-Attention-based pooling aggregates frame sequences into utterance-level vectors but typically operates only in the SSL feature space.
-Our prosody-guided variant injects frame-aligned F0 and energy as an explicit prior, related in spirit to knowledge-guided attention in paralinguistics but implemented with strict parameter parity against a self-attention ablation.
+WavLM~\cite{chen2022wavlm}, HuBERT~\cite{hsu2021hubert}, and
+emotion-specialized models such as emotion2vec~\cite{ma2024emotion2vec}
+provide frame-level embeddings that have largely replaced hand-crafted features
+in SER. Layer-wise analyses consistently show that mid-to-upper transformer
+layers carry the most emotion-discriminative information~\cite{pasad2021layer},
+motivating learnable weighted fusion over fixed single-layer
+extraction~\cite{rozen2024layer}. We adopt WavLM Base (wavlm-base-sv) as our
+frozen backbone and compare three fusion strategies: last-layer only,
+grid-search best single layer, and learnable 12-layer weighted sum.
 
-\paragraph{Child speech and corpus bias.}
-Child SER datasets remain scarce; C-BESD and FAU Aibo represent contrasting regimes (acted vs.\ spontaneous).
-Prior work reports strong in-domain acted performance but rarely quantifies cross-style transfer at scale.
-We complement parametric Fr\'{e}chet distance (FD) with kernel-based speech MMD (SMMD) to characterize distribution shift non-parametrically.
+\subsection{Temporal Pooling and Prosody-Guided Attention}
 
-\paragraph{Explainability in affective computing.}
-Post-hoc saliency maps are common, but correlation between learned attention and physical prosody (our APC metric) offers a lightweight, deployment-friendly interpretability probe suitable for clinical review workflows.
+Aggregating variable-length frame sequences into fixed-dimensional utterance
+representations is a central design choice in SER. Mean pooling is the
+simplest baseline but discards temporal structure. Self-attention
+pooling~\cite{lin2017structured} learns to weight frames by importance but
+operates only in the SSL feature space. Prosody-guided
+pooling~\cite{triantafyllopoulos2023prosody} injects frame-aligned F0 and
+energy as an explicit acoustic prior into the attention computation, acting as
+a structural regularizer. Prior work has evaluated these strategies on adult
+speech or small acted child corpora; we provide the first systematic comparison
+across acted and spontaneous child speech under matched parameter budgets.
+
+\subsection{Children's Speech and Cross-Corpus SER}
+
+The FAU Aibo corpus~\cite{batliner2011fau,steidl2009fau} is the largest
+publicly available spontaneous child speech emotion dataset, collected from 51
+German children (aged 10--13) interacting with a robot dog. The INTERSPEECH
+2009 Emotion Challenge~\cite{schuller2009interspeech} established a two-class
+(negative vs.\ idle) baseline on this corpus. Subsequent work extended to
+5-class~\cite{steidl2011fau} and 4-class labeling schemes. The C-BESD
+dataset~\cite{sazali2023besd} provides 6-class acted child speech in Malay from
+75 children, but critical metadata (child identity, recording session) is
+embedded only in filenames and has not been systematically extracted in prior
+work---a gap we address through regex-based child-ID parsing.
+
+Cross-corpus SER studies~\cite{schuller2010cross, latif2024cross}
+consistently report catastrophic accuracy drops when training and test
+distributions differ, but have not systematically measured the
+\textit{relationship between the magnitude of distribution shift and accuracy
+degradation}. Our work fills this gap by computing Fr\'{e}chet Distance between
+every pair of corpora and correlating it with downstream zero-shot and
+in-domain performance.
+
+\subsection{Distribution Shift Diagnostics}
+
+Fr\'{e}chet Distance (FD) in deep feature space, originally proposed for
+evaluating generative models~\cite{heusel2017gans}, has been adapted as a
+corpus-level distribution shift metric in speech~\cite{le2024dist}. The
+Simplified MMD (SMMD) provides a complementary kernel-based measure. We apply
+both metrics to WavLM frame-level features and use the resulting FD values as
+explanatory variables for cross-corpus accuracy patterns.
