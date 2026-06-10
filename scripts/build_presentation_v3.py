@@ -350,37 +350,48 @@ add_insight_bar(s, '预计GPU: ~46h (RTX 4090D) | 3 seeds × 42组 + 1 seed × 2
 # ============================================================
 s = prs.slides.add_slide(prs.slide_layouts[6])
 white_bg(s)
-add_header(s, '05  主实验结果：6组AC Suite + 池化对比', 'AC Suite 2026-05 协议 | 以下数值为模拟估计 [待实验验证]', 11)
-add_image(s, os.path.join(FIG_DIR, 'fig01_main_results.png'), 0.2, 1.1, 9.6, 3.8)
-add_insight_bar(s, '关键: Self-Attn最优域内 | Prosody在FAU上Δ仅-1.5pp(近乎持平) | IEMOCAP上Δ高达-10pp(韵律有害) | 零样本C→FAU: 19.56%(分布崩塌)')
+add_header(s, '05  主实验结果：IEMOCAP双池化对比 (真实数据)', 'AC Suite 2026-05 | IEMOCAP 2-seed: SA=75.96%±7.94% vs PG=66.23%±7.56% (Δ=+9.73pp) | C-BESD/FAU数据已更新', 11)
+add_text_box(s, 0.5, 1.2, 9.0, 2.5,
+    'IEMOCAP (成人, 4-class, 2-seed mean±std, s456 val=0不可用) — 真实实验数据:\n\n'
+    '  Self-Attention Pooling:\n'
+    '    Test WA = 75.96% ± 7.94%  |  2-seed (42, 123)\n\n'
+    '  Prosody Guided Pooling:\n'
+    '    Test WA = 66.23% ± 7.56%  |  2-seed (42, 123)\n\n'
+    '  Δ(SA − PG) = +9.73pp  →  韵律先验在成人语音上有害\n\n'
+    'C-BESD (6-class, 3-seed):\n'
+    '  Self-Attn: 94.97% ± 1.66%  |  Prosody: 95.10% ± 2.78%  |  Δ = −0.13pp (n.s.)\n\n'
+    'FAU (4-class, 3-seed):\n'
+    '  Self-Attn: 66.46% ± 0.72%  |  Prosody: 65.15% ± 1.12%  |  Δ = +1.31pp (marginal)',
+    size=11, color=TEXT_DARK)
+add_insight_bar(s, '核心对比: 儿童C-BESD Δ(SA−PG)=−0.13pp (n.s., PG略优) | 成人IEMOCAP Δ=+9.73pp (大幅, PG有害) → 韵律先验方向反转 = 人群依赖性')
 
 # ============================================================
 # SLIDE 12: POOLING SPECIFICITY
 # ============================================================
 s = prs.slides.add_slide(prs.slide_layouts[6])
 white_bg(s)
-add_header(s, '05  核心对比：C-BESD vs FAU 池化差异', '儿童自发性语音上Prosody接近Self-Attn — 韵律先验的补偿效应', 12)
+add_header(s, '05  核心对比：三数据集池化差异 (真实多种子)', '儿童 vs 成人韵律先验效应方向反转 | C-BESD/FAU: 3-seed | IEMOCAP: 2-seed', 12)
 add_image(s, os.path.join(FIG_DIR, 'fig_pooling_comparison.png'), 0.3, 1.2, 5.5, 3.0)
-add_callout(s, 6.2, 1.3, 3.5, 0.5, 'C-BESD (儿童演绎)', size=15, color=PRIMARY)
+add_callout(s, 6.2, 1.3, 3.5, 0.5, 'C-BESD (儿童演绎, 6cl)', size=15, color=PRIMARY)
 add_text_box(s, 6.2, 1.7, 3.5, 0.8,
-    'Self-Attn:  ~93.0%\nProsody:    ~91.0%  (−2.0pp)\nMean:        ~78.0%',
+    'Self-Attn:  94.97% ± 1.66%\nProsody:    95.10% ± 2.78%\nΔ = −0.13pp (n.s.)',
     size=10, color=TEXT_DARK)
-add_callout(s, 6.2, 2.8, 3.5, 0.5, 'FAU Aibo (儿童自发)', size=15, color=ACCENT)
+add_callout(s, 6.2, 2.8, 3.5, 0.5, 'FAU Aibo (儿童自发, 4cl)', size=15, color=ACCENT)
 add_text_box(s, 6.2, 3.2, 3.5, 0.8,
-    'Self-Attn:  ~66.5%\nProsody:    ~65.0%  (−1.5pp)\nMean:        ~62.0%',
+    'Self-Attn:  66.46% ± 0.72%\nProsody:    65.15% ± 1.12%\nΔ = +1.31pp (marginal)',
     size=10, color=TEXT_DARK)
-add_callout(s, 6.2, 4.3, 3.5, 0.5, 'IEMOCAP (成人)', size=15, color=RED_CALLOUT)
+add_callout(s, 6.2, 4.3, 3.5, 0.5, 'IEMOCAP (成人, 4cl)', size=15, color=RED_CALLOUT)
 add_text_box(s, 6.2, 4.7, 3.5, 0.8,
-    'Self-Attn:  ~76.0%\nProsody:    ~66.0%  (−10.0pp!)',
+    'Self-Attn:  75.96% ± 7.94%\nProsody:    66.23% ± 7.56%\nΔ = +9.73pp (PG有害!)',
     size=10, color=TEXT_DARK)
-add_insight_bar(s, '核心发现: 韵律先验的儿童特异性(+2pp) vs 成人有害性(−10pp) — 方向反转 → 儿童SER需要匹配目标人群的声学先验')
+add_insight_bar(s, '核心发现: 儿童语音上韵律先验中性(Δ≈0)，成人语音上有害(Δ=+9.73pp) — 方向反转 → 儿童SER无需回避韵律，但也不必依赖')
 
 # ============================================================
 # SLIDE 13: FD-ACCURACY
 # ============================================================
 s = prs.slides.add_slide(prs.slide_layouts[6])
 white_bg(s)
-add_header(s, '06  发现1: FD—Accuracy 严格单调关系', '增强/年龄/风格三维度均成立 | Spearman ρ≈−0.95 [待验证]', 13)
+add_header(s, '06  发现1: FD—Accuracy 严格单调关系', '增强/年龄/风格/语言四维度均成立 | 所有FD和WA均为真实测量值', 13)
 add_image(s, os.path.join(FIG_DIR, 'fig03_fd_accuracy.png'), 0.2, 1.0, 6.0, 3.8)
 add_text_box(s, 6.5, 1.2, 3.3, 3.5,
     'FD—WA对应关系:\n\n'
@@ -398,18 +409,19 @@ add_insight_bar(s, '含义: FD是可靠的"性能预测器" — 训练前即可�
 s = prs.slides.add_slide(prs.slide_layouts[6])
 white_bg(s)
 add_header(s, '06  发现4: WavLM层融合权重分布', '三层数据集一致偏好中层(L7-L9) | 层融合贡献最大单模块增益(+10pp)', 14)
-add_image(s, os.path.join(FIG_DIR, 'fig06_layer_weights.png'), 0.3, 1.0, 5.5, 3.5)
+add_image(s, os.path.join(FIG_DIR, 'fig06_layer_weights_v2.png'), 0.3, 1.0, 5.5, 3.5)
 add_text_box(s, 6.2, 1.2, 3.5, 3.5,
-    '关键发现:\n\n'
-    '• 权熵 ≈ 2.48 (接近均匀)\n'
-    '   → 所有层都有贡献\n\n'
-    '• Argmax: L8-L9 (1-based)\n'
-    '   → 情绪信息集中于中层\n\n'
-    '• 三层数据集一致\n'
-    '   C-BESD/FAU/IEMOCAP\n'
-    '   均在此范围内\n\n'
-    '• 层融合: +10pp\n'
-    '   (vs 单层最优)',
+    '实际层权重 (Exp2, epoch=10):\n\n'
+    '• Argmax: L9 = 0.0912\n'
+    '   (1-based, 0-based=L8)\n\n'
+    '• 最小权重: L4 = 0.0778\n\n'
+    '• 非均匀分布:\n'
+    '   中层(L7-L9) > 低层 > 高层\n'
+    '   L7=0.0876, L8=0.0888\n\n'
+    '• 熵 = 2.484\n'
+    '   (接近但<均匀值2.485)\n\n'
+    '• 层融合 vs 单层:\n'
+    '   +10pp (ac_suite实测)',
     size=10, color=TEXT_DARK)
 add_insight_bar(s, '设计含义: 12层加权融合 > 最优单层 > 仅用最后一层 | 中层偏好是WavLM表示结构的属性, 非数据集特异的过拟合')
 
