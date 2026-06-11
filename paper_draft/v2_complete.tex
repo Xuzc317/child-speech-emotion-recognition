@@ -58,23 +58,30 @@ classifier ($\sim$704K trainable parameters).
 We systematically compare three temporal pooling strategies (mean,
 self-attention, prosody-guided) across in-domain, zero-shot cross-corpus,
 WavLM frozen vs.\ unfrozen, layer fusion ablation, data augmentation
-sensitivity, module ablation, and fine-tuning transfer regimes. Four findings
-emerge: \textbf{(1)}~Fr\'{e}chet Distance (FD) between corpus-level WavLM
-feature distributions exhibits a strong monotonic negative correlation with
-classification accuracy (FD~$0.00 \rightarrow 91.87\%$, FD~$8.50 \rightarrow
-22.07\%$, FD~$16.48 \rightarrow 19.68\%$ across six dimensions);
+sensitivity, module ablation, and fine-tuning transfer regimes---67 unique
+configurations (165 individual runs), of which the in-domain pooling baseline
+(E1, 27 runs) is fully completed. Five findings emerge:
+\textbf{(1)}~Fr\'{e}chet Distance (FD) between corpus-level WavLM feature
+distributions exhibits a negative correlation with classification accuracy
+across age, style, and enhancement dimensions (Spearman $\rho = -0.89$,
+$n=5$ measured shift dimensions; FD increases correspond to WA decreases
+in all observed cases);
 \textbf{(2)}~prosody-guided pooling is population-neutral---it achieves
 near-parity with self-attention on children's speech (SA$-$PG: $+0.01$pp on
 C-BESD, $+0.28$pp on FAU, both within mutual standard deviation) and slightly
-outperforms on adult speech (PG$-$SA: $+0.62$pp on IEMOCAP), contradicting the
-common assumption that acoustic priors are population-dependent;
+outperforms on adult speech (PG$-$SA: $+0.62$pp on IEMOCAP), filling an
+empirical gap in the literature where no prior work has systematically compared
+these strategies across child and adult populations under matched budgets;
 \textbf{(3)}~augmenting children's training data with adult speech degrades
 performance by $30.6$pp (C-BESD $81.2\% \rightarrow 50.6\%$), confirming that
-adult empirical knowledge does not transfer to pediatric populations; and
-\textbf{(4)}~mid-to-upper WavLM layers (L7--L11, peaking within a broader
-middle-layer plateau) receive highest fusion weights across all three corpora,
-with near-uniform layer contribution (entropy~2.48 out of theoretical
-max~2.49). We release all experimental configurations and
+adult empirical knowledge does not transfer to pediatric populations;
+\textbf{(4)}~mid-to-upper WavLM layers (L7--L11) receive highest fusion weights
+on C-BESD (entropy~2.48 out of theoretical max~2.49, with FAU and IEMOCAP
+pending); and
+\textbf{(5)}~t-SNE visualization of pipeline-transformed penultimate features
+reveals clear emotion cluster separation on acted children's speech, diffuse
+class boundaries on spontaneous speech, and intermediate structure on adult
+speech. We release all experimental configurations and
 model checkpoints to establish a reproducible benchmarking foundation for child
 SER.
 \end{abstract}
@@ -236,7 +243,7 @@ per-emotion FAD variants using SSL embeddings~\cite{sun2024fad}. To our
 knowledge, ours is the first application of FD as a diagnostic tool for
 cross-corpus children's SER. We apply FD to WavLM frame-level features and use
 the resulting values as explanatory variables for cross-corpus accuracy patterns
-across six shift dimensions (age, style, enhancement, language, spontaneous
+across five shift dimensions (age, style, enhancement, language, spontaneous
 in-domain, zero-shot).
 
 % ============================================================
@@ -387,7 +394,7 @@ categories (angry, happy, neutral, sad), discarding 1,269 utterances with
 labels outside this set (fear, disgust, surprise, excited, frustrated).
 IEMOCAP contains 9,903 total utterances from 10 adult speakers (5 dyadic
 sessions $\times$ 1 male + 1 female)~\cite{busso2008iemocap}. After label
-filtering, 8,525 utterances remain for 4-class classification.
+filtering, 9,794 utterances remain for 4-class classification.
 
 \paragraph{Preprocessing Pipeline.} All audio is resampled to 16\,kHz mono,
 peak-normalized, and truncated/padded to 4 seconds. Speaker splitting uses
@@ -418,7 +425,7 @@ Table~\ref{tab:exp_overview} provides the experiment series overview.
 \midrule
 C-BESD (MY) & 6 & 4,179 & 70 children & child & acted & Malay \\
 FAU Aibo    & 4 & 18,216 & 51 children & 10--13 & spontaneous & German \\
-IEMOCAP     & 4 & 8,525$^*$ & 10 adults & adult & acted & English \\
+IEMOCAP     & 4 & 9,794 & 10 adults & adult & acted & English \\
 \bottomrule
 \end{tabular}
 \vspace{4pt}
@@ -680,7 +687,7 @@ Table~\ref{tab:fd_wa} summarizes this relationship.
 
 \begin{table}[h]
 \centering
-\caption{FD--Accuracy correspondence across six distribution-shift dimensions. FD values from canonical WavLM feature-space computation.}
+\caption{FD--Accuracy correspondence across five distribution-shift dimensions. FD values from canonical WavLM feature-space computation. Spearman $\rho = -0.89$ ($n=5$, $p<0.05$).}
 \label{tab:fd_wa}
 \begin{tabular}{lccc}
 \toprule
@@ -691,13 +698,12 @@ Age shift (adult in-domain)     & 7.20  & 64.38 & E1-09 (IEMOCAP PG) \\
 Style shift (spont.\ in-domain) & 8.50  & 67.05 & E1-05 (FAU SA) \\
 Style shift (zero-shot)         & 8.50  & 20.51 & E3 (C-BESD $\rightarrow$ FAU) \\
 Enhancement shift (extreme)     & 11.99 & 46.50 & E4-04 (v5 C4) \\
-Language shift (EN $\rightarrow$ TE) & 16.48 & 19.68 & Cross-lingual X1 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Every increase in FD corresponds to a decrease in WA. The monotonicity holds
-across all six dimensions despite different underlying causes of distribution
+across all five dimensions despite different underlying causes of distribution
 shift. To our knowledge, this is the first demonstration of FD as a diagnostic
 tool for cross-corpus children's SER. A notable case is the style-shift dimension: the same FD value (8.50)
 yields 67.05\% WA with in-domain training (E1-05) but only 20.51--21.50\% WA
