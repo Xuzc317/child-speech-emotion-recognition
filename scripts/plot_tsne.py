@@ -96,69 +96,76 @@ def plot_tsne_panel(ax, features_2d, labels, title, label_names):
 
 # ── Main ────────────────────────────────────────────────────
 
+def load_model_and_extract(name, cfg):
+    """Load checkpoint, run inference, return (feats_2d, labels, label_names)."""
+    print(f'[{name}] Loading checkpoint: {cfg["ckpt"]}')
+    ckpt = torch.load(cfg['ckpt'], map_location=device)
+
+    model_config = ckpt.get('config', {
+        'pooling_type': 'self_attention', 'num_classes': cfg['num_classes'],
+        'ssl_model': 'wavlm', 'pooling_dropout': 0.0,
+        'fusion_mode': 'weighted', 'fusion_best_layer': 8,
+        'use_adapter': False, 'unfreeze_ssl': False,
+    })
+    for k in ['fusion_mode', 'fusion_best_layer', 'use_adapter', 'unfreeze_ssl']:
+        if k not in model_config:
+            model_config[k] = False if k in ('use_adapter', 'unfreeze_ssl') else (
+                'weighted' if k == 'fusion_mode' else 8)
+
+    model = SERModel(model_config).to(device)
+    model.load_state_dict(ckpt['model_state_dict'], strict=False)
+
+    dls = get_dataloaders(cfg['dataset'], batch_size=64, num_workers=4,
+                          seed=42, splits=['test'])
+
+    print(f'  Extracting features (max {MAX_SAMPLES})...')
+    feats, labels = extract_features(model, dls['test'], MAX_SAMPLES)
+    print(f'  Collected {len(feats)} samples, {len(set(labels))} classes')
+
+    print(f'  Running t-SNE (perplexity={PERPLEXITY})...')
+    tsne = TSNE(n_components=2, perplexity=PERPLEXITY, random_state=42,
+                 n_iter=1000, verbose=0)
+    feats_2d = tsne.fit_transform(feats)
+
+    if cfg['num_classes'] == 6:
+        label_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad']
+    else:
+        label_names = ['angry', 'happy', 'neutral', 'sad']
+
+    return feats_2d, labels, label_names
+
+
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+    # Step 1: Extract t-SNE for all three datasets (cache results)
+    results = {}
+    for name, cfg in CHECKPOINTS.items():
+        results[name] = load_model_and_extract(name, cfg)
+
+    # Step 2: Combined figure (3 panels)
     fig, axes = plt.subplots(1, 3, figsize=(20, 6.2))
     fig.suptitle(
         't-SNE of Pooled Features (Self-Attention Pooling, seed=42)',
         fontsize=15, fontweight='bold', y=1.01
     )
-
-    for ax, (name, cfg) in zip(axes, CHECKPOINTS.items()):
-        print(f'[{name}] Loading checkpoint: {cfg["ckpt"]}')
-        ckpt = torch.load(cfg['ckpt'], map_location=device)
-
-        # Build model from saved config (fallback to defaults for legacy checkpoints)
-        model_config = ckpt.get('config', {
-            'pooling_type': 'self_attention',
-            'num_classes': cfg['num_classes'],
-            'ssl_model': 'wavlm',
-            'pooling_dropout': 0.0,
-            'fusion_mode': 'weighted',
-            'fusion_best_layer': 8,
-            'use_adapter': False,
-            'unfreeze_ssl': False,
-        })
-        # Ensure keys exist for legacy checkpoints
-        for k in ['fusion_mode', 'fusion_best_layer', 'use_adapter', 'unfreeze_ssl']:
-            if k not in model_config:
-                model_config[k] = False if k in ('use_adapter', 'unfreeze_ssl') else (
-                    'weighted' if k == 'fusion_mode' else 8)
-
-        model = SERModel(model_config).to(device)
-        model.load_state_dict(ckpt['model_state_dict'], strict=False)
-
-        # DataLoader: test split only
-        dls = get_dataloaders(
-            cfg['dataset'], batch_size=64, num_workers=4,
-            seed=42, splits=['test'],
-        )
-
-        print(f'  Extracting features (max {MAX_SAMPLES})...')
-        feats, labels = extract_features(model, dls['test'], MAX_SAMPLES)
-        print(f'  Collected {len(feats)} samples, {len(set(labels))} classes')
-
-        # t-SNE
-        print(f'  Running t-SNE (perplexity={PERPLEXITY})...')
-        tsne = TSNE(n_components=2, perplexity=PERPLEXITY, random_state=42,
-                     n_iter=1000, verbose=0)
-        feats_2d = tsne.fit_transform(feats)
-
-        # Labels
-        if cfg['num_classes'] == 6:
-            label_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad']
-        else:
-            label_names = ['angry', 'happy', 'neutral', 'sad']
-
+    for ax, (name, (feats_2d, labels, label_names)) in zip(axes, results.items()):
         plot_tsne_panel(ax, feats_2d, labels, name, label_names)
-        print(f'  Done.')
-
     plt.tight_layout()
-    out_path = os.path.join(OUTPUT_DIR, 'fig_tsne_e1_pooled_features.png')
-    fig.savefig(out_path, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f'\nSaved: {out_path}')
-    plt.close()
+    combined_path = os.path.join(OUTPUT_DIR, 'fig_tsne_e1_pooled_features.png')
+    fig.savefig(combined_path, dpi=200, bbox_inches='tight', facecolor='white')
+    plt.close(fig)
+    print(f'Saved combined: {combined_path}')
+
+    # Step 3: Individual figures per dataset
+    for name, (feats_2d, labels, label_names) in results.items():
+        fig_ind, ax_ind = plt.subplots(1, 1, figsize=(7, 6.5))
+        plot_tsne_panel(ax_ind, feats_2d, labels, name, label_names)
+        safe_name = name.replace(' ', '_')
+        ind_path = os.path.join(OUTPUT_DIR, f'fig_tsne_{safe_name}_self_attention.png')
+        fig_ind.savefig(ind_path, dpi=200, bbox_inches='tight', facecolor='white')
+        plt.close(fig_ind)
+        print(f'Saved individual: {ind_path}')
 
 
 if __name__ == '__main__':
