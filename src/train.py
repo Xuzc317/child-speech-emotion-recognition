@@ -154,7 +154,14 @@ class SERModel(nn.Module):
             pooled = self.pooler(fused, mask=mask)
 
         logits = self.classifier(pooled)
-        if return_features:
+        if return_features == 'pooled':
+            return logits, pooled
+        elif return_features == 'penultimate':
+            # Return 128-dim penultimate features (before final linear projection)
+            # classifier.net: [0..9] up to Linear(256,128)+ReLU, [10..12] dropout+final_linear
+            penult = self.classifier.net[:10](pooled)
+            return logits, penult
+        elif return_features:
             return logits, pooled
         return logits
 

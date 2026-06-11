@@ -159,10 +159,55 @@ why Prosody-Guided pooling does not harm children's SER (Finding~2): the
 prosody prior serves as a regularization signal that decorrelates attention
 from raw acoustic energy, counterbalancing any redundancy it introduces.
 
+\subsection{Finding 5: Feature Space Visualization via t-SNE}
+
+To qualitatively assess how the distribution-driven pipeline transforms the
+feature space, we apply t-SNE~\cite{van2008visualizing} to the penultimate
+classifier layer (128-dim) before and after the full pipeline. Following
+Neumann \& Vu~\cite{neumann2019cross}, who visualized the last hidden layer
+of an attentive CNN for SER, we extract features from the layer immediately
+preceding the final linear projection. For the ``before'' condition, we use
+raw frozen WavLM last-layer output (768-dim, mean-pooled over time) without
+any pipeline modules. For the ``after'' condition, we use the full
+distribution-driven pipeline (WavLM $\rightarrow$ LayerFusion $\rightarrow$
+Adapter $\rightarrow$ Pooling $\rightarrow$ SEMLP penultimate 128-dim).
+All t-SNE projections use perplexity 30 with stratified per-class sampling
+(2,000 samples per dataset).
+
+Figure~\ref{fig:tsne} shows the 3$\times$2 t-SNE grid across C-BESD
+(children acted, 6-class), FAU Aibo (children spontaneous, 4-class), and
+IEMOCAP (adults acted, 4-class). Three patterns emerge:
+
+\begin{enumerate}
+    \item \textbf{Clear separation gain on acted children's speech.}
+    For C-BESD (WA=91.87\%), the before panel shows partially overlapping
+    clusters, while the after panel reveals six well-separated emotion
+    clusters, consistent with the strong quantitative performance.
+
+    \item \textbf{Spontaneous speech resists clean separation.}
+    For FAU Aibo (WA=67.05\%, UAR=42.92\%), the ``neutral'' class remains
+    diffusely distributed across all regions even after pipeline processing.
+    The large WA--UAR gap ($\sim$24pp) is visually corroborated: the model
+    achieves moderate WA by capturing majority-class boundaries but fails
+    to form compact per-class clusters, particularly for under-represented
+    emotions. This visual evidence reinforces that spontaneous children's
+    speech is the hardest condition and that distribution awareness alone
+    cannot fully compensate for within-corpus class imbalance.
+
+    \item \textbf{Adult speech benefits from pipeline structure.}
+    For IEMOCAP (WA=63.76\%), the pipeline transforms dispersed raw WavLM
+    features into moderately structured clusters, though separation remains
+    weaker than C-BESD---consistent with the cross-population FD gap.
+\end{enumerate}
+
+\noindent To our knowledge, this is the first t-SNE visualization of
+children's speech emotion features under a distribution-driven pipeline,
+addressing a noted gap in the SER visualization literature~\cite{kanwal2022speech}.
+
 \subsection{Limitations}
 
 We identify four limitations. First, our experimental coverage is bounded by
-available GPU resources (63 experiments on RTX 4090D); broader architectures
+available GPU resources (67 experiments on RTX 4090D); broader architectures
 (e.g., HuBERT, data2vec) and larger child corpora (MyST, KidsTALC) remain for
 future work. Second, C-BESD child age metadata is unavailable, preventing
 fine-grained developmental analysis. Third, our FD measurements use WavLM
