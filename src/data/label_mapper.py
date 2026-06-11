@@ -39,6 +39,7 @@ C_BESD_MAP_4CL = {
 IEMOCAP_MAP = {
     'ang': 'angry',
     'anger': 'angry',
+    'angry': 'angry',
     'frustrated': 'angry',   # frustration → angry (standard IEMOCAP merge)
     'hap': 'happy',
     'happy': 'happy',
@@ -100,6 +101,7 @@ IDX_TO_UNIFIED_LABEL = {v: k for k, v in UNIFIED_LABEL_TO_IDX.items()}
 # Dataset-level class count
 DATASET_NUM_CLASSES = {
     'c-besd': 6,
+    'c-besd-4cl': 4,  # cross-corpus 4-class subset
     'iemocap': 4,
     'crema-d': 4,
     'fau-aibo': 4,

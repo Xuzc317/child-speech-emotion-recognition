@@ -16,6 +16,52 @@ from .audio_processor import StandardAudioProcessor
 from .label_mapper import UniversalLabelMapper, UNIFIED_LABEL_TO_IDX
 from .speaker_splitter import split_speakers, get_split_for_speaker
 
+# Lazy import for augmentation (avoids librosa dependency if not needed)
+_aug_cache = {}
+
+def _get_augmenter(condition: str):
+    """Cache and return augmentation callable for the given condition."""
+    if condition in _aug_cache:
+        return _aug_cache[condition]
+
+    if condition == 'C1':
+        aug = None  # no augmentation
+    elif condition == 'C3':
+        from src.augmentation.safe_augmentation import SafeAWGN
+        aug = SafeAWGN(snr_db_range=(10.0, 20.0), apply_prob=0.5)
+    elif condition in ('C2', 'C4'):
+        # C2: data mixing handled at Dataset level (multi-dataset)
+        # C4: data mixing + waveform augmentation (AWGN + pitch shift)
+        if condition == 'C4':
+            from functools import partial
+            from src.augmentation.safe_augmentation import SafeAWGN
+            import numpy as np
+            import librosa
+
+            class ExtremeAugmentation:
+                def __init__(self):
+                    self.awgn = SafeAWGN(snr_db_range=(5.0, 15.0), apply_prob=1.0)
+
+                def __call__(self, waveform):
+                    # AWGN
+                    waveform = self.awgn.apply_torch(waveform) if hasattr(waveform, 'dtype') else self.awgn(np.asarray(waveform))
+                    # Pitch shift ±12 st
+                    if np.random.random() < 0.5:
+                        n_steps = np.random.uniform(-12, 12)
+                        waveform = librosa.effects.pitch_shift(
+                            np.asarray(waveform, dtype=np.float32), sr=16000, n_steps=n_steps
+                        )
+                    return waveform.astype(np.float32) if isinstance(waveform, np.ndarray) else waveform
+
+            aug = ExtremeAugmentation()
+        else:
+            aug = None
+    else:
+        aug = None
+
+    _aug_cache[condition] = aug
+    return aug
+
 
 # ============================================================
 # Dataset path configuration
@@ -27,6 +73,7 @@ _SHARED_ROOT = os.path.dirname(_PROJECT_ROOT)  # D:\...\儿童语音情绪识别
 
 DATASET_PATHS: Dict[str, str] = {
     'c-besd': os.path.join(_SHARED_ROOT, '提交到团队', '数据集', 'BESD', 'BESD', 'MY'),
+    'c-besd-4cl': os.path.join(_SHARED_ROOT, '提交到团队', '数据集', 'BESD', 'BESD', 'MY'),  # alias for 4-class cross-corpus
     'iemocap': os.path.join(_SHARED_ROOT, '提交到团队', '数据集', 'IEMOCAP', 'wavs'),
     'crema-d': r'D:\大学\crema_temp\AudioWAV',
     'fau-aibo': r'D:\大学\数据集IS2009EmotionChallenge\IS2009EmotionChallenge\IS2009EmotionChallenge\wav',
@@ -35,6 +82,7 @@ DATASET_PATHS: Dict[str, str] = {
 # Optional path overrides for cross-platform training (e.g., Linux cloud).
 _ENV_OVERRIDES = {
     'c-besd': os.environ.get('SER_C_BESD_PATH'),
+    'c-besd-4cl': os.environ.get('SER_C_BESD_PATH'),  # same path as c-besd
     'iemocap': os.environ.get('SER_IEMOCAP_PATH'),
     'crema-d': os.environ.get('SER_CREMA_D_PATH'),
     'fau-aibo': os.environ.get('SER_FAU_AIBO_PATH'),
@@ -257,6 +305,7 @@ def _collect_fau_aibo(root: str) -> List[Tuple[str, str, str]]:
 
 DATASET_COLLECTORS = {
     'c-besd': _collect_cbesd,
+    'c-besd-4cl': _collect_cbesd,  # same collector, 4-class via mapper key
     'iemocap': _collect_iemocap,
     'crema-d': _collect_cremad,
     'fau-aibo': _collect_fau_aibo,
@@ -288,11 +337,14 @@ class UnifiedSERDataset(Dataset):
         split: str = 'all',
         seed: int = 42,
         processor: Optional[StandardAudioProcessor] = None,
+        augment_condition: str = 'C1',
     ):
         self.dataset_names = [d.lower() for d in dataset_names]
         self.split = split
         self.seed = seed
         self.processor = processor or StandardAudioProcessor(target_sr=16000)
+        self.augment_condition = augment_condition
+        self.augmenter = _get_augmenter(augment_condition) if split == 'train' else None
 
         # Internal storage: list of (wav_path, unified_label_idx, speaker_id, dataset_name)
         self._samples: List[Tuple[str, int, str, str]] = []
@@ -358,6 +410,11 @@ class UnifiedSERDataset(Dataset):
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, int, str, str]:
         wav_path, label_idx, speaker_id, ds_name = self._samples[idx]
         waveform = self.processor.load_and_process(wav_path)
+
+        # Apply waveform-level augmentation (training only, C3/C4)
+        if self.augmenter is not None:
+            waveform = self.augmenter(waveform)
+
         return (
             torch.from_numpy(waveform),
             label_idx,

@@ -44,6 +44,7 @@ def get_dataloaders(
     num_workers: int = 0,
     seed: int = 42,
     splits: Optional[List[str]] = None,
+    augment_condition: str = 'C1',
 ) -> Dict[str, DataLoader]:
     """Build DataLoaders for one or more corpora.
 
@@ -53,6 +54,7 @@ def get_dataloaders(
         num_workers: DataLoader worker processes
         seed: random seed for speaker splitting
         splits: which splits to return (default: ['train', 'val', 'test'])
+        augment_condition: C1 (none) / C2 (data mix) / C3 (SafeAWGN) / C4 (extreme)
 
     Returns:
         dict mapping split name → DataLoader, e.g. {'train': dl, 'val': dl, 'test': dl}
@@ -69,6 +71,7 @@ def get_dataloaders(
             split=split,
             seed=seed,
             processor=processor,
+            augment_condition=augment_condition,
         )
         shuffle = (split == 'train')
         dataloaders[split] = DataLoader(
@@ -90,6 +93,7 @@ def get_cross_corpus_dataloaders(
     num_workers: int = 0,
     seed: int = 42,
     test_split: str = 'all',
+    augment_condition: str = 'C1',
 ) -> Dict[str, DataLoader]:
     """Build dataloaders for cross-corpus zero-shot evaluation.
 
@@ -104,6 +108,7 @@ def get_cross_corpus_dataloaders(
         test_split: which split of test dataset to use.
                     'all' = all speakers (default, maximal coverage).
                     'test' = test-only split (for paper consistency, N=3389 for FAU).
+        augment_condition: C1 (none) / C2 (data mix) / C3 (SafeAWGN) / C4 (extreme)
 
     Returns:
         dict with 'train', 'val', 'test' DataLoaders.
@@ -111,7 +116,8 @@ def get_cross_corpus_dataloaders(
     """
     processor = StandardAudioProcessor(target_sr=16000)
 
-    train_ds = UnifiedSERDataset(train_datasets, split='train', seed=seed, processor=processor)
+    train_ds = UnifiedSERDataset(train_datasets, split='train', seed=seed, processor=processor,
+                                  augment_condition=augment_condition)
     val_ds = UnifiedSERDataset(train_datasets, split='val', seed=seed, processor=processor)
     test_ds = UnifiedSERDataset(test_datasets, split=test_split, seed=seed, processor=processor)
 
