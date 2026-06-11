@@ -120,7 +120,7 @@ class SERModel(nn.Module):
         else:
             raise ValueError(f"Unknown fusion_mode: {self.fusion_mode}")
 
-    def forward(self, waveforms, lengths=None):
+    def forward(self, waveforms, lengths=None, return_features=False):
         # M2: Extract all hidden layers
         _, all_hidden = self.backbone(waveforms, return_all_layers=True)
         fused = self._get_layer_features(all_hidden)  # (B, T, 768)
@@ -154,6 +154,8 @@ class SERModel(nn.Module):
             pooled = self.pooler(fused, mask=mask)
 
         logits = self.classifier(pooled)
+        if return_features:
+            return logits, pooled
         return logits
 
 
