@@ -28,7 +28,7 @@
 2. 验证：75 个唯一 child_id，每 child 55-61 样本
 3. 更新 `speaker_splitter.py`：明确传入 `child_id` 列而非从文件名猜测
 4. 划分协议：**70/15/15** (train/val/test)，按 child_id 严格隔离，seed=42
-5. 论文操作描述："C-BESD contains 4,180 utterances from 75 Malay children (ages unknown), recorded across 6 acted emotion categories. Child identity was extracted from the filename pattern and used for speaker-disjoint partitioning."
+5. 论文操作描述："C-BESD contains 4,180 utterances from 75 English+Telugu bilingual children (ages unknown), recorded across 6 acted emotion categories. Child identity was extracted from the filename pattern and used for speaker-disjoint partitioning."
 
 ### 1.3 FAU Aibo 4 分类决策
 

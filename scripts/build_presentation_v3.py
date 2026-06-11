@@ -293,7 +293,7 @@ rows, cols = 5, 7
 tbl = s.shapes.add_table(rows, cols, Inches(0.5), Inches(1.2), Inches(9.0), Inches(2.2)).table
 headers = ['数据集', '类别', '样本', '说话人', '年龄', '风格', '语言']
 data = [
-    ['C-BESD (MY)', '6 (全保留)', '4,179', '70 children', '儿童', '演绎式', '马来语'],
+    ['C-BESD (MY)', '6 (全保留)', '4,179', '70 children', '儿童', '演绎式', '英语+泰卢固语双语'],
     ['FAU Aibo', '4 (A+E→Angry)', '6,048 labeled', '51 children', '10-13岁', '自发性', '德语'],
     ['IEMOCAP', '4 (标准)', '8,525', '10 adults', '成人', '演绎式', '英语'],
     ['划分协议', 'MD5 hash 70/15/15', '零重叠验证', 'seed=42', '', '', '3 seeds × 42组'],
