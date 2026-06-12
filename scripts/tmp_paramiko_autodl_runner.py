@@ -18,7 +18,7 @@ import paramiko
 
 
 REMOTE_HOST = "connect.cqa1.seetacloud.com"
-REMOTE_PORT = 14393  # cloned instance 2026-05-26
+REMOTE_PORT = 25808  # updated 2026-06-13
 REMOTE_USER = "root"
 REMOTE_PASS = "9HmcVfCXUFVD"
 
@@ -44,9 +44,10 @@ def _connect() -> paramiko.SSHClient:
         port=REMOTE_PORT,
         username=REMOTE_USER,
         password=REMOTE_PASS,
-        timeout=20,
-        banner_timeout=20,
-        auth_timeout=20,
+        timeout=15,
+        look_for_keys=False,
+        allow_agent=False,
+        disabled_algorithms={'pubkeys': ['rsa-sha2-256', 'rsa-sha2-512']},
     )
     return client
 
