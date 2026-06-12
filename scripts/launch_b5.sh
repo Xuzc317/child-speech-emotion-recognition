@@ -15,7 +15,7 @@ mkdir -p checkpoints/b5 results/b5
 # E1 best pooling per dataset (UPDATE AFTER B1 COMPLETES)
 CBESD_POOL="self_attention"
 FAU_POOL="self_attention"
-IEMO_POOL="self_attention"
+IEMO_POOL="prosody_guided"  # E1-09 best (WA=0.6505)
 
 echo "========================================="
 echo " B5: WAVLM UNFREEZE - $(date)"
@@ -35,7 +35,7 @@ run_unfrozen() {
             --train_data "$dataset" --pooling_type "$pooling" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --unfreeze_ssl --ssl_lr 1e-5 --lr 3e-4 \
-            --seed "$seed" --epochs 100 --batch_size 8 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 8 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b5/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -51,3 +51,7 @@ echo ""
 echo "========================================="
 echo " B5 COMPLETED: $(date)"
 echo "========================================="
+echo ""
+echo "=== AUTO-CHAINING TO B6 ==="
+nohup bash scripts/launch_b6.sh > b6_output.log 2>&1 &
+echo "B6 launched in background"

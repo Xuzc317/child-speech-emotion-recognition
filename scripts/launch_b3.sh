@@ -21,7 +21,7 @@ mkdir -p checkpoints/b3 results/b3
 # E1 best pooling per dataset (UPDATE AFTER B1 COMPLETES)
 CBESD_POOL="self_attention"
 FAU_POOL="self_attention"
-IEMO_POOL="self_attention"  # placeholder, update from E1
+IEMO_POOL="prosody_guided"  # E1-09 best (WA=0.6505)
 
 echo "========================================="
 echo " B3: AUGMENTATION SENSITIVITY - $(date)"
@@ -40,7 +40,7 @@ run_aug() {
             --train_data "$dataset" --pooling_type "$pooling" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --augment_condition "$cond" \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b3/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -76,3 +76,7 @@ echo ""
 echo "========================================="
 echo " B3 COMPLETED: $(date)"
 echo "========================================="
+echo ""
+echo "=== AUTO-CHAINING TO B4 ==="
+nohup bash scripts/launch_b4.sh > b4_output.log 2>&1 &
+echo "B4 launched in background"

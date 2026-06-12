@@ -17,9 +17,9 @@ mkdir -p checkpoints/b7 results/b7
 
 # E1 best checkpoints (UPDATE AFTER B1 COMPLETES — pick best seed per dataset)
 # These are examples; replace with actual best seed paths from B1 results.
-CBESD_CKPT="checkpoints/b1/E1-02_s42/best_model.pt"      # self_attn seed42
-FAU_CKPT="checkpoints/b1/E1-05_s456/best_model.pt"       # self_attn seed456
-IEMO_CKPT="checkpoints/b1/E1-08_s42/best_model.pt"       # placeholder
+CBESD_CKPT="checkpoints/b1/E1-02_s42/best_model.pt"      # self_attn seed42 (WA=0.9292)
+FAU_CKPT="checkpoints/b1/E1-05_s42/best_model.pt"        # self_attn seed42 (WA=0.6781)
+IEMO_CKPT="checkpoints/b1/E1-09_s42/best_model.pt"       # prosody_guided seed42 (WA=0.6505)
 
 echo "========================================="
 echo " B7: MODEL TRANSFER (FINE-TUNE) - $(date)"
@@ -38,7 +38,7 @@ run_transfer() {
             --train_data "$tgt_dataset" --pooling_type "$pooling" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --load_checkpoint "$ckpt" \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b7/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"

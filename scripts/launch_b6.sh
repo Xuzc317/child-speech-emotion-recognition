@@ -39,7 +39,7 @@ run_minimal() {
             --train_data "$dataset" --pooling_type "mean" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --fusion_mode "last" \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b6/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -58,7 +58,7 @@ run_adapter_only() {
             --train_data "$dataset" --pooling_type "mean" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --fusion_mode "last" --use_adapter \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b6/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -77,7 +77,7 @@ run_pooling_only() {
             --train_data "$dataset" --pooling_type "$pooling" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --fusion_mode "last" \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b6/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -96,7 +96,7 @@ run_fusion_only() {
             --train_data "$dataset" --pooling_type "$pooling" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --fusion_mode "$FUSION_MODE" --fusion_best_layer "$BEST_LAYER" \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b6/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -116,7 +116,7 @@ run_full() {
             --num_classes "$ncls" --reg_profile "$reg" \
             --fusion_mode "$FUSION_MODE" --fusion_best_layer "$BEST_LAYER" \
             --use_adapter \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b6/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -145,3 +145,7 @@ echo ""
 echo "========================================="
 echo " B6 COMPLETED: $(date)"
 echo "========================================="
+echo ""
+echo "=== AUTO-CHAINING TO B7 ==="
+nohup bash scripts/launch_b7.sh > b7_output.log 2>&1 &
+echo "B7 launched in background"

@@ -25,7 +25,7 @@ run_zs() {
     $PYTHON -m src.train \
         --train_data "$src" --test_data "$tgt" \
         --pooling_type "$pooling" --num_classes "$ncls" \
-        --seed 42 --epochs 100 --batch_size 16 --patience 15 \
+        --seed 42 --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
         --exp_name "$exp_id" --output_dir "checkpoints/b2/$exp_id"
     echo "  $exp_id DONE"
 }
@@ -64,3 +64,7 @@ echo ""
 echo "========================================="
 echo " B2 COMPLETED: $(date)"
 echo "========================================="
+echo ""
+echo "=== AUTO-CHAINING TO B3 ==="
+nohup bash scripts/launch_b3.sh > b3_output.log 2>&1 &
+echo "B3 launched in background"

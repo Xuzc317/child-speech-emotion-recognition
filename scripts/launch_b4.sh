@@ -17,7 +17,7 @@ mkdir -p checkpoints/b4 results/b4
 # E1 best pooling per dataset (UPDATE AFTER B1 COMPLETES)
 CBESD_POOL="self_attention"
 FAU_POOL="self_attention"
-IEMO_POOL="self_attention"
+IEMO_POOL="prosody_guided"  # E1-09 best (WA=0.6505)
 
 echo "========================================="
 echo " B4: LAYER FUSION ABLATION - $(date)"
@@ -37,7 +37,7 @@ run_fusion() {
             --train_data "$dataset" --pooling_type "$pooling" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --fusion_mode "$mode" --fusion_best_layer "$layer" \
-            --seed "$seed" --epochs 100 --batch_size 16 --patience 15 \
+            --seed "$seed" --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${exp_id}_s${seed}" \
             --output_dir "checkpoints/b4/${exp_id}_s${seed}"
         echo "  seed=$seed DONE"
@@ -57,7 +57,7 @@ run_layer_scan() {
             --train_data "$dataset" --pooling_type "$pooling" \
             --num_classes "$ncls" --reg_profile "$reg" \
             --fusion_mode "best_single" --fusion_best_layer "$layer" \
-            --seed 42 --epochs 100 --batch_size 16 --patience 15 \
+            --seed 42 --data_split_seed 42 --epochs 100 --batch_size 16 --patience 15 \
             --exp_name "${eid}_s42" \
             --output_dir "checkpoints/b4/${eid}_s42"
         echo "  Layer $layer DONE"
@@ -89,3 +89,7 @@ echo ""
 echo "========================================="
 echo " B4 COMPLETED: $(date)"
 echo "========================================="
+echo ""
+echo "=== AUTO-CHAINING TO B5 ==="
+nohup bash scripts/launch_b5.sh > b5_output.log 2>&1 &
+echo "B5 launched in background"
