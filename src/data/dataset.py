@@ -43,15 +43,19 @@ def _get_augmenter(condition: str):
                     self.awgn = SafeAWGN(snr_db_range=(5.0, 15.0), apply_prob=1.0)
 
                 def __call__(self, waveform):
+                    # waveform from dataset.__getitem__ is always numpy; SafeAWGN expects numpy
+                    import torch as _torch
+                    if isinstance(waveform, _torch.Tensor):
+                        waveform = waveform.cpu().numpy()
                     # AWGN
-                    waveform = self.awgn.apply_torch(waveform) if hasattr(waveform, 'dtype') else self.awgn(np.asarray(waveform))
+                    waveform = self.awgn(np.asarray(waveform, dtype=np.float32))
                     # Pitch shift ±12 st
                     if np.random.random() < 0.5:
                         n_steps = np.random.uniform(-12, 12)
                         waveform = librosa.effects.pitch_shift(
-                            np.asarray(waveform, dtype=np.float32), sr=16000, n_steps=n_steps
+                            waveform, sr=16000, n_steps=n_steps
                         )
-                    return waveform.astype(np.float32) if isinstance(waveform, np.ndarray) else waveform
+                    return waveform.astype(np.float32)
 
             aug = ExtremeAugmentation()
         else:
