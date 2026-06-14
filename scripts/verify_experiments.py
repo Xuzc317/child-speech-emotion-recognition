@@ -9,7 +9,7 @@ os.environ.setdefault('SER_C_BESD_PATH', '/root/autodl-tmp/datasets/BESD/BESD/MY
 os.environ.setdefault('SER_IEMOCAP_PATH', '/root/autodl-tmp/IEMOCAP/wavs')
 os.environ.setdefault('SER_FAU_AIBO_PATH', '/root/autodl-tmp/IS2009EmotionChallenge/IS2009EmotionChallenge/wav')
 
-LOG_DIR = 'results/logs'
+LOG_DIR = os.environ.get('SER_LOG_DIR', 'results_remote/results/logs')
 SEEDS = [42, 123, 456]
 
 # Expected experiment matrices per phase
@@ -132,9 +132,11 @@ def main():
 
     # Write gaps file for automated fixup
     if all_missing:
-        with open('results/logs/VERIFY_GAPS.json', 'w') as f:
+        gaps_path = os.path.join(LOG_DIR, 'VERIFY_GAPS.json')
+        os.makedirs(LOG_DIR, exist_ok=True)
+        with open(gaps_path, 'w') as f:
             json.dump(all_missing, f, indent=2)
-        print(f'  Gaps written to results/logs/VERIFY_GAPS.json')
+        print(f'  Gaps written to {gaps_path}')
 
     return 0 if all_ok else 1
 
