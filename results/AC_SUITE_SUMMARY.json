@@ -2356,6 +2356,11 @@
           "augment": "C1"
         }
       }
+    },
+    "B7": {
+      "n_files": 0,
+      "status": "in_progress",
+      "note": "E7-01_s42 training (epoch ~6)"
     }
   }
 }
