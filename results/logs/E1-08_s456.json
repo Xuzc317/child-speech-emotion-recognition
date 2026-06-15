@@ -1,0 +1,27 @@
+{
+  "exp_name": "E1-08_s456",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 456,
+  "best_val_wa": 0.6024509803921568,
+  "test_wa": 0.638205499276411,
+  "test_uar": 0.608469615107943,
+  "best_epoch": 9,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b1/E1-08_s456",
+  "protocol": "ac_suite_2026-06"
+}

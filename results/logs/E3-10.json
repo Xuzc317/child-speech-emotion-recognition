@@ -1,0 +1,27 @@
+{
+  "exp_name": "E3-10",
+  "pooling_type": "mean",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6566153846153846,
+  "test_wa": 0.26199714110680006,
+  "test_uar": 0.30554800273276705,
+  "best_epoch": 17,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b2/E3-10",
+  "protocol": "ac_suite_2026-06"
+}

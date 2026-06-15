@@ -1,0 +1,27 @@
+{
+  "exp_name": "E3-04",
+  "pooling_type": "mean",
+  "train_data": [
+    "c-besd-4cl"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.8455056179775281,
+  "test_wa": 0.30600367571982845,
+  "test_uar": 0.27016861008411025,
+  "best_epoch": 29,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b2/E3-04",
+  "protocol": "ac_suite_2026-06"
+}

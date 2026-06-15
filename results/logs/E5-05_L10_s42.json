@@ -1,0 +1,27 @@
+{
+  "exp_name": "E5-05_L10_s42",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6630769230769231,
+  "test_wa": 0.6742401888462674,
+  "test_uar": 0.4147853922581882,
+  "best_epoch": 5,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "fusion_mode": "best_single",
+  "fusion_best_layer": 10,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b4/E5-05_L10_s42",
+  "protocol": "ac_suite_2026-06"
+}

@@ -1,0 +1,2347 @@
+{
+  "protocol": "ac_suite_2026-06",
+  "generated": "2026-06-16",
+  "phases": {
+    "B1": {
+      "n_files": 27,
+      "experiments": {
+        "E1-01_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 123,
+          "test_wa": 0.7822966507177034,
+          "test_uar": 0.7824929971988795,
+          "best_epoch": 28,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-01_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.7925801011804384,
+          "test_uar": 0.7921265284423179,
+          "best_epoch": 50,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-01_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 456,
+          "test_wa": 0.802013422818792,
+          "test_uar": 0.801111111111111,
+          "best_epoch": 52,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-02_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9007177033492823,
+          "test_uar": 0.9007352941176471,
+          "best_epoch": 34,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-02_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9291736930860034,
+          "test_uar": 0.9287116781853625,
+          "best_epoch": 60,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-02_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9261744966442953,
+          "test_uar": 0.9260416666666668,
+          "best_epoch": 30,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-03_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.9055023923444976,
+          "test_uar": 0.9054621848739496,
+          "best_epoch": 46,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-03_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.924114671163575,
+          "test_uar": 0.9235530746057061,
+          "best_epoch": 53,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-03_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.9261744966442953,
+          "test_uar": 0.9260416666666665,
+          "best_epoch": 42,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-04_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 123,
+          "test_wa": 0.6541117388575016,
+          "test_uar": 0.38777250428369386,
+          "best_epoch": 8,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-04_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.6763056948952494,
+          "test_uar": 0.3936562319796828,
+          "best_epoch": 6,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-04_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 456,
+          "test_wa": 0.6776825785393716,
+          "test_uar": 0.3985826180922381,
+          "best_epoch": 6,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-05_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6654111738857501,
+          "test_uar": 0.4193452976470234,
+          "best_epoch": 7,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-05_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6780761286515197,
+          "test_uar": 0.45053748700715535,
+          "best_epoch": 4,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-05_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.667890656874745,
+          "test_uar": 0.4176407818852631,
+          "best_epoch": 4,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-06_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.6597614563716259,
+          "test_uar": 0.4209842371926212,
+          "best_epoch": 7,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-06_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6618471525523754,
+          "test_uar": 0.44778058690549727,
+          "best_epoch": 5,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-06_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6813545491636067,
+          "test_uar": 0.41939431174322667,
+          "best_epoch": 11,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-07_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "mean",
+          "seed": 123,
+          "test_wa": 0.6128798842257598,
+          "test_uar": 0.5745005560462487,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-07_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.60383502170767,
+          "test_uar": 0.55450246070725,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-07_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "mean",
+          "seed": 456,
+          "test_wa": 0.6190303907380608,
+          "test_uar": 0.5382197404920357,
+          "best_epoch": 31,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-08_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6425470332850941,
+          "test_uar": 0.5929087911551709,
+          "best_epoch": 13,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-08_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.63205499276411,
+          "test_uar": 0.6000623720105511,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-08_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.638205499276411,
+          "test_uar": 0.608469615107943,
+          "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-09_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.6490593342981187,
+          "test_uar": 0.5947245413421736,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-09_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.650506512301013,
+          "test_uar": 0.6082000041060127,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E1-09_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6316931982633864,
+          "test_uar": 0.6081604688907266,
+          "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        }
+      }
+    },
+    "B2": {
+      "n_files": 18,
+      "experiments": {
+        "E3-01": {
+          "dataset": [
+            "c-besd-4cl"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.20514931927975405,
+          "test_uar": 0.24233711351039772,
+          "best_epoch": 29,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-02": {
+          "dataset": [
+            "c-besd-4cl"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.21503074220465526,
+          "test_uar": 0.24140639844647607,
+          "best_epoch": 15,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-03": {
+          "dataset": [
+            "c-besd-4cl"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.21909310496267018,
+          "test_uar": 0.23986132594177514,
+          "best_epoch": 19,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-04": {
+          "dataset": [
+            "c-besd-4cl"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.30600367571982845,
+          "test_uar": 0.27016861008411025,
+          "best_epoch": 29,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-05": {
+          "dataset": [
+            "c-besd-4cl"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.27261588727792524,
+          "test_uar": 0.2682390937602985,
+          "best_epoch": 15,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-06": {
+          "dataset": [
+            "c-besd-4cl"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.28864610986318157,
+          "test_uar": 0.26944491678951865,
+          "best_epoch": 19,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-07": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.2866906474820144,
+          "test_uar": 0.28751708545401344,
+          "best_epoch": 17,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-08": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.2514388489208633,
+          "test_uar": 0.25262172155780466,
+          "best_epoch": 2,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-09": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.25287769784172665,
+          "test_uar": 0.25400913333294906,
+          "best_epoch": 1,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-10": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.26199714110680006,
+          "test_uar": 0.30554800273276705,
+          "best_epoch": 17,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-11": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.2352460690218501,
+          "test_uar": 0.2828066026946278,
+          "best_epoch": 2,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-12": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.27537267714927505,
+          "test_uar": 0.30592161158987907,
+          "best_epoch": 1,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-13": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.3122302158273381,
+          "test_uar": 0.31208530588620786,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-14": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.34676258992805753,
+          "test_uar": 0.3465854360727985,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-15": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.33309352517985613,
+          "test_uar": 0.3327668529822143,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-16": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.29254501537110233,
+          "test_uar": 0.3233829455246863,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-17": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.3371212121212121,
+          "test_uar": 0.33002900425999926,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E3-18": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.33080808080808083,
+          "test_uar": 0.3454814581075796,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        }
+      }
+    },
+    "B3": {
+      "n_files": 36,
+      "experiments": {
+        "E4-01_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9190556492411467,
+          "test_uar": 0.9185902888534468,
+          "best_epoch": 44,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-01_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9291736930860034,
+          "test_uar": 0.9287116781853625,
+          "best_epoch": 60,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-01_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9106239460370995,
+          "test_uar": 0.9100478468899521,
+          "best_epoch": 53,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-02_s123": {
+          "dataset": [
+            "c-besd-4cl",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6614946168461051,
+          "test_uar": 0.6342000886655129,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-02_s42": {
+          "dataset": [
+            "c-besd-4cl",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.661811272957568,
+          "test_uar": 0.6299079535755868,
+          "best_epoch": 7,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-02_s456": {
+          "dataset": [
+            "c-besd-4cl",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.6627612412919569,
+          "test_uar": 0.6269090403826221,
+          "best_epoch": 8,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-03_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9156829679595279,
+          "test_uar": 0.9153242955874533,
+          "best_epoch": 32,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-03_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9325463743676222,
+          "test_uar": 0.9320077972709551,
+          "best_epoch": 53,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-03_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9072512647554806,
+          "test_uar": 0.9067650186071239,
+          "best_epoch": 26,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-04_s123": {
+          "dataset": [
+            "c-besd-4cl",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6380620645978468,
+          "test_uar": 0.5778022248731836,
+          "best_epoch": 42,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-04_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6802030456852792,
+          "test_uar": 0.6812918660287082,
+          "best_epoch": 8,
+          "unfreeze": false,
+          "fusion": "",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-04_s456": {
+          "dataset": [
+            "c-besd-4cl",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.6266624445851805,
+          "test_uar": 0.5601458820166697,
+          "best_epoch": 43,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-05_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6420773089406905,
+          "test_uar": 0.4182640272755605,
+          "best_epoch": 7,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-05_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6780761286515197,
+          "test_uar": 0.45053748700715535,
+          "best_epoch": 4,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-05_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.6721746827972853,
+          "test_uar": 0.3982214428262516,
+          "best_epoch": 0,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-06_s123": {
+          "dataset": [
+            "fau-aibo",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6509019990248659,
+          "test_uar": 0.5886570980236779,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-06_s42": {
+          "dataset": [
+            "fau-aibo",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6450511945392492,
+          "test_uar": 0.569768017419063,
+          "best_epoch": 10,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-06_s456": {
+          "dataset": [
+            "fau-aibo",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.6375751665854055,
+          "test_uar": 0.5434959976706428,
+          "best_epoch": 5,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-07_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.646798465624078,
+          "test_uar": 0.4487184570751392,
+          "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-07_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6854529359693124,
+          "test_uar": 0.4198437660775577,
+          "best_epoch": 4,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-07_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.6506344054293302,
+          "test_uar": 0.43195935721999446,
+          "best_epoch": 6,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-08_s123": {
+          "dataset": [
+            "fau-aibo",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.5884934178449537,
+          "test_uar": 0.49820543347540247,
+          "best_epoch": 21,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-08_s42": {
+          "dataset": [
+            "fau-aibo",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6068584430359174,
+          "test_uar": 0.48305011081552335,
+          "best_epoch": 15,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-08_s456": {
+          "dataset": [
+            "fau-aibo",
+            "iemocap"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.5958069234519746,
+          "test_uar": 0.46598053468690115,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-09_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.6490593342981187,
+          "test_uar": 0.5947245413421736,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-09_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.650506512301013,
+          "test_uar": 0.6082000041060127,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-09_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6316931982633864,
+          "test_uar": 0.6081604688907266,
+          "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E4-10_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.5687409551374819,
+          "test_uar": 0.4935071649637235,
+          "best_epoch": 0,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-10_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6360347322720694,
+          "test_uar": 0.589069425651285,
+          "best_epoch": 14,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-10_s456": {
+          "dataset": [
+            "iemocap",
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6531773118803835,
+          "test_uar": 0.5844539276305192,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C2"
+        },
+        "E4-11_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.6418234442836469,
+          "test_uar": 0.5979863742366698,
+          "best_epoch": 14,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-11_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6530390738060782,
+          "test_uar": 0.606940655605114,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-11_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6465267727930536,
+          "test_uar": 0.5913955029151837,
+          "best_epoch": 17,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C3"
+        },
+        "E4-12_s123": {
+          "dataset": [
+            "iemocap",
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.5634649764342597,
+          "test_uar": 0.3980425007125116,
+          "best_epoch": 1,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-12_s42": {
+          "dataset": [
+            "iemocap",
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.606045831301804,
+          "test_uar": 0.5123162103653237,
+          "best_epoch": 34,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        },
+        "E4-12_s456": {
+          "dataset": [
+            "iemocap",
+            "fau-aibo"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6190476190476191,
+          "test_uar": 0.5078461571323224,
+          "best_epoch": 31,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C4"
+        }
+      }
+    },
+    "B4": {
+      "n_files": 54,
+      "experiments": {
+        "E5-01_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9173693086003373,
+          "test_uar": 0.916940457203615,
+          "best_epoch": 48,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-01_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9291736930860034,
+          "test_uar": 0.9285362395888711,
+          "best_epoch": 66,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-01_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9106239460370995,
+          "test_uar": 0.910361509835194,
+          "best_epoch": 42,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L10_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.8920741989881956,
+          "test_uar": 0.8916471734892785,
+          "best_epoch": 20,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L11_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.8988195615514334,
+          "test_uar": 0.898377636009215,
+          "best_epoch": 41,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L12_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9291736930860034,
+          "test_uar": 0.9285362395888711,
+          "best_epoch": 66,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L1_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6661045531197302,
+          "test_uar": 0.665916179337232,
+          "best_epoch": 43,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L2_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.7318718381112985,
+          "test_uar": 0.7317862838915471,
+          "best_epoch": 43,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L3_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.718381112984823,
+          "test_uar": 0.7183483962431331,
+          "best_epoch": 38,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L4_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.7892074198988196,
+          "test_uar": 0.788975722133617,
+          "best_epoch": 59,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L5_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.8330522765598651,
+          "test_uar": 0.8322142477405635,
+          "best_epoch": 25,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L6_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.8532883642495784,
+          "test_uar": 0.853003721424774,
+          "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L7_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.897133220910624,
+          "test_uar": 0.8965966684387737,
+          "best_epoch": 47,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L8_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9173693086003373,
+          "test_uar": 0.916940457203615,
+          "best_epoch": 66,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-02_L9_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9055649241146712,
+          "test_uar": 0.9054323941166046,
+          "best_epoch": 15,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-03_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9190556492411467,
+          "test_uar": 0.9185902888534468,
+          "best_epoch": 44,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-03_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9291736930860034,
+          "test_uar": 0.9287116781853625,
+          "best_epoch": 60,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-03_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9106239460370995,
+          "test_uar": 0.9100478468899521,
+          "best_epoch": 53,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-04_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6833874299203305,
+          "test_uar": 0.4133543931256839,
+          "best_epoch": 10,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-04_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.673650044260844,
+          "test_uar": 0.41993909407084623,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-04_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.676600767187961,
+          "test_uar": 0.4060729268489743,
+          "best_epoch": 6,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L10_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6742401888462674,
+          "test_uar": 0.4147853922581882,
+          "best_epoch": 5,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L11_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6733549719681322,
+          "test_uar": 0.4161157713578382,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L12_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.673650044260844,
+          "test_uar": 0.41993909407084623,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L1_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6606668633815285,
+          "test_uar": 0.3990955175730702,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L2_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6476836825022131,
+          "test_uar": 0.43083845511355773,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L3_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6565358512835645,
+          "test_uar": 0.4073071568249779,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L4_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6544703452345825,
+          "test_uar": 0.41434473783467074,
+          "best_epoch": 5,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L5_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6745352611389791,
+          "test_uar": 0.45093065913095887,
+          "best_epoch": 4,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L6_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6603717910888167,
+          "test_uar": 0.42851813010638834,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L7_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6488639716730599,
+          "test_uar": 0.45329281263502935,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L8_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6618471525523754,
+          "test_uar": 0.4428710184460494,
+          "best_epoch": 8,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-05_L9_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6786662732369431,
+          "test_uar": 0.41138371544151175,
+          "best_epoch": 2,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-06_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.6420773089406905,
+          "test_uar": 0.4182640272755605,
+          "best_epoch": 7,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-06_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6780761286515197,
+          "test_uar": 0.45053748700715535,
+          "best_epoch": 4,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-06_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.6721746827972853,
+          "test_uar": 0.3982214428262516,
+          "best_epoch": 0,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-07_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.6313314037626628,
+          "test_uar": 0.5446285364811552,
+          "best_epoch": 36,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-07_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6403762662807525,
+          "test_uar": 0.5764541167014114,
+          "best_epoch": 35,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-07_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6374819102749638,
+          "test_uar": 0.5772236305125424,
+          "best_epoch": 14,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L10_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.64616497829233,
+          "test_uar": 0.5909355138478691,
+          "best_epoch": 28,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L11_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6515918958031838,
+          "test_uar": 0.6000938183239518,
+          "best_epoch": 26,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L12_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6403762662807525,
+          "test_uar": 0.5764541167014114,
+          "best_epoch": 35,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L1_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.5499276410998553,
+          "test_uar": 0.4655566384927089,
+          "best_epoch": 22,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L2_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.5691027496382055,
+          "test_uar": 0.5184526759004182,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L3_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.5770622286541245,
+          "test_uar": 0.5597051070494949,
+          "best_epoch": 8,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L4_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.5842981186685963,
+          "test_uar": 0.5283009258603675,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L5_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6121562952243126,
+          "test_uar": 0.5405175803597015,
+          "best_epoch": 16,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L6_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6157742402315485,
+          "test_uar": 0.5528072918292793,
+          "best_epoch": 7,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L7_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6316931982633864,
+          "test_uar": 0.5619777878930519,
+          "best_epoch": 26,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L8_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6349493487698987,
+          "test_uar": 0.5690337798878058,
+          "best_epoch": 18,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-08_L9_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6356729377713459,
+          "test_uar": 0.5758890041832989,
+          "best_epoch": 11,
+          "unfreeze": false,
+          "fusion": "best_single",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-09_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.6490593342981187,
+          "test_uar": 0.5947245413421736,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-09_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.650506512301013,
+          "test_uar": 0.6082000041060127,
+          "best_epoch": 12,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E5-09_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6316931982633864,
+          "test_uar": 0.6081604688907266,
+          "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        }
+      }
+    },
+    "B5": {
+      "n_files": 9,
+      "experiments": {
+        "E2-01_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9679595278246206,
+          "test_uar": 0.9675642388800284,
+          "best_epoch": 33,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-01_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9679595278246206,
+          "test_uar": 0.967618288144604,
+          "best_epoch": 27,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-01_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9713322091062394,
+          "test_uar": 0.9711438950912634,
+          "best_epoch": 14,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-02_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.651814694600177,
+          "test_uar": 0.4273006726206049,
+          "best_epoch": 2,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-02_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.6686338152847447,
+          "test_uar": 0.45898264757976753,
+          "best_epoch": 1,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-02_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.6706993213337268,
+          "test_uar": 0.39540150204286517,
+          "best_epoch": 0,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-03_s123": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 123,
+          "test_wa": 0.6714905933429812,
+          "test_uar": 0.6203480240155109,
+          "best_epoch": 20,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-03_s42": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 42,
+          "test_wa": 0.6530390738060782,
+          "test_uar": 0.6080773563124457,
+          "best_epoch": 26,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E2-03_s456": {
+          "dataset": [
+            "iemocap"
+          ],
+          "pooling": "prosody_guided",
+          "seed": 456,
+          "test_wa": 0.6664254703328509,
+          "test_uar": 0.5939890497418416,
+          "best_epoch": 38,
+          "unfreeze": true,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        }
+      }
+    },
+    "B6": {
+      "n_files": 20,
+      "experiments": {
+        "E6-01_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 123,
+          "test_wa": 0.8145025295109612,
+          "test_uar": 0.8141609073188021,
+          "best_epoch": 71,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-01_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.8026981450252951,
+          "test_uar": 0.8025181640971115,
+          "best_epoch": 42,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-01_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 456,
+          "test_wa": 0.8094435075885329,
+          "test_uar": 0.8089181286549708,
+          "best_epoch": 57,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-02_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 123,
+          "test_wa": 0.8263069139966274,
+          "test_uar": 0.8261651603756867,
+          "best_epoch": 55,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-02_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.7807757166947723,
+          "test_uar": 0.7805883395357079,
+          "best_epoch": 21,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-02_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "mean",
+          "seed": 456,
+          "test_wa": 0.8279932546374368,
+          "test_uar": 0.827986886407939,
+          "best_epoch": 76,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-03_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9173693086003373,
+          "test_uar": 0.916940457203615,
+          "best_epoch": 48,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-03_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9291736930860034,
+          "test_uar": 0.9285362395888711,
+          "best_epoch": 66,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-03_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9106239460370995,
+          "test_uar": 0.910361509835194,
+          "best_epoch": 42,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-04_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9190556492411467,
+          "test_uar": 0.9185902888534468,
+          "best_epoch": 44,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-04_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9291736930860034,
+          "test_uar": 0.9287116781853625,
+          "best_epoch": 60,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-04_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9106239460370995,
+          "test_uar": 0.9100478468899521,
+          "best_epoch": 53,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-05_s123": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 123,
+          "test_wa": 0.9173693086003373,
+          "test_uar": 0.9168562821194399,
+          "best_epoch": 37,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-05_s42": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 42,
+          "test_wa": 0.9072512647554806,
+          "test_uar": 0.9068731171362749,
+          "best_epoch": 27,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-05_s456": {
+          "dataset": [
+            "c-besd"
+          ],
+          "pooling": "self_attention",
+          "seed": 456,
+          "test_wa": 0.9089376053962901,
+          "test_uar": 0.9083811802232854,
+          "best_epoch": 20,
+          "unfreeze": false,
+          "fusion": "weighted",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-06_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 123,
+          "test_wa": 0.6792564178223665,
+          "test_uar": 0.38755059549025794,
+          "best_epoch": 13,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-06_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.67984656240779,
+          "test_uar": 0.38924646611816743,
+          "best_epoch": 6,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-06_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 456,
+          "test_wa": 0.6801416347005016,
+          "test_uar": 0.3762745268609607,
+          "best_epoch": 19,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": false,
+          "augment": "C1"
+        },
+        "E6-07_s123": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 123,
+          "test_wa": 0.6795514901150782,
+          "test_uar": 0.37188626203580266,
+          "best_epoch": 15,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-07_s42": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 42,
+          "test_wa": 0.6801416347005016,
+          "test_uar": 0.3927234558465418,
+          "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": true,
+          "augment": "C1"
+        }
+      }
+    }
+  }
+}

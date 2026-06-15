@@ -1,0 +1,22 @@
+{
+  "exp_name": "E1-04_s42",
+  "pooling_type": "mean",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6526153846153846,
+  "test_wa": 0.6763056948952494,
+  "test_uar": 0.3936562319796828,
+  "best_epoch": 6,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "output_dir": "checkpoints/b1/E1-04_s42",
+  "protocol": "ac_suite_2026-05"
+}

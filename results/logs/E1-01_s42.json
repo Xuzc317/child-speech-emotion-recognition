@@ -1,0 +1,22 @@
+{
+  "exp_name": "E1-01_s42",
+  "pooling_type": "mean",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.8432835820895522,
+  "test_wa": 0.7925801011804384,
+  "test_uar": 0.7921265284423179,
+  "best_epoch": 50,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/b1/E1-01_s42",
+  "protocol": "ac_suite_2026-05"
+}

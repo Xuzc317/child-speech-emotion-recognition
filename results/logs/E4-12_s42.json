@@ -1,0 +1,29 @@
+{
+  "exp_name": "E4-12_s42",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "iemocap",
+    "fau-aibo"
+  ],
+  "test_data": [
+    "iemocap",
+    "fau-aibo"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.5967863894139886,
+  "test_wa": 0.606045831301804,
+  "test_uar": 0.5123162103653237,
+  "best_epoch": 34,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C4",
+  "output_dir": "checkpoints/b3/E4-12_s42",
+  "protocol": "ac_suite_2026-06"
+}
