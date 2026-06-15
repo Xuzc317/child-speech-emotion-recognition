@@ -2059,7 +2059,7 @@
       }
     },
     "B6": {
-      "n_files": 20,
+      "n_files": 21,
       "experiments": {
         "E6-01_s123": {
           "dataset": [
@@ -2336,6 +2336,20 @@
           "test_wa": 0.6801416347005016,
           "test_uar": 0.3927234558465418,
           "best_epoch": 9,
+          "unfreeze": false,
+          "fusion": "last",
+          "adapter": true,
+          "augment": "C1"
+        },
+        "E6-07_s456": {
+          "dataset": [
+            "fau-aibo"
+          ],
+          "pooling": "mean",
+          "seed": 456,
+          "test_wa": 0.6848627913838891,
+          "test_uar": 0.4019437334270853,
+          "best_epoch": 23,
           "unfreeze": false,
           "fusion": "last",
           "adapter": true,
