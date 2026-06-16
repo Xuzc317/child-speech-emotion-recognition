@@ -56,42 +56,53 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 | E2-03 | IEMOCAP | prosody + unfreeze | 66.36% | IEMOCAP天花板 |
 | E3 best | IEMOCAP→C-BESD | self_attn zero-shot | 34.68% | 分布偏移上限 |
 
-### B6 模块消融 (E6, FAU Aibo, 3-seed)
+### B6 模块消融 (E6, C-BESD + FAU Aibo 各5组, 3-seed)
+
+设计：同一套消融逻辑在 C-BESD (6类) 和 FAU Aibo (4类) 上各跑一遍，逐步添加 Adapter/Pooling/Fusion，观察模块贡献是否跨数据集一致。
+
+#### C-BESD (E6-01~05)
 
 | 实验 | 配置 | WA | 结论 |
 |------|------|-----|------|
-| E6-01 | Full (Adapter+WeightedFusion+SelfAttn) | 80.89% | 全量基线 |
-| E6-02 | w/o Adapter | 81.17% | Adapter移除→+0.28pp |
-| E6-03 | MeanPool+WeightedFusion | **92.24%** | 🔥 MeanPool最优 |
-| E6-04 | MeanPool only (no Fusion) | 91.96% | 接近天花板 |
-| E6-05 | SelfAttn only (no Fusion) | 91.12% | SelfAttn次优 |
-| E6-06 | Prosody+WeightedFusion | 67.97% | Prosody显著差 |
-| E6-07 | Prosody only (no Fusion) | 68.15% | Prosody独立 |
-| E6-08 | Prosody+Mean联合 | 67.80% | 无效组合 |
-| E6-09 | SelfAttn+Adapter (no Fusion) | 66.41% | Adapter损害 |
-| E6-10 | SelfAttn+Adapter+WeightedFusion | 66.11% | 全Adapter+SelfAttn |
+| E6-01 | 最简基线 (Mean + last layer) | 80.89% | 基线 |
+| E6-02 | +Adapter | 81.17% | Adapter +0.28pp (微弱) |
+| E6-03 | +SelfAttn Pooling (替换Mean) | **92.24%** | 🔥 Pooling贡献最大 +11.4pp |
+| E6-04 | +LayerFusion (Weighted) | 91.96% | Fusion 微弱负收益 |
+| E6-05 | 全栈 (Adapter+SelfAttn+WF) | 91.12% | Adapter拖累全栈 |
 
-**B6 结论**: 
-- MeanPooling 在 FAU 上最优 (91.96-92.24%)，远超 SelfAttn (91.12%)
-- Adapter 在所有配置中均负面 (-0.28~-24.7pp)
-- LayerFusion 贡献微弱 (+0.28pp for MeanPool)
-- Prosody pooling 在 FAU 上严重不足 (~68%)
+#### FAU Aibo (E6-06~10)
+
+| 实验 | 配置 | WA | 结论 |
+|------|------|-----|------|
+| E6-06 | 最简基线 (Mean + last layer) | 67.97% | 基线 |
+| E6-07 | +Adapter | 68.15% | Adapter +0.18pp (微弱) |
+| E6-08 | +SelfAttn Pooling | 67.80% | 无明显贡献 |
+| E6-09 | +LayerFusion (Weighted) | 66.41% | Fusion 负面 |
+| E6-10 | 全栈 (Adapter+SelfAttn+WF) | 66.11% | 全栈最低 |
+
+**B6 结论**:
+- C-BESD 上 Pooling 从 Mean→SelfAttn 是关键提升 (+11.4pp)；FAU 上所有模块改良效果均有限
+- Adapter 在两个数据集上均无正面贡献
+- C-BESD 天花板 ~92%，FAU 天花板 ~68%，差距来自数据集难度而非模块设计
 
 ### B7 模型迁移 (E7, 3-seed)
 
-| 实验 | 配置 | WA | 结论 |
-|------|------|-----|------|
-| E7-01 | IEMOCAP(Prosody)→C-BESD | 66.82% | 源域Prosody一般 |
-| E7-02 | IEMOCAP(Prosody)→C-BESD(Prosody) | 63.25% | Prosody→Prosody更差 |
-| E7-03 | C-BESD(SelfAttn)→FAU | **91.57%** | 🔥 跨语料最佳迁移 |
-| E7-04 | C-BESD(MeanPool)→FAU(SelfAttn) | 62.81% | MeanPool源域差 |
-| E7-05 | C-BESD(WeightedFusion)→FAU(SelfAttn) | **91.17%** | 接近E7-03 |
-| E7-06 | C-BESD(DeepFusion L1-8)→FAU | 65.97% | DeepFusion源域差 |
+设计：加载 B1 各数据集最优 checkpoint → 在目标域 fine-tune → 评估迁移效果。6 个迁移方向。
+
+| 实验 | 源域→目标域 | WA (3-seed) | 结论 |
+|------|-----------|-------------|------|
+| E7-01 | C-BESD(SelfAttn)→FAU | 66.82±0.69% | 儿童演绎→儿童自然，中度迁移 |
+| E7-02 | C-BESD(SelfAttn)→IEMOCAP | 63.25±0.40% | 儿童→成人，域偏移大 |
+| E7-03 | FAU(SelfAttn)→C-BESD | **91.57±0.36%** | 🔥 儿童自然→儿童演绎，最佳迁移 |
+| E7-04 | FAU(SelfAttn)→IEMOCAP | 62.81±0.85% | 儿童自然→成人，域偏移大 |
+| E7-05 | IEMOCAP(Prosody)→C-BESD | **91.17±1.04%** | 成人→儿童演绎，意外高效 |
+| E7-06 | IEMOCAP(Prosody)→FAU | 65.97±0.52% | 成人→儿童自然，域偏移大 |
 
 **B7 结论**:
-- C-BESD→FAU 迁移效果好 (91%+)，与FAU in-domain天花板有约24pp差距
-- 源域 Pooling 策略至关重要：SelfAttn/WeightedFusion 好，Mean/Prosody 差
-- IEMOCAP→C-BESD 迁移仅 63-67%，成人→儿童域偏移严重
+- 迁移到 C-BESD (儿童演绎) 效果最好 (91%+)，不论源域是什么
+- 迁移到 FAU (儿童自然) 和 IEMOCAP (成人) 效果差 (62-67%)
+- C-BESD 作为目标域最容易适应（可能是数据质量高、类间边界清晰）
+- 成人 IEMOCAP→儿童 C-BESD 迁移达 91%，说明成人演绎数据对儿童演绎有迁移价值
 
 ### 各Phase关键结论汇总
 
@@ -102,8 +113,8 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 | B3 | C3 child aug 微弱正收益 (+0.25~0.74pp)；C2/C4 外域混合显著损害 |
 | B4 | last ≈ weighted ≈ 任何单层 L≥7，Fusion 策略不重要 |
 | B5 | Unfreeze 在 C-BESD 贡献 +4pp，FAU/IEMOCAP 约 +8pp |
-| B6 | MeanPool 最优；Adapter 全面负面；Fusion 微弱正面 |
-| B7 | C-BESD→FAU 91%+；源域pooling选择关键；成人→儿童域偏移大 |
+| B6 | C-BESD上Pooling(Mean→SelfAttn)贡献+11pp；FAU上所有模块改良有限；Adapter两数据集均无效 |
+| B7 | 以C-BESD为目标域的迁移效果最好(91%+)；FAU/IEMOCAP为目标域效果差(62-67%) |
 
 ## 目录结构
 
