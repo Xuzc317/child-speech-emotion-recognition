@@ -1,0 +1,163 @@
++ cd /root/autodl-tmp/d-ser
++ mkdir -p results/logs checkpoints
++ export PYTHONPATH=/root/autodl-tmp/d-ser:
++ PYTHONPATH=/root/autodl-tmp/d-ser:
+++ command -v python
+++ true
++ PYTHON_BIN=
++ '[' -z '' ']'
+++ command -v python3
+++ true
++ PYTHON_BIN=
++ '[' -z '' ']'
++ '[' -x /root/miniconda3/bin/python ']'
++ PYTHON_BIN=/root/miniconda3/bin/python
++ '[' -z /root/miniconda3/bin/python ']'
++ '[' -z /root/miniconda3/bin/python ']'
+++ pick_existing_dir /root/autodl-tmp/BESD/BESD/MY /root/autodl-tmp/datasets/BESD/BESD/MY /root/autodl-tmp/datasets/c-besd/MY
+++ for p in "$@"
+++ '[' -d /root/autodl-tmp/BESD/BESD/MY ']'
+++ for p in "$@"
+++ '[' -d /root/autodl-tmp/datasets/BESD/BESD/MY ']'
+++ for p in "$@"
+++ '[' -d /root/autodl-tmp/datasets/c-besd/MY ']'
+++ return 1
+++ true
++ SER_C_BESD_PATH=
+++ pick_existing_dir /root/autodl-tmp/IEMOCAP/wavs /root/autodl-tmp/datasets/IEMOCAP/wavs
+++ for p in "$@"
+++ '[' -d /root/autodl-tmp/IEMOCAP/wavs ']'
+++ echo /root/autodl-tmp/IEMOCAP/wavs
+++ return 0
++ SER_IEMOCAP_PATH=/root/autodl-tmp/IEMOCAP/wavs
+++ pick_existing_dir /root/autodl-tmp/IS2009EmotionChallenge/IS2009EmotionChallenge/IS2009EmotionChallenge/wav /root/autodl-tmp/IS2009EmotionChallenge/wav
+++ for p in "$@"
+++ '[' -d /root/autodl-tmp/IS2009EmotionChallenge/IS2009EmotionChallenge/IS2009EmotionChallenge/wav ']'
+++ for p in "$@"
+++ '[' -d /root/autodl-tmp/IS2009EmotionChallenge/wav ']'
+++ echo /root/autodl-tmp/IS2009EmotionChallenge/wav
+++ return 0
++ SER_FAU_AIBO_PATH=/root/autodl-tmp/IS2009EmotionChallenge/wav
++ export SER_C_BESD_PATH SER_IEMOCAP_PATH SER_FAU_AIBO_PATH
++ echo '[paths] SER_C_BESD_PATH=<missing>'
+[paths] SER_C_BESD_PATH=<missing>
++ echo '[paths] SER_IEMOCAP_PATH=/root/autodl-tmp/IEMOCAP/wavs'
+[paths] SER_IEMOCAP_PATH=/root/autodl-tmp/IEMOCAP/wavs
++ echo '[paths] SER_FAU_AIBO_PATH=/root/autodl-tmp/IS2009EmotionChallenge/wav'
+[paths] SER_FAU_AIBO_PATH=/root/autodl-tmp/IS2009EmotionChallenge/wav
++ '[' -n '' ']'
++ echo '[skip] Exp1/Exp2 skipped: C-BESD path unavailable.'
+[skip] Exp1/Exp2 skipped: C-BESD path unavailable.
++ '[' -n /root/autodl-tmp/IEMOCAP/wavs ']'
++ /root/miniconda3/bin/python -m src.train --train_data iemocap --pooling_type prosody_guided --exp_name exp3_adult_iemocap
+  [iemocap] 8525 samples (10 speakers), discarded=1269, split='train' → 4313 samples (train=5/val=2/test=3 speakers)
+  [iemocap] 8525 samples (10 speakers), discarded=1269, split='val' → 1841 samples (train=5/val=2/test=3 speakers)
+  [iemocap] 8525 samples (10 speakers), discarded=1269, split='test' → 2371 samples (train=5/val=2/test=3 speakers)
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+Model params: 95,086,369 total, 704,433 trainable
+Regularization profile=default, weight_decay=0.001, label_smoothing=0.1, pooling_dropout=0.0, grad_clip=None
+Epoch 1: train_wa=0.4554, val_wa=0.4992, best=0.0000
+Epoch 2: train_wa=0.5319, val_wa=0.5394, best=0.4992
+Epoch 3: train_wa=0.5734, val_wa=0.5307, best=0.5394
+Epoch 4: train_wa=0.5936, val_wa=0.5551, best=0.5394
+Epoch 5: train_wa=0.6188, val_wa=0.5589, best=0.5551
+Epoch 6: train_wa=0.6455, val_wa=0.5584, best=0.5589
+Epoch 7: train_wa=0.6592, val_wa=0.5611, best=0.5589
+Epoch 8: train_wa=0.6640, val_wa=0.5633, best=0.5611
+Epoch 9: train_wa=0.6780, val_wa=0.5741, best=0.5633
+Epoch 10: train_wa=0.6870, val_wa=0.5502, best=0.5741
+Epoch 11: train_wa=0.7014, val_wa=0.5508, best=0.5741
+Epoch 12: train_wa=0.7304, val_wa=0.5655, best=0.5741
+Epoch 13: train_wa=0.7248, val_wa=0.5557, best=0.5741
+Epoch 14: train_wa=0.7327, val_wa=0.5502, best=0.5741
+Epoch 15: train_wa=0.7561, val_wa=0.5464, best=0.5741
+Epoch 16: train_wa=0.7651, val_wa=0.5361, best=0.5741
+Epoch 17: train_wa=0.7605, val_wa=0.5682, best=0.5741
+Epoch 18: train_wa=0.7788, val_wa=0.5627, best=0.5741
+Epoch 19: train_wa=0.7742, val_wa=0.5644, best=0.5741
+Epoch 20: train_wa=0.7848, val_wa=0.5562, best=0.5741
+Epoch 21: train_wa=0.7936, val_wa=0.5426, best=0.5741
+Epoch 22: train_wa=0.7994, val_wa=0.5426, best=0.5741
+Epoch 23: train_wa=0.7994, val_wa=0.5492, best=0.5741
+Epoch 24: train_wa=0.8078, val_wa=0.5470, best=0.5741
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+RESULT: {"exp_name": "exp3_adult_iemocap", "pooling_type": "prosody_guided", "train_data": ["iemocap"], "test_data": ["iemocap"], "best_val_wa": 0.5741444866920152, "test_wa": 0.5866722901729228, "test_uar": 0.5911058892250335, "best_epoch": 8, "reg_profile": "default", "weight_decay": 0.001, "label_smoothing": 0.1, "pooling_dropout": 0.0, "grad_clip": null}
++ '[' -n '' ']'
++ echo '[skip] Exp4 skipped: C-BESD or FAU path unavailable.'
+[skip] Exp4 skipped: C-BESD or FAU path unavailable.
++ '[' -n /root/autodl-tmp/IS2009EmotionChallenge/wav ']'
++ /root/miniconda3/bin/python -m src.train --train_data fau-aibo --pooling_type prosody_guided --exp_name exp5_fau_indomain --reg_profile fau
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='train' → 11577 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='val' → 3250 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='test' → 3389 samples (train=35/val=7/test=9 speakers)
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+Model params: 95,086,369 total, 704,433 trainable
+Regularization profile=fau, weight_decay=0.005, label_smoothing=0.15, pooling_dropout=0.3, grad_clip=1.0
+Epoch 1: train_wa=0.6431, val_wa=0.6308, best=0.0000
+Epoch 2: train_wa=0.6737, val_wa=0.6317, best=0.6308
+Epoch 3: train_wa=0.6799, val_wa=0.6215, best=0.6317
+Epoch 4: train_wa=0.6903, val_wa=0.6403, best=0.6317
+Epoch 5: train_wa=0.6910, val_wa=0.6262, best=0.6403
+Epoch 6: train_wa=0.7024, val_wa=0.6308, best=0.6403
+Epoch 7: train_wa=0.7066, val_wa=0.6228, best=0.6403
+Epoch 8: train_wa=0.7080, val_wa=0.6258, best=0.6403
+Epoch 9: train_wa=0.7138, val_wa=0.6062, best=0.6403
+Epoch 10: train_wa=0.7124, val_wa=0.6292, best=0.6403
+Epoch 11: train_wa=0.7179, val_wa=0.6206, best=0.6403
+Epoch 12: train_wa=0.7242, val_wa=0.6265, best=0.6403
+Epoch 13: train_wa=0.7251, val_wa=0.6302, best=0.6403
+Epoch 14: train_wa=0.7262, val_wa=0.6209, best=0.6403
+Epoch 15: train_wa=0.7246, val_wa=0.5957, best=0.6403
+Epoch 16: train_wa=0.7345, val_wa=0.6225, best=0.6403
+Epoch 17: train_wa=0.7354, val_wa=0.6280, best=0.6403
+Epoch 18: train_wa=0.7389, val_wa=0.6342, best=0.6403
+Epoch 19: train_wa=0.7428, val_wa=0.6209, best=0.6403
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+RESULT: {"exp_name": "exp5_fau_indomain", "pooling_type": "prosody_guided", "train_data": ["fau-aibo"], "test_data": ["fau-aibo"], "best_val_wa": 0.6403076923076924, "test_wa": 0.6636175863086456, "test_uar": 0.5635103471463822, "best_epoch": 3, "reg_profile": "fau", "weight_decay": 0.005, "label_smoothing": 0.15, "pooling_dropout": 0.3, "grad_clip": 1.0}
++ /root/miniconda3/bin/python -m src.train --train_data fau-aibo --pooling_type self_attention --exp_name exp5b_self_attention_fau --reg_profile fau
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='train' → 11577 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='val' → 3250 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='test' → 3389 samples (train=35/val=7/test=9 speakers)
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+Model params: 95,086,369 total, 704,433 trainable
+Regularization profile=fau, weight_decay=0.005, label_smoothing=0.15, pooling_dropout=0.3, grad_clip=1.0
+Epoch 1: train_wa=0.6389, val_wa=0.6320, best=0.0000
+Epoch 2: train_wa=0.6685, val_wa=0.6329, best=0.6320
+Epoch 3: train_wa=0.6877, val_wa=0.6342, best=0.6329
+Epoch 4: train_wa=0.6934, val_wa=0.6329, best=0.6342
+Epoch 5: train_wa=0.6981, val_wa=0.6006, best=0.6342
+Epoch 6: train_wa=0.7018, val_wa=0.6243, best=0.6342
+Epoch 7: train_wa=0.7033, val_wa=0.6169, best=0.6342
+Epoch 8: train_wa=0.7121, val_wa=0.6194, best=0.6342
+Epoch 9: train_wa=0.7239, val_wa=0.5889, best=0.6342
+Epoch 10: train_wa=0.7222, val_wa=0.6286, best=0.6342
+Epoch 11: train_wa=0.7277, val_wa=0.6049, best=0.6342
+Epoch 12: train_wa=0.7311, val_wa=0.6117, best=0.6342
+Epoch 13: train_wa=0.7359, val_wa=0.6182, best=0.6342
+Epoch 14: train_wa=0.7406, val_wa=0.6111, best=0.6342
+Epoch 15: train_wa=0.7459, val_wa=0.5923, best=0.6342
+Epoch 16: train_wa=0.7488, val_wa=0.6163, best=0.6342
+Epoch 17: train_wa=0.7517, val_wa=0.6117, best=0.6342
+Epoch 18: train_wa=0.7512, val_wa=0.6209, best=0.6342
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+RESULT: {"exp_name": "exp5b_self_attention_fau", "pooling_type": "self_attention", "train_data": ["fau-aibo"], "test_data": ["fau-aibo"], "best_val_wa": 0.6341538461538462, "test_wa": 0.6618471525523754, "test_uar": 0.5823169398212319, "best_epoch": 2, "reg_profile": "fau", "weight_decay": 0.005, "label_smoothing": 0.15, "pooling_dropout": 0.3, "grad_clip": 1.0}
++ '[' -d /root/autodl-tmp/datasets/myst ']'
++ '[' -d /root/autodl-tmp/datasets/kidstalc ']'

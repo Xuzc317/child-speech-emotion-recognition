@@ -1,32 +1,49 @@
-# results/ — 本地实验结果与分析
+# results/ — 实验结果（整合后）
 
-本地生成的分析数据和早期结果快照。投稿权威数据参见 `CLAUDE.md` 和 `results_remote/results/logs/`。
+B1-B7 全部 192 个实验的 JSON 结果、分析数据和训练日志。
 
-## 根目录文件
+## 结构
+
+```
+results/
+├── logs/                  # B1-B7 全量实验 JSON (192 files)
+├── analysis/              # FD、XAI、layer weights 等分析数据
+├── figures/               # 混淆矩阵（待生成）
+├── training_logs/         # 云端训练终端日志
+├── archive/               # 旧实验数据归档
+├── TODO_补充清单.md        # 待补充分析项
+└── README.md
+```
+
+## logs/ — 实验 JSON
+
+| Phase | E系列 | 文件数 |
+|-------|-------|--------|
+| B1 | E1 | 27 |
+| B2 | E3 | 18 |
+| B3 | E4 | 36 |
+| B4 | E5 | 54 |
+| B5 | E2 | 9 |
+| B6 | E6 | 30 |
+| B7 | E7 | 18 |
+| **总计** | | **192** |
+
+校验：`python scripts/verify_all_192.py`
+
+## analysis/ — 分析数据
 
 | 文件 | 内容 |
 |------|------|
-| `canonical_fd_pairs.json` | FD/SMMD 权威值：C-BESD vs IEMOCAP (FD=7.20), vs FAU (FD=8.50) |
-| `distribution_shift.json` | C-BESD vs CREMA-D 的 FD=16.33 / SMMD=0.412 |
-| `layer_weights.json` | WavLM 12 层融合权重，argmax L9 (1-based) |
-| `xai_final.png` | XAI 可视化 |
+| `canonical_fd_pairs.json` | FD/SMMD 权威值 |
+| `layer_weights.json` | WavLM 12 层融合权重 |
 | `xai_raw_data.npz` | XAI 原始数据 |
+| `xai_final.png` | XAI 可视化 |
 | `AC_SUITE_SUMMARY.json` | AC 套件汇总 |
 
-## logs/ — 早期结果快照
+## archive/ — 历史数据
 
-旧版实验 (AC Suite 早期，2026-05-26~27) 的 JSON 结果。
-
-| 文件 | 含义 |
+| 目录 | 内容 |
 |------|------|
-| `exp1_self_attention.json` | C-BESD Self-Attn, WA=92.78% |
-| `exp2_prosody_guided.json` | C-BESD Prosody, WA=91.30% |
-| `exp3_adult_iemocap.json` | IEMOCAP, WA=58.67% |
-| `exp4_zero_shot_fau.json` | Zero-shot C-BESD→FAU, WA=19.56% |
-| `exp5_fau_indomain.json` | FAU Prosody, WA=66.36% |
-| `exp5b_self_attention_fau.json` | FAU Self-Attn, WA=66.18% |
-| `fau_multiseed_summary.json` | FAU 多 seed 汇总 |
-| `apc_metrics.json` | APC_wav=0.718 |
-| `DATA_FREEZE.json` | 数据冻结记录 |
-
-> ⚠️ 完整的 192 实验 JSON 在 `results_remote/results/logs/` — 使用 `python scripts/verify_all_192.py` 校验。
+| `old_experiments/` | exp1~exp5b JSON + apc_metrics + fau_multiseed |
+| `old_figures/` | 旧实验混淆矩阵 (PNG/PDF/JSON) |
+| `old_logs/` | 早期日志归档 |

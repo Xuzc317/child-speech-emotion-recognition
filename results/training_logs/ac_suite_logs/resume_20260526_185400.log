@@ -1,0 +1,240 @@
+=== AC SUITE RESUME 2026-05-26T18:54:00+08:00 ===
+--- CM confusion_exp1_self_attention ---
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='train' → 1851 samples (train=162/val=36/test=39 speakers)
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='val' → 389 samples (train=162/val=36/test=39 speakers)
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='test' → 540 samples (train=162/val=36/test=39 speakers)
+              precision    recall  f1-score   support
+
+       angry      0.899     0.930     0.915       115
+       happy      0.943     0.943     0.943       140
+     neutral      0.948     0.914     0.931       140
+         sad      0.918     0.924     0.921       145
+
+    accuracy                          0.928       540
+   macro avg      0.927     0.928     0.927       540
+weighted avg      0.928     0.928     0.928       540
+
+Saved results/figures/confusion_exp1_self_attention.png / .pdf / .json
+--- CM confusion_exp2_prosody_guided ---
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='train' → 1851 samples (train=162/val=36/test=39 speakers)
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='val' → 389 samples (train=162/val=36/test=39 speakers)
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='test' → 540 samples (train=162/val=36/test=39 speakers)
+              precision    recall  f1-score   support
+
+       angry      0.836     0.930     0.881       115
+       happy      0.936     0.936     0.936       140
+     neutral      0.975     0.843     0.904       140
+         sad      0.907     0.945     0.926       145
+
+    accuracy                          0.913       540
+   macro avg      0.914     0.913     0.912       540
+weighted avg      0.917     0.913     0.913       540
+
+Saved results/figures/confusion_exp2_prosody_guided.png / .pdf / .json
+--- CM confusion_exp3_adult_iemocap ---
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+  [iemocap] 8525 samples (10 speakers), discarded=1269, split='train' → 4313 samples (train=5/val=2/test=3 speakers)
+  [iemocap] 8525 samples (10 speakers), discarded=1269, split='val' → 1841 samples (train=5/val=2/test=3 speakers)
+  [iemocap] 8525 samples (10 speakers), discarded=1269, split='test' → 2371 samples (train=5/val=2/test=3 speakers)
+              precision    recall  f1-score   support
+
+       angry      0.658     0.628     0.643       829
+       happy      0.660     0.597     0.627       724
+     neutral      0.423     0.416     0.419       500
+         sad      0.532     0.723     0.613       318
+
+    accuracy                          0.587      2371
+   macro avg      0.568     0.591     0.576      2371
+weighted avg      0.592     0.587     0.587      2371
+
+Saved results/figures/confusion_exp3_adult_iemocap.png / .pdf / .json
+--- CM confusion_exp4_zero_shot_fau ---
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='train' → 1851 samples (train=162/val=36/test=39 speakers)
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='val' → 389 samples (train=162/val=36/test=39 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='all' → 18216 samples (train=35/val=7/test=9 speakers)
+              precision    recall  f1-score   support
+
+       angry      0.156     0.617     0.249      2759
+       happy      0.203     0.233     0.217      4490
+     neutral      0.589     0.060     0.109     10967
+         sad      0.000     0.000     0.000         0
+
+    accuracy                          0.187     18216
+   macro avg      0.237     0.228     0.144     18216
+weighted avg      0.429     0.187     0.157     18216
+
+Saved results/figures/confusion_exp4_zero_shot_fau.png / .pdf / .json
+--- CM confusion_exp5_fau_indomain ---
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='train' → 11577 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='val' → 3250 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='test' → 3389 samples (train=35/val=7/test=9 speakers)
+              precision    recall  f1-score   support
+
+       angry      0.500     0.382     0.433       558
+       happy      0.519     0.497     0.508       833
+     neutral      0.749     0.812     0.779      1998
+         sad      0.000     0.000     0.000         0
+
+   micro avg      0.664     0.664     0.664      3389
+   macro avg      0.442     0.423     0.430      3389
+weighted avg      0.652     0.664     0.655      3389
+
+Saved results/figures/confusion_exp5_fau_indomain.png / .pdf / .json
+--- CM confusion_exp5b_self_attention_fau ---
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='train' → 11577 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='val' → 3250 samples (train=35/val=7/test=9 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='test' → 3389 samples (train=35/val=7/test=9 speakers)
+              precision    recall  f1-score   support
+
+       angry      0.512     0.441     0.474       558
+       happy      0.492     0.526     0.508       833
+     neutral      0.772     0.780     0.776      1998
+         sad      0.000     0.000     0.000         0
+
+   micro avg      0.662     0.662     0.662      3389
+   macro avg      0.444     0.437     0.440      3389
+weighted avg      0.661     0.662     0.661      3389
+
+Saved results/figures/confusion_exp5b_self_attention_fau.png / .pdf / .json
+--- MULTISEED exp5 seed=123 ---
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='train' → 11518 samples (train=33/val=10/test=8 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='val' → 3512 samples (train=33/val=10/test=8 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='test' → 3186 samples (train=33/val=10/test=8 speakers)
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+Model params: 95,086,369 total, 704,433 trainable
+Regularization profile=fau, weight_decay=0.005, label_smoothing=0.15, pooling_dropout=0.3, grad_clip=1.0
+Epoch 1: train_wa=0.6475, val_wa=0.6694, best=0.0000
+Epoch 2: train_wa=0.6749, val_wa=0.6669, best=0.6694
+Epoch 3: train_wa=0.6836, val_wa=0.6754, best=0.6694
+Epoch 4: train_wa=0.6892, val_wa=0.6620, best=0.6754
+Epoch 5: train_wa=0.6973, val_wa=0.6737, best=0.6754
+Epoch 6: train_wa=0.7085, val_wa=0.6637, best=0.6754
+Epoch 7: train_wa=0.7166, val_wa=0.6760, best=0.6754
+Epoch 8: train_wa=0.7123, val_wa=0.6478, best=0.6760
+Epoch 9: train_wa=0.7225, val_wa=0.6483, best=0.6760
+Epoch 10: train_wa=0.7190, val_wa=0.6495, best=0.6760
+Epoch 11: train_wa=0.7246, val_wa=0.6651, best=0.6760
+Epoch 12: train_wa=0.7271, val_wa=0.6651, best=0.6760
+Epoch 13: train_wa=0.7341, val_wa=0.6486, best=0.6760
+Epoch 14: train_wa=0.7305, val_wa=0.6301, best=0.6760
+Epoch 15: train_wa=0.7388, val_wa=0.6475, best=0.6760
+Epoch 16: train_wa=0.7386, val_wa=0.6469, best=0.6760
+Epoch 17: train_wa=0.7406, val_wa=0.6643, best=0.6760
+Epoch 18: train_wa=0.7457, val_wa=0.6629, best=0.6760
+Epoch 19: train_wa=0.7501, val_wa=0.6609, best=0.6760
+Epoch 20: train_wa=0.7456, val_wa=0.6418, best=0.6760
+Epoch 21: train_wa=0.7530, val_wa=0.6489, best=0.6760
+Epoch 22: train_wa=0.7539, val_wa=0.6609, best=0.6760
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+RESULT: {"exp_name": "exp5_fau_indomain_s123", "pooling_type": "prosody_guided", "train_data": ["fau-aibo"], "test_data": ["fau-aibo"], "seed": 123, "best_val_wa": 0.6759681093394078, "test_wa": 0.6365348399246704, "test_uar": 0.5100341660379469, "best_epoch": 6, "reg_profile": "fau", "weight_decay": 0.005, "label_smoothing": 0.15, "pooling_dropout": 0.3, "grad_clip": 1.0, "output_dir": "checkpoints/exp5_fau_indomain_s123", "protocol": "ac_suite_2026-05"}
+--- MULTISEED exp5b seed=123 ---
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='train' → 11518 samples (train=33/val=10/test=8 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='val' → 3512 samples (train=33/val=10/test=8 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='test' → 3186 samples (train=33/val=10/test=8 speakers)
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+Model params: 95,086,369 total, 704,433 trainable
+Regularization profile=fau, weight_decay=0.005, label_smoothing=0.15, pooling_dropout=0.3, grad_clip=1.0
+Epoch 1: train_wa=0.6486, val_wa=0.6734, best=0.0000
+Epoch 2: train_wa=0.6775, val_wa=0.6651, best=0.6734
+Epoch 3: train_wa=0.6872, val_wa=0.6754, best=0.6734
+Epoch 4: train_wa=0.6916, val_wa=0.6694, best=0.6754
+Epoch 5: train_wa=0.6983, val_wa=0.6768, best=0.6754
+Epoch 6: train_wa=0.7123, val_wa=0.6686, best=0.6768
+Epoch 7: train_wa=0.7169, val_wa=0.6720, best=0.6768
+Epoch 8: train_wa=0.7186, val_wa=0.6623, best=0.6768
+Epoch 9: train_wa=0.7265, val_wa=0.6424, best=0.6768
+Epoch 10: train_wa=0.7269, val_wa=0.6566, best=0.6768
+Epoch 11: train_wa=0.7273, val_wa=0.6637, best=0.6768
+Epoch 12: train_wa=0.7344, val_wa=0.6683, best=0.6768
+Epoch 13: train_wa=0.7403, val_wa=0.6478, best=0.6768
+Epoch 14: train_wa=0.7440, val_wa=0.6256, best=0.6768
+Epoch 15: train_wa=0.7452, val_wa=0.6395, best=0.6768
+Epoch 16: train_wa=0.7540, val_wa=0.6518, best=0.6768
+Epoch 17: train_wa=0.7579, val_wa=0.6643, best=0.6768
+Epoch 18: train_wa=0.7571, val_wa=0.6560, best=0.6768
+Epoch 19: train_wa=0.7586, val_wa=0.6566, best=0.6768
+Epoch 20: train_wa=0.7650, val_wa=0.6407, best=0.6768
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+RESULT: {"exp_name": "exp5b_self_attention_fau_s123", "pooling_type": "self_attention", "train_data": ["fau-aibo"], "test_data": ["fau-aibo"], "seed": 123, "best_val_wa": 0.6768223234624146, "test_wa": 0.657564344005022, "test_uar": 0.5349883298410659, "best_epoch": 4, "reg_profile": "fau", "weight_decay": 0.005, "label_smoothing": 0.15, "pooling_dropout": 0.3, "grad_clip": 1.0, "output_dir": "checkpoints/exp5b_self_attention_fau_s123", "protocol": "ac_suite_2026-05"}
+--- MULTISEED exp5 seed=456 ---
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='train' → 13001 samples (train=35/val=9/test=7 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='val' → 2764 samples (train=35/val=9/test=7 speakers)
+  [fau-aibo] 18216 samples (51 speakers), discarded=0, split='test' → 2451 samples (train=35/val=9/test=7 speakers)
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+Model params: 95,086,369 total, 704,433 trainable
+Regularization profile=fau, weight_decay=0.005, label_smoothing=0.15, pooling_dropout=0.3, grad_clip=1.0
+Epoch 1: train_wa=0.6458, val_wa=0.6335, best=0.0000
+Epoch 2: train_wa=0.6717, val_wa=0.6386, best=0.6335
+Epoch 3: train_wa=0.6846, val_wa=0.6520, best=0.6386
+Epoch 4: train_wa=0.6905, val_wa=0.6451, best=0.6520
+Epoch 5: train_wa=0.6910, val_wa=0.6483, best=0.6520
+Epoch 6: train_wa=0.6979, val_wa=0.6241, best=0.6520
+Epoch 7: train_wa=0.7016, val_wa=0.6501, best=0.6520
+Epoch 8: train_wa=0.7035, val_wa=0.6512, best=0.6520
+Epoch 9: train_wa=0.7109, val_wa=0.6295, best=0.6520
+Epoch 10: train_wa=0.7168, val_wa=0.6447, best=0.6520
+Epoch 11: train_wa=0.7191, val_wa=0.6523, best=0.6520
+Epoch 12: train_wa=0.7198, val_wa=0.6371, best=0.6523
+Epoch 13: train_wa=0.7219, val_wa=0.6306, best=0.6523
+Epoch 14: train_wa=0.7286, val_wa=0.6433, best=0.6523
+Epoch 15: train_wa=0.7329, val_wa=0.6382, best=0.6523

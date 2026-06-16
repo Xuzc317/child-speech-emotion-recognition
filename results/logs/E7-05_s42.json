@@ -1,0 +1,27 @@
+{
+  "exp_name": "E7-05_s42",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.9477611940298507,
+  "test_wa": 0.9173693086003373,
+  "test_uar": 0.9170822257664363,
+  "best_epoch": 63,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b7/E7-05_s42",
+  "protocol": "ac_suite_2026-06"
+}

@@ -1,0 +1,44 @@
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='train' → 1851 samples (train=162/val=36/test=39 speakers)
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='val' → 389 samples (train=162/val=36/test=39 speakers)
+  [c-besd] 2780 samples (237 speakers), discarded=0, split='test' → 540 samples (train=162/val=36/test=39 speakers)
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+Model params: 95,086,369 total, 704,433 trainable
+Regularization profile=default, weight_decay=0.001, label_smoothing=0.1, pooling_dropout=0.0, grad_clip=None
+Epoch 1: train_wa=0.5041, val_wa=0.6350, best=0.0000
+Epoch 2: train_wa=0.7250, val_wa=0.8072, best=0.6350
+Epoch 3: train_wa=0.7931, val_wa=0.8406, best=0.8072
+Epoch 4: train_wa=0.8374, val_wa=0.8689, best=0.8406
+Epoch 5: train_wa=0.8444, val_wa=0.8843, best=0.8689
+Epoch 6: train_wa=0.8595, val_wa=0.8715, best=0.8843
+Epoch 7: train_wa=0.8606, val_wa=0.8766, best=0.8843
+Epoch 8: train_wa=0.8774, val_wa=0.9023, best=0.8843
+Epoch 9: train_wa=0.8903, val_wa=0.8920, best=0.9023
+Epoch 10: train_wa=0.9022, val_wa=0.8895, best=0.9023
+Epoch 11: train_wa=0.9006, val_wa=0.9126, best=0.9023
+Epoch 12: train_wa=0.9130, val_wa=0.8972, best=0.9126
+Epoch 13: train_wa=0.9152, val_wa=0.8920, best=0.9126
+Epoch 14: train_wa=0.9227, val_wa=0.9023, best=0.9126
+Epoch 15: train_wa=0.9254, val_wa=0.8766, best=0.9126
+Epoch 16: train_wa=0.9076, val_wa=0.8946, best=0.9126
+Epoch 17: train_wa=0.9287, val_wa=0.9049, best=0.9126
+Epoch 18: train_wa=0.9330, val_wa=0.8817, best=0.9126
+Epoch 19: train_wa=0.9222, val_wa=0.8920, best=0.9126
+Epoch 20: train_wa=0.9373, val_wa=0.8792, best=0.9126
+Epoch 21: train_wa=0.9319, val_wa=0.8895, best=0.9126
+Epoch 22: train_wa=0.9417, val_wa=0.8972, best=0.9126
+Epoch 23: train_wa=0.9411, val_wa=0.8972, best=0.9126
+Epoch 24: train_wa=0.9373, val_wa=0.8972, best=0.9126
+Epoch 25: train_wa=0.9390, val_wa=0.8920, best=0.9126
+Epoch 26: train_wa=0.9400, val_wa=0.8869, best=0.9126
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+RESULT: {"exp_name": "exp2_prosody_guided", "pooling_type": "prosody_guided", "train_data": ["c-besd"], "test_data": ["c-besd"], "best_val_wa": 0.9125964010282777, "test_wa": 0.912962962962963, "test_uar": 0.9134584493467551, "best_epoch": 10, "reg_profile": "default", "weight_decay": 0.001, "label_smoothing": 0.1, "pooling_dropout": 0.0, "grad_clip": null}

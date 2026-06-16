@@ -1,0 +1,24 @@
+=== AC SUITE RESUME 2026-05-26T18:32:53+08:00 ===
+--- CM confusion_exp1_self_attention ---
+/root/miniconda3/lib/python3.8/site-packages/torchvision/datapoints/__init__.py:12: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torchvision/transforms/v2/__init__.py:54: UserWarning: The torchvision.datapoints and torchvision.transforms.v2 namespaces are still Beta. While we do not expect major breaking changes, some APIs may still change according to user feedback. Please submit any feedback you may have in this issue: https://github.com/pytorch/vision/issues/6753, and you can also check out https://github.com/pytorch/vision/issues/7319 to learn more about the APIs that we suspect might involve future changes. You can silence this warning by calling torchvision.disable_beta_transforms_warning().
+  warnings.warn(_BETA_TRANSFORMS_WARNING)
+/root/miniconda3/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+[SSLBackbone] Loaded WavLM from local snapshot
+[SSLBackbone] Frozen wavlm — 94,381,936 params frozen
+  WARNING: Dataset path not found for 'c-besd': /root/autodl-tmp/提交到团队/数据集/BESD/BESD/MY
+  WARNING: No samples loaded for datasets=['c-besd'], split=train
+Traceback (most recent call last):
+  File "scripts/plot_confusion_matrix.py", line 104, in <module>
+    main()
+  File "scripts/plot_confusion_matrix.py", line 63, in main
+    dls = get_dataloaders(args.train_data, batch_size=args.batch_size, seed=args.seed)
+  File "/root/autodl-tmp/d-ser/src/data/data_loader.py", line 74, in get_dataloaders
+    dataloaders[split] = DataLoader(
+  File "/root/miniconda3/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 351, in __init__
+    sampler = RandomSampler(dataset, generator=generator)  # type: ignore[arg-type]
+  File "/root/miniconda3/lib/python3.8/site-packages/torch/utils/data/sampler.py", line 107, in __init__
+    raise ValueError("num_samples should be a positive integer "
+ValueError: num_samples should be a positive integer value, but got num_samples=0

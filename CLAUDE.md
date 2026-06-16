@@ -109,66 +109,67 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 
 ```
 ├── docs/
-│   ├── current/                       # ⭐ 当前使用的核心文档
+│   ├── current/                       # ⭐ 当前核心文档
 │   │   ├── 实验设计方案_v3_含学习笔记.md
-│   │   ├── AC实验协议.md
 │   │   ├── 权威数据手册.md
-│   │   ├── SER项目全量台账_数据路径与任务清单.md
-│   │   ├── 全部实验结果汇总.md
 │   │   └── 模块文档 (1-6)
-│   ├── discussion/                    # 在讨论的设计方案
-│   │   ├── 讨论纪要_解冻WavLM效果分析与FAU重标注方案.md
-│   │   ├── 跨数据集儿童SER数据方案_v2.md
-│   │   └── 方向对比与方案设计.md
-│   ├── ops/                           # 运维操作手册
-│   └── archive/                       # 已迭代的旧版文档
+│   ├── discussion/                    # 设计讨论
+│   ├── ops/                           # 运维操作手册 (2026-06更新)
+│   └── archive/                       # 已归档旧文档
 ├── paper_draft/
-│   ├── current/                       # ⭐ 当前v9版本 (LaTeX + Markdown)
-│   ├── archive/                       # v8及更早版本
-│   ├── presentations/                 # PPT汇报文件
-│   └── figures/                       # 论文图表
-├── src/
-│   ├── train.py                       # 统一训练入口
-│   ├── models/                        # ssl_backbone, pooling, semlp, layer_fusion, adapter
-│   ├── augmentation/                  # safe_augmentation, constrained_aug
+│   ├── current/                       # ⭐ v9 LaTeX
+│   ├── archive/                       # v8及更早
+│   ├── presentations/                 # PPT
+│   └── figures/                       # 论文配图
+├── src/                               # 核心代码
+│   ├── models/                        # ssl_backbone, pooling, semlp, layer_fusion
 │   ├── data/                          # 数据加载
-│   └── evaluation/                    # 评估工具
-├── scripts/
-│   ├── launch_b1.sh ~ launch_b7.sh    # 云端批量启动脚本
-│   ├── launch_b6_fill.sh              # B6补完脚本
-│   ├── tmp_paramiko_autodl_runner.py  # 云端同步工具
-│   ├── verify_experiments.py          # 实验完整性校验 (B1/B3)
-│   ├── verify_all_192.py              # 全量 192 实验校验 (B1-B7)
-│   └── archive/                       # 已迭代脚本 (v2-v6等)
-├── results/
-│   └── logs/                          # 本地核心结果快照
-├── results_remote/
-│   └── results/logs/                  # ⭐ 云端完整结果 (192 runs)
-├── checkpoints/                       # 本地权重
-├── experiments/
-│   └── archive/                       # 旧Phase实验数据 (Phase 1-5)
+│   ├── evaluation/                    # FD, XAI
+│   ├── augmentation/                  # 数据增强
+│   └── training/                      # 训练入口
+├── scripts/                           # 脚本工具
+│   ├── launch_b1.sh ~ launch_b7.sh    # 云端启动脚本
+│   ├── tmp_paramiko_autodl_runner.py  # 云端同步
+│   ├── verify_all_192.py              # 192 run 全量校验
+│   ├── download_checkpoints.py        # 云端权重下载
+│   └── archive/                       # 历史脚本
+├── results/                           # ★ 整合后的实验结果
+│   ├── logs/                          # 192 B1-B7 JSON
+│   ├── analysis/                      # FD, XAI, layer weights
+│   ├── figures/                       # 混淆矩阵 (待生成)
+│   ├── training_logs/                 # 云端训练日志
+│   ├── archive/                       # 旧实验数据
+│   └── TODO_补充清单.md                # 待补充分析项
+├── checkpoints/
+│   ├── autodl/b1~b7/                  # B1-B7 权重 (151个)
+│   └── archive/                       # 历史权重
+├── experiments/                       # 旧Protocol实验 (已归档)
+├── references/                        # 参考文献 PDF
+├── _legacy/                           # 已废弃的旧数据/工具
 └── CLAUDE.md
 ```
 
 ## 实验完整性校验
 
 - **校验脚本**: `python scripts/verify_all_192.py` — 覆盖 B1-B7 全部 192 runs
-- **本地**: `results_remote/results/logs/` — **192/192 ✅** (2026-06-16 复验通过)
+- **权威数据源**: `results/logs/` — **192/192 ✅** (2026-06-16 复验通过)
 - **云端**: `/root/autodl-tmp/d-ser/results/logs/` — **192/192 ✅** (与本地一致)
-- **192 + 14 extra JSONs** (exp1~5b 单文件副本, apc_metrics, fau_multiseed_summary 等)
+- **结果整合**: `results/` 整合了原 `results_remote/` + `results/`，旧数据在 `results/archive/`
 
 ## AutoDL 云端状态
 
 - **当前状态**: 所有实验已完成，数据已全量同步到本地
-- **可以关机**: ✅ — 无待跑实验，数据已安全存储在 `results_remote/` + GitHub
+- **可以关机**: ✅ — 无待跑实验，数据已安全存储
 - **下次需要时再开机**: 需补充实验、重新训练、或提取 checkpoint 时
 - **开机后同步命令**: `python scripts/tmp_paramiko_autodl_runner.py --pull-all`
 
 ## 结果数据权威来源
 
-- **完整结果**: `results_remote/results/logs/` (192 runs, 从云端同步)
-- **核心快照**: `results/logs/DATA_FREEZE.json`
+- **完整结果**: `results/logs/` (192 runs, E1-E7 全量 JSON)
+- **分析数据**: `results/analysis/` (FD, XAI, layer weights)
+- **补充清单**: `results/TODO_补充清单.md`
 - **同步命令**: `python scripts/tmp_paramiko_autodl_runner.py --pull-all`
+- **下载权重**: `python scripts/download_checkpoints.py`
 - **完整校验**: `python scripts/verify_all_192.py`
 
 ## 关键约束

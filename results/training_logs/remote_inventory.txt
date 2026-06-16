@@ -1,0 +1,221 @@
+=== results/logs ===
+total 584
+drwxr-xr-x 2 root root 8192 Jun 14 19:38 .
+drwxr-xr-x 9 root root 4096 Jun 13 17:31 ..
+-rw-r--r-- 1 root root  471 Jun 11 02:34 E1-01_s123.json
+-rw-r--r-- 1 root root  468 Jun 11 02:14 E1-01_s42.json
+-rw-r--r-- 1 root root  469 Jun 11 03:06 E1-01_s456.json
+-rw-r--r-- 1 root root  481 Jun 11 04:03 E1-02_s123.json
+-rw-r--r-- 1 root root  478 Jun 11 03:41 E1-02_s42.json
+-rw-r--r-- 1 root root  481 Jun 11 04:25 E1-02_s456.json
+-rw-r--r-- 1 root root  481 Jun 11 06:18 E1-03_s123.json
+-rw-r--r-- 1 root root  477 Jun 11 05:27 E1-03_s42.json
+-rw-r--r-- 1 root root  481 Jun 11 07:10 E1-03_s456.json
+-rw-r--r-- 1 root root  471 Jun 11 08:20 E1-04_s123.json
+-rw-r--r-- 1 root root  467 Jun 11 07:43 E1-04_s42.json
+-rw-r--r-- 1 root root  470 Jun 11 08:56 E1-04_s456.json
+-rw-r--r-- 1 root root  479 Jun 11 10:03 E1-05_s123.json
+-rw-r--r-- 1 root root  478 Jun 11 09:27 E1-05_s42.json
+-rw-r--r-- 1 root root  479 Jun 11 10:36 E1-05_s456.json
+-rw-r--r-- 1 root root  480 Jun 11 12:57 E1-06_s123.json
+-rw-r--r-- 1 root root  478 Jun 11 11:44 E1-06_s42.json
+-rw-r--r-- 1 root root  482 Jun 11 14:27 E1-06_s456.json
+-rw-r--r-- 1 root root  473 Jun 11 21:01 E1-07_s123.json
+-rw-r--r-- 1 root root  465 Jun 11 14:49 E1-07_s42.json
+-rw-r--r-- 1 root root  472 Jun 11 21:39 E1-07_s456.json
+-rw-r--r-- 1 root root  619 Jun 11 22:25 E1-08_s123.json
+-rw-r--r-- 1 root root  478 Jun 11 22:01 E1-08_s42.json
+-rw-r--r-- 1 root root  616 Jun 11 22:46 E1-08_s456.json
+-rw-r--r-- 1 root root  619 Jun 12 00:42 E1-09_s123.json
+-rw-r--r-- 1 root root  615 Jun 11 23:44 E1-09_s42.json
+-rw-r--r-- 1 root root  618 Jun 12 01:33 E1-09_s456.json
+-rw-r--r-- 1 root root  604 Jun 12 01:59 E3-01.json
+-rw-r--r-- 1 root root  614 Jun 12 02:14 E3-02.json
+-rw-r--r-- 1 root root  614 Jun 12 02:39 E3-03.json
+-rw-r--r-- 1 root root  603 Jun 12 02:55 E3-04.json
+-rw-r--r-- 1 root root  612 Jun 12 03:17 E3-05.json
+-rw-r--r-- 1 root root  613 Jun 12 03:41 E3-06.json
+-rw-r--r-- 1 root root  603 Jun 12 04:31 E3-07.json
+-rw-r--r-- 1 root root  612 Jun 12 04:58 E3-08.json
+-rw-r--r-- 1 root root  613 Jun 12 05:53 E3-09.json
+-rw-r--r-- 1 root root  601 Jun 12 06:45 E3-10.json
+-rw-r--r-- 1 root root  608 Jun 12 07:14 E3-11.json
+-rw-r--r-- 1 root root  610 Jun 12 08:12 E3-12.json
+-rw-r--r-- 1 root root  601 Jun 12 08:35 E3-13.json
+-rw-r--r-- 1 root root  612 Jun 12 08:58 E3-14.json
+-rw-r--r-- 1 root root  612 Jun 12 09:57 E3-15.json
+-rw-r--r-- 1 root root  599 Jun 12 10:21 E3-16.json
+-rw-r--r-- 1 root root  610 Jun 12 10:45 E3-17.json
+-rw-r--r-- 1 root root  610 Jun 12 11:47 E3-18.json
+-rw-r--r-- 1 root root  617 Jun 12 13:42 E4-01_s123.json
+-rw-r--r-- 1 root root  614 Jun 12 13:14 E4-01_s42.json
+-rw-r--r-- 1 root root  617 Jun 12 14:14 E4-01_s456.json
+-rw-r--r-- 1 root root  655 Jun 12 15:10 E4-02_s123.json
+-rw-r--r-- 1 root root  650 Jun 12 14:39 E4-02_s42.json
+-rw-r--r-- 1 root root  654 Jun 12 15:37 E4-02_s456.json
+-rw-r--r-- 1 root root  617 Jun 12 16:31 E4-03_s123.json
+-rw-r--r-- 1 root root  614 Jun 12 16:09 E4-03_s42.json
+-rw-r--r-- 1 root root  617 Jun 12 16:50 E4-03_s456.json
+-rw-r--r-- 1 root root  655 Jun 13 05:09 E4-04_s123.json
+-rw-r--r-- 1 root root  334 Jun 13 23:50 E4-04_s42.json
+-rw-r--r-- 1 root root  655 Jun 13 05:44 E4-04_s456.json
+-rw-r--r-- 1 root root  616 Jun 12 17:58 E4-05_s123.json
+-rw-r--r-- 1 root root  614 Jun 12 17:22 E4-05_s42.json
+-rw-r--r-- 1 root root  616 Jun 12 18:23 E4-05_s456.json
+-rw-r--r-- 1 root root  647 Jun 12 20:34 E4-06_s123.json
+-rw-r--r-- 1 root root  643 Jun 12 19:25 E4-06_s42.json
+-rw-r--r-- 1 root root  646 Jun 12 21:25 E4-06_s456.json
+-rw-r--r-- 1 root root  615 Jun 12 22:36 E4-07_s123.json
+-rw-r--r-- 1 root root  613 Jun 12 21:57 E4-07_s42.json
+-rw-r--r-- 1 root root  604 Jun 12 23:11 E4-07_s456.json
+-rw-r--r-- 1 root root  648 Jun 13 07:09 E4-08_s123.json
+-rw-r--r-- 1 root root  645 Jun 13 06:23 E4-08_s42.json
+-rw-r--r-- 1 root root  648 Jun 13 07:44 E4-08_s456.json
+-rw-r--r-- 1 root root  619 Jun 13 01:08 E4-09_s123.json
+-rw-r--r-- 1 root root  615 Jun 13 00:10 E4-09_s42.json
+-rw-r--r-- 1 root root  618 Jun 13 02:00 E4-09_s456.json
+-rw-r--r-- 1 root root  363 Jun 14 00:24 E4-10_s123.json
+-rw-r--r-- 1 root root  361 Jun 14 00:22 E4-10_s42.json
+-rw-r--r-- 1 root root  651 Jun 13 08:14 E4-10_s456.json
+-rw-r--r-- 1 root root  619 Jun 13 10:19 E4-11_s123.json
+-rw-r--r-- 1 root root  615 Jun 13 09:14 E4-11_s42.json
+-rw-r--r-- 1 root root  618 Jun 13 11:30 E4-11_s456.json
+-rw-r--r-- 1 root root  650 Jun 13 17:07 E4-12_s123.json
+-rw-r--r-- 1 root root  647 Jun 13 16:42 E4-12_s42.json
+-rw-r--r-- 1 root root  651 Jun 13 23:30 E4-12_s456.json
+-rw-r--r-- 1 root root  612 Jun 14 04:40 E5-01_s123.json
+-rw-r--r-- 1 root root  610 Jun 14 04:27 E5-01_s42.json
+-rw-r--r-- 1 root root  612 Jun 14 04:51 E5-01_s456.json
+-rw-r--r-- 1 root root  623 Jun 14 03:43 E5-02_L10_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 03:54 E5-02_L11_s42.json
+-rw-r--r-- 1 root root  623 Jun 14 04:11 E5-02_L12_s42.json
+-rw-r--r-- 1 root root  619 Jun 14 02:10 E5-02_L1_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 02:22 E5-02_L2_s42.json
+-rw-r--r-- 1 root root  619 Jun 14 02:32 E5-02_L3_s42.json
+-rw-r--r-- 1 root root  619 Jun 14 02:47 E5-02_L4_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 02:56 E5-02_L5_s42.json
+-rw-r--r-- 1 root root  618 Jun 14 03:01 E5-02_L6_s42.json
+-rw-r--r-- 1 root root  619 Jun 14 03:13 E5-02_L7_s42.json
+-rw-r--r-- 1 root root  619 Jun 14 03:29 E5-02_L8_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 03:36 E5-02_L9_s42.json
+-rw-r--r-- 1 root root  617 Jun 14 05:19 E5-03_s123.json
+-rw-r--r-- 1 root root  614 Jun 14 05:07 E5-03_s42.json
+-rw-r--r-- 1 root root  617 Jun 14 05:33 E5-03_s456.json
+-rw-r--r-- 1 root root  613 Jun 14 08:57 E5-04_s123.json
+-rw-r--r-- 1 root root  610 Jun 14 08:43 E5-04_s42.json
+-rw-r--r-- 1 root root  611 Jun 14 09:08 E5-04_s456.json
+-rw-r--r-- 1 root root  622 Jun 14 07:49 E5-05_L10_s42.json
+-rw-r--r-- 1 root root  623 Jun 14 08:07 E5-05_L11_s42.json
+-rw-r--r-- 1 root root  623 Jun 14 08:25 E5-05_L12_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 05:48 E5-05_L1_s42.json
+-rw-r--r-- 1 root root  621 Jun 14 06:02 E5-05_L2_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 06:17 E5-05_L3_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 06:28 E5-05_L4_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 06:39 E5-05_L5_s42.json
+-rw-r--r-- 1 root root  621 Jun 14 06:57 E5-05_L6_s42.json
+-rw-r--r-- 1 root root  621 Jun 14 07:15 E5-05_L7_s42.json
+-rw-r--r-- 1 root root  619 Jun 14 07:28 E5-05_L8_s42.json
+-rw-r--r-- 1 root root  620 Jun 14 07:38 E5-05_L9_s42.json
+-rw-r--r-- 1 root root  616 Jun 14 09:32 E5-06_s123.json
+-rw-r--r-- 1 root root  614 Jun 14 09:19 E5-06_s42.json
+-rw-r--r-- 1 root root  616 Jun 14 09:40 E5-06_s456.json
+-rw-r--r-- 1 root root  623 Jun 14 18:29 E5-08_L10_s42.json
+-rw-r--r-- 1 root root  625 Jun 14 19:38 E5-08_L11_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 10:43 E5-08_L1_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 11:29 E5-08_L2_s42.json
+-rw-r--r-- 1 root root  621 Jun 14 12:09 E5-08_L3_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 12:55 E5-08_L4_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 13:48 E5-08_L5_s42.json
+-rw-r--r-- 1 root root  606 Jun 14 14:26 E5-08_L6_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 15:35 E5-08_L7_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 16:31 E5-08_L8_s42.json
+-rw-r--r-- 1 root root  622 Jun 14 17:16 E5-08_L9_s42.json
+-rw-r--r-- 1 root root  465 Jun 11 00:24 TEST_BS96.json
+-rw-r--r-- 1 root root   51 Jun 14 00:14 VERIFY_GAPS.json
+-rw-r--r-- 1 root root  222 May 27 01:03 apc_metrics.json
+-rw-r--r-- 1 root root  495 May 26 16:20 exp1_self_attention.json
+-rw-r--r-- 1 root root  395 May 26 15:12 exp2_prosody_guided.json
+-rw-r--r-- 1 root root  494 May 26 16:57 exp3_adult_iemocap.json
+-rw-r--r-- 1 root root  497 May 26 17:18 exp4_zero_shot_fau.json
+-rw-r--r-- 1 root root  490 May 26 18:13 exp5_fau_indomain.json
+-rw-r--r-- 1 root root  501 May 26 20:01 exp5_fau_indomain_s123.json
+-rw-r--r-- 1 root root  501 May 26 23:35 exp5_fau_indomain_s456.json
+-rw-r--r-- 1 root root  504 May 26 18:23 exp5b_self_attention_fau.json
+-rw-r--r-- 1 root root  514 May 26 20:12 exp5b_self_attention_fau_s123.json
+-rw-r--r-- 1 root root  515 May 26 23:51 exp5b_self_attention_fau_s456.json
+-rw-r--r-- 1 root root 1791 May 27 01:03 fau_multiseed_summary.json
+=== checkpoints ===
+checkpoints:
+total 4
+drwxr-xr-x  4 root root   55 Jun 14 20:02 .
+drwxr-xr-x 10 root root 4096 Jun 14 20:02 ..
+drwxr-xr-x  5 root root   73 Jun 12 19:16 b1
+drwxr-xr-x  2 root root   10 Jun 13 04:35 exp1_self_attention
+
+checkpoints/b1:
+total 0
+drwxr-xr-x 5 root root 73 Jun 12 19:16 .
+drwxr-xr-x 4 root root 55 Jun 14 20:02 ..
+drwxr-xr-x 2 root root 35 Jun 11 03:06 E1-02_s42
+drwxr-xr-x 2 root root 35 Jun 11 08:58 E1-05_s42
+drwxr-xr-x 2 root root 35 Jun 11 22:48 E1-09_s42
+
+checkpoints/b1/E1-02_s42:
+total 371552
+drwxr-xr-x 2 root root        35 Jun 11 03:06 .
+drwxr-xr-x 5 root root        73 Jun 12 19:16 ..
+-rw-r--r-- 1 root root 380468830 Jun 11 03:34 best_model.pt
+
+checkpoints/b1/E1-05_s42:
+total 371556
+drwxr-xr-x 2 root root        35 Jun 11 08:58 .
+drwxr-xr-x 5 root root        73 Jun 12 19:16 ..
+-rw-r--r-- 1 root root 380467806 Jun 11 09:04 best_model.pt
+
+checkpoints/b1/E1-09_s42:
+total 371552
+drwxr-xr-x 2 root root        35 Jun 11 22:48 .
+drwxr-xr-x 5 root root        73 Jun 12 19:16 ..
+-rw-r--r-- 1 root root 380468190 Jun 11 23:13 best_model.pt
+
+checkpoints/exp1_self_attention:
+total 0
+drwxr-xr-x 2 root root 10 Jun 13 04:35 .
+drwxr-xr-x 4 root root 55 Jun 14 20:02 ..
+=== training logs ===
+=== results/figures ===
+total 384
+drwxr-xr-x 2 root root  4096 May 26 18:59 .
+drwxr-xr-x 9 root root  4096 Jun 13 17:31 ..
+-rw-r--r-- 1 root root   402 May 26 22:31 confusion_exp1_self_attention.json
+-rw-r--r-- 1 root root 17453 May 26 22:31 confusion_exp1_self_attention.pdf
+-rw-r--r-- 1 root root 24937 May 26 22:31 confusion_exp1_self_attention.png
+-rw-r--r-- 1 root root   403 May 26 22:32 confusion_exp2_prosody_guided.json
+-rw-r--r-- 1 root root 17490 May 26 22:32 confusion_exp2_prosody_guided.pdf
+-rw-r--r-- 1 root root 25434 May 26 22:32 confusion_exp2_prosody_guided.png
+-rw-r--r-- 1 root root   421 May 26 22:32 confusion_exp3_adult_iemocap.json
+-rw-r--r-- 1 root root 17471 May 26 22:32 confusion_exp3_adult_iemocap.pdf
+-rw-r--r-- 1 root root 28450 May 26 22:32 confusion_exp3_adult_iemocap.png
+-rw-r--r-- 1 root root   424 May 26 22:35 confusion_exp4_zero_shot_fau.json
+-rw-r--r-- 1 root root 17899 May 26 22:35 confusion_exp4_zero_shot_fau.pdf
+-rw-r--r-- 1 root root 31391 May 26 22:35 confusion_exp4_zero_shot_fau.png
+-rw-r--r-- 1 root root   414 May 26 22:36 confusion_exp5_fau_indomain.json
+-rw-r--r-- 1 root root 17466 May 26 22:36 confusion_exp5_fau_indomain.pdf
+-rw-r--r-- 1 root root 30190 May 26 22:36 confusion_exp5_fau_indomain.png
+-rw-r--r-- 1 root root   422 May 26 22:36 confusion_exp5b_self_attention_fau.json
+-rw-r--r-- 1 root root 17819 May 26 22:36 confusion_exp5b_self_attention_fau.pdf
+-rw-r--r-- 1 root root 29232 May 26 22:36 confusion_exp5b_self_attention_fau.png
+-rw-r--r-- 1 root root   403 May 26 15:39 exp2_confusion.json
+-rw-r--r-- 1 root root 17513 May 26 15:39 exp2_confusion.pdf
+-rw-r--r-- 1 root root 25040 May 26 15:39 exp2_confusion.png
+=== results aux ===
+-rw-r--r-- 1 root root 534 May 27 01:03 results/layer_weights.json
+=== publication_package ===
+total 204
+drwxr-xr-x  2 root root     68 May 27 01:03 .
+drwxr-xr-x 10 root root   4096 Jun 14 20:02 ..
+-rw-r--r--  1 root root    534 May 27 01:03 layer_weights.json
+-rw-r--r--  1 root root 198279 May 27 01:03 xai_raw_data.npz
+=== optional datasets ===
+missing: /root/autodl-tmp/datasets/myst
+missing: /root/autodl-tmp/datasets/kidstalc
