@@ -2,7 +2,7 @@
 
 > **协议**: `ac_suite_2026-06` | **最后更新**: 2026-06-16
 > **权威设计文档**: `docs/current/实验设计方案_v3_含学习笔记.md`
-> **状态**: 🎉 **192/192 全部完成**
+> **状态**: 🎉 **192/192 全部完成** (本地+云端双检通过)
 
 ## 项目定位
 
@@ -137,7 +137,8 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 │   ├── launch_b1.sh ~ launch_b7.sh    # 云端批量启动脚本
 │   ├── launch_b6_fill.sh              # B6补完脚本
 │   ├── tmp_paramiko_autodl_runner.py  # 云端同步工具
-│   ├── verify_experiments.py          # 实验完整性校验
+│   ├── verify_experiments.py          # 实验完整性校验 (B1/B3)
+│   ├── verify_all_192.py              # 全量 192 实验校验 (B1-B7)
 │   └── archive/                       # 已迭代脚本 (v2-v6等)
 ├── results/
 │   └── logs/                          # 本地核心结果快照
@@ -149,11 +150,26 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 └── CLAUDE.md
 ```
 
+## 实验完整性校验
+
+- **校验脚本**: `python scripts/verify_all_192.py` — 覆盖 B1-B7 全部 192 runs
+- **本地**: `results_remote/results/logs/` — **192/192 ✅** (2026-06-16 复验通过)
+- **云端**: `/root/autodl-tmp/d-ser/results/logs/` — **192/192 ✅** (与本地一致)
+- **192 + 14 extra JSONs** (exp1~5b 单文件副本, apc_metrics, fau_multiseed_summary 等)
+
+## AutoDL 云端状态
+
+- **当前状态**: 所有实验已完成，数据已全量同步到本地
+- **可以关机**: ✅ — 无待跑实验，数据已安全存储在 `results_remote/` + GitHub
+- **下次需要时再开机**: 需补充实验、重新训练、或提取 checkpoint 时
+- **开机后同步命令**: `python scripts/tmp_paramiko_autodl_runner.py --pull-all`
+
 ## 结果数据权威来源
 
 - **完整结果**: `results_remote/results/logs/` (192 runs, 从云端同步)
 - **核心快照**: `results/logs/DATA_FREEZE.json`
 - **同步命令**: `python scripts/tmp_paramiko_autodl_runner.py --pull-all`
+- **完整校验**: `python scripts/verify_all_192.py`
 
 ## 关键约束
 
