@@ -1,0 +1,7 @@
+\section{Conclusion}
+
+We presented a systematic 192-experiment ablation study diagnosing the factors limiting children's speech emotion recognition. Using WavLM Base across three corpora spanning acted children's speech, spontaneous children's speech, and acted adult speech, we isolated the contributions of pooling strategy, layer fusion, adapter modules, data augmentation, and transfer learning.
+
+Our central finding is that distribution shift between corpora---not architectural design choices---is the dominant bottleneck. The 25-percentage-point gap between C-BESD (92.92\%) and FAU Aibo (67.81\%) persists across all architectural configurations tested. Zero-shot cross-corpus transfer collapses to 19--35\%, and transfer learning success is determined primarily by the target domain rather than the source. Architectural factors such as adapter modules and layer fusion contribute negligibly, with self-attention pooling being the only module providing consistent gains.
+
+These results suggest that future advances in children's SER require addressing the acted-spontaneous distribution gap through better data, domain adaptation, and augmentation strategies, rather than through incremental architectural refinements. All experiment logs, checkpoints, and code are publicly available.

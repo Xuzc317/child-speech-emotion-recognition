@@ -1,0 +1,27 @@
+\section{Analysis and Discussion}
+
+\subsection{Distribution Shift Is the Dominant Bottleneck}
+
+The 25-percentage-point gap between C-BESD (92.92\%) and FAU Aibo (67.81\%) under identical architecture and training protocol indicates that corpus-level distribution differences, not model design, are the primary performance constraint. This interpretation is reinforced by the zero-shot results: even the best transfer direction (IEMOCAP$\rightarrow$C-BESD) achieves only 34.68\%, confirming that models trained on one speech distribution do not generalize to another without adaptation.
+
+Quantitatively, the Fr\'{e}chet Distance between C-BESD and FAU Aibo is 8.50, compared to 7.20 for C-BESD versus IEMOCAP. The larger FD between the two children's corpora than between child and adult acted speech suggests that speaking style (acted vs.\ spontaneous) creates greater distribution divergence than speaker age (child vs.\ adult) in WavLM's representation space.
+
+\subsection{Architectural Choices Are Secondary}
+
+Across B1, B4, and B6, architectural variations affect performance within a narrow band ($\pm$2--5pp) compared to the corpus gap ($\sim$25pp). Self-attention pooling provides the largest benefit over mean pooling (+13.4pp on C-BESD), but this benefit shrinks on harder corpora. The Adapter module is neutral to harmful in all tested configurations---a finding consistent with recent work questioning the necessity of adapter layers when the backbone is sufficiently expressive. Layer fusion contributes negligibly: any transformer layer L$\geq$7 performs equivalently to learned weighted fusion, suggesting that WavLM's upper layers already encode task-relevant information.
+
+\subsection{Transfer Learning: Target Domain Asymmetry}
+
+The transfer results reveal an unexpected pattern: C-BESD as a transfer target achieves near-ceiling performance (91\%+) from any source domain, while FAU and IEMOCAP as targets show poor transfer (62--67\%). This asymmetry may reflect C-BESD's characteristics as a high-quality acted corpus with clear inter-class boundaries and controlled recording conditions. When the target domain provides a ``clean'' learning signal, the source domain's quality matters less. Conversely, the high within-class variability of spontaneous child speech (FAU) and the mismatch between adult and child vocal characteristics (IEMOCAP) make these domains intrinsically harder to adapt to.
+
+\subsection{Per-Class Analysis Reveals Corpus-Specific Confusions}
+
+The confusion matrices (Section 4.8) reveal that class-level difficulty is corpus-dependent. On C-BESD, all six emotions are well-separated. On FAU Aibo, \textit{sad} is nearly unrecognizable (1--13\% accuracy) while \textit{neutral} dominates (84--86\%). On IEMOCAP, \textit{neutral} is hardest (28--29\%) while \textit{angry} is easiest (78--81\%). These patterns reflect corpus-specific annotation distributions and acoustic confusability rather than model limitations.
+
+\subsection{Implications for Children's SER}
+
+Our findings suggest that future progress in children's SER depends less on novel architectures and more on addressing distribution shift. Three directions appear promising: (1) collecting larger and more diverse spontaneous child speech corpora to reduce the acted-spontaneous gap; (2) developing domain adaptation techniques specifically targeting the spontaneous child speech domain; and (3) designing data augmentation strategies that better approximate the target child speech distribution.
+
+\subsection{Limitations}
+
+This study is limited to WavLM-based representations and three corpora. The findings may not generalize to other SSL backbones (e.g., HuBERT, wav2vec 2.0, emotion2vec) or to corpora in other languages. The 3-seed experimental design provides estimates of training variance but is insufficient for formal statistical testing. The absence of B1 checkpoints for 24 of 27 experiments limits full confusion matrix coverage.

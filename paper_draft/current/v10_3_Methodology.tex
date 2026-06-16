@@ -1,0 +1,52 @@
+\section{Methodology}
+
+\subsection{Corpora}
+
+We use three corpora spanning acted and spontaneous speech from children and adults:
+
+\begin{itemize}
+    \item \textbf{C-BESD (MY)}: 4,179 utterances from 70 children (ages 6--12), six emotion classes, bilingual (English and Telugu). Acted/portrayed speech.
+    \item \textbf{FAU Aibo}: 18,216 utterances from 51 children (ages 10--13), four emotion classes (angry, happy, neutral, sad). Spontaneous child-robot interaction.
+    \item \textbf{IEMOCAP}: $\sim$9,794 utterances from 10 adults, four emotion classes (angry, happy, neutral, sad). Acted/portrayed speech, serving as adult control.
+\end{itemize}
+
+For cross-corpus compatibility, we map all corpora to four shared emotion classes (angry, happy, neutral, sad) except for C-BESD in-domain evaluations where six native classes are used.
+
+\subsection{Speaker-Independent Split}
+
+We use a deterministic MD5-hash-based speaker split (70/15/15 train/val/test) with a fixed data split seed of 42. This ensures zero speaker leakage between splits and reproducibility across all experiments.
+
+\subsection{Model Architecture}
+
+Our model consists of four components built on a frozen or unfrozen WavLM Base backbone:
+
+\begin{enumerate}
+    \item \textbf{SSL Backbone}: WavLM Base (microsoft/wavlm-base-sv, 94M parameters) extracts frame-level 768-dimensional features at 50 Hz from 16kHz audio.
+    \item \textbf{Layer Fusion}: A 12-layer learnable weighted summation module combines hidden states from all transformer layers. When disabled, the last layer alone is used.
+    \item \textbf{Temporal Pooling}: Three strategies are compared---mean pooling, self-attention pooling (a learned query vector attends over the time dimension), and prosody-guided pooling (F0 and energy features modulate the attention weights).
+    \item \textbf{SEMLP Classifier}: A Squeeze-Excitation MLP head ($\sim$593K parameters) maps pooled features to class logits.
+\end{enumerate}
+
+Total trainable parameters are approximately 704K when the backbone is frozen. An optional Acoustic Calibration Adapter (a small bottleneck MLP inserted after layer fusion) is evaluated in the ablation study.
+
+\subsection{Training Protocol}
+
+All models are trained end-to-end on raw waveforms with a batch size of 16, AdamW optimizer, and 100-epoch maximum with early stopping (patience=15 on validation weighted accuracy). Each experiment is repeated with three random seeds (42, 123, 456) for reliability estimation.
+
+\subsection{Evaluation Metrics}
+
+We report weighted accuracy (WA) and unweighted average recall (UAR). Distribution shift is quantified using Fr\'{e}chet Distance (FD) and Subspace Mean Maximum Discrepancy (SMMD) between corpus pairs.
+
+\subsection{Experimental Design}
+
+Seven experimental phases (B1--B7, 192 total runs) systematically isolate each factor:
+
+\begin{itemize}
+    \item \textbf{B1 (Pooling Baseline)}: 3 pooling $\times$ 3 corpora $\times$ 3 seeds = 27 runs.
+    \item \textbf{B2 (Zero-Shot Transfer)}: 18 cross-corpus directions, single run each.
+    \item \textbf{B3 (Augmentation Sensitivity)}: 4 augmentation conditions $\times$ 3 corpora $\times$ 3 seeds = 36 runs.
+    \item \textbf{B4 (Layer Fusion Ablation)}: 54 runs varying fusion mode and layer selection.
+    \item \textbf{B5 (Unfreeze Comparison)}: 3 corpora $\times$ 3 seeds = 9 runs.
+    \item \textbf{B6 (Module Ablation)}: 5 configurations $\times$ 2 corpora $\times$ 3 seeds = 30 runs.
+    \item \textbf{B7 (Transfer Fine-tuning)}: 6 transfer directions $\times$ 3 seeds = 18 runs.
+\end{itemize}
