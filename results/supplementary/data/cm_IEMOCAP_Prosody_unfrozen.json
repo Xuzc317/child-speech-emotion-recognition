@@ -1,0 +1,45 @@
+{
+  "experiment": "E2-03_s123",
+  "phase": "B5",
+  "label": "IEMOCAP_Prosody_unfrozen",
+  "n_classes": 4,
+  "classes": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "confusion_matrix": [
+    [
+      990,
+      100,
+      55,
+      77
+    ],
+    [
+      145,
+      507,
+      40,
+      32
+    ],
+    [
+      150,
+      135,
+      138,
+      77
+    ],
+    [
+      63,
+      23,
+      11,
+      221
+    ]
+  ],
+  "per_class_accuracy": {
+    "angry": 0.8101472995090017,
+    "happy": 0.7002762430939227,
+    "neutral": 0.276,
+    "sad": 0.6949685534591195
+  },
+  "overall_wa": 0.6714905933429812
+}
