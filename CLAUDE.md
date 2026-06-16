@@ -2,7 +2,8 @@
 
 > **协议**: `ac_suite_2026-06` | **最后更新**: 2026-06-16
 > **权威设计文档**: `docs/current/实验设计方案_v3_含学习笔记.md`
-> **状态**: 🎉 **192/192 全部完成** (本地+云端双检通过)
+> **AI理解入口**: `docs/current/AI项目理解提示词.md`
+> **状态**: 🎉 **192/192 全部完成** | **补充实验完成** | 配图已整理 | AutoDL可关机
 
 ## 项目定位
 
@@ -44,7 +45,19 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 
 **总计**: 192/192 runs ✅
 
-## 关键数值
+## 补充实验 — 已完成
+
+| 项目 | 数量 | 位置 |
+|------|------|------|
+| 混淆矩阵 (B1/B5/B6/B7代表) | 8组 (PNG+PDF+JSON) | `paper_draft/figures/cm_*.png` + `results/figures/` |
+| XAI可视化 (E1-02, E6-04) | 2张 | `paper_draft/figures/xai_*.png` |
+| Layer Fusion 权重 (E1-02 L9, E5-03 L9) | 2组 | `paper_draft/figures/layer_weights_*.png` |
+| APC 指标 (E1-02, E6-04) | 2组 JSON | `results/analysis/apc_*.json` |
+| t-SNE 可视化 (B1 Before/After) | 4张 | `paper_draft/figures/fig_tsne_*.png` |
+
+**配图目录**: `paper_draft/figures/` 已清理 — 归档旧协议68文件，保留33有效文件。
+
+**补充实验方案**: `docs/current/补充实验方案_v1.md`
 
 ### 各数据集天花板
 
