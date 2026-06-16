@@ -1,44 +1,78 @@
-# Data files (large .npy)
-data/*.npy
+# ── 大文件：数据集、模型权重、特征数组 ──
+# .npy 特征文件（单个可达 1.7 GB）
+*.npy
+*.npz
 
-# Checkpoints — ignore weights, keep structure
-checkpoints/**/*.pth
-checkpoints/**/*.pt
+# PyTorch 模型权重（单个 ~363 MB）
+*.pt
+*.pth
+*.ckpt
 
-# Remote backup
-results_remote/
+# 压缩数据集
+*.tar.gz
+*.tar
+*.zip
+*.7z
+*.rar
 
-# Archived external tools (may contain API keys)
-last/papervizagent/
+# ── 云端/远程备份（README 除外） ──
+results_remote/*
+!results_remote/README.md
 
-# Python
+# ── 历史/废弃内容 ──
+_legacy/
+
+# ── 大型文档与演示 ──
+*.pptx
+*.docx
+*.pdf
+!references/*.pdf
+
+# ── 密钥与凭证 ──
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+*.env
+credentials.json
+secrets.yaml
+**/api_keys.*
+**/credentials.*
+
+# ── Python ──
 __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
 dist/
 build/
+*.egg
 
-# IDE
+# ── IDE ──
 .vscode/
 .idea/
 *.swp
 *.swo
+*.code-workspace
 
-# Conda/venv
+# ── Conda/venv ──
 env/
 venv/
+.venv/
+conda/
 
-# OS
+# ── OS ──
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Jupyter
+# ── Jupyter ──
 .ipynb_checkpoints/
+*.ipynb
 
-# Agent planning artifacts
+# ── Agent artifacts ──
 .claude/
 
-# Model cache
+# ── 模型缓存 ──
 .cache/
-data/last/fau_aibo.tar.gz
