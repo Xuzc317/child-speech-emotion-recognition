@@ -12,17 +12,17 @@
 | B1 | E1-02_s42 | C-BESD | SelfAttn frozen | 92.78% |
 | B1 | E1-05_s42 | FAU | SelfAttn frozen | 68.74% |
 | B1 | E1-08_s42 | IEMOCAP | SelfAttn frozen | 63.73% |
-| B5 | E2-01_s456 | C-BESD | SelfAttn unfrozen | 97.22% |
+| B5 | E2-01_s456 | C-BESD | SelfAttn unfrozen | 97.13% |
 | B5 | E2-02_s456 | FAU | SelfAttn unfrozen | 76.69% |
-| B5 | E2-03_s123 | IEMOCAP | Prosody unfrozen | 63.98% |
-| B6 | E6-04_s42 | C-BESD | SelfAttn+WeightedFusion | 92.92% |
+| B5 | E2-03_s123 | IEMOCAP | Prosody unfrozen | 67.15% |
+| B6 | E6-04_s42 | C-BESD | SelfAtten+WeightedFusion | 92.92% |
 | B7 | E7-03_s42 | FAU→C-BESD | SA→SA transfer | 92.07% |
 
 **输出**: PNG + PDF + JSON → `paper_draft/figures/` + `results/figures/`
 
 ## 2. XAI 可视化 + APC 指标
 
-**选取实验**: B6 E6-04_s42 (C-BESD SelfAttn+WeightedFusion 最优, 92.92%) + B1 E1-02_s42 (C-BESD 最优, 92.78%)
+**选取实验**: B6 E6-04_s42 (C-BESD SelfAtten+WeightedFusion 最优, 92.92%) + B1 E1-02_s42 (C-BESD 最优, 92.78%)
 
 **输出**: 
 - XAI 三联图 (波形+F0+注意力) → `paper_draft/figures/`

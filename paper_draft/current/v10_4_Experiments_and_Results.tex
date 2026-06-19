@@ -116,20 +116,22 @@ We ablated three architectural modules---Adapter, pooling strategy, and layer fu
 \midrule
 E6-01 & Mean + last layer (baseline)          & C-BESD & 80.89$\pm$0.59\% \\
 E6-02 & + Adapter                            & C-BESD & 81.17$\pm$2.64\% \\
-E6-03 & + SelfAttn Pooling (replace Mean)    & C-BESD & \textbf{92.24\%} \\
+E6-03 & + SelfAttn Pooling, $-$Adapter$^\dagger$ & C-BESD & 91.91$\pm$0.94\% \\
 E6-04 & + LayerFusion                        & C-BESD & 91.96$\pm$0.94\% \\
 E6-05 & Full stack (Adapter+SelfAttn+Fusion) & C-BESD & 91.12$\pm$0.54\% \\
 \addlinespace
 E6-06 & Mean + last layer (baseline)          & FAU    & 67.97$\pm$0.04\% \\
 E6-07 & + Adapter                            & FAU    & 68.15$\pm$0.29\% \\
-E6-08 & + SelfAttn Pooling (replace Mean)    & FAU    & 67.80$\pm$0.50\% \\
+E6-08 & + SelfAttn Pooling, $-$Adapter$^\dagger$ & FAU    & 67.80$\pm$0.50\% \\
 E6-09 & + LayerFusion                        & FAU    & 66.41$\pm$1.93\% \\
 E6-10 & Full stack (Adapter+SelfAttn+Fusion) & FAU    & 66.11$\pm$0.61\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Three findings emerge. First, the largest contributor on C-BESD is the pooling upgrade from mean to self-attention (+11.4pp from E6-01 to E6-03), while on FAU, no module provides meaningful improvement. Second, the Adapter module is neutral to slightly harmful in every configuration (E6-02 vs E6-01: +0.28pp; E6-07 vs E6-06: +0.18pp; E6-05 vs E6-03: $-$1.12pp). Third, layer fusion contributes negligibly (E6-04 vs E6-03: $-$0.28pp; E6-09 vs E6-08: $-$1.39pp). The C-BESD ceiling of $\sim$92\% and FAU ceiling of $\sim$68\% are inherent to the corpora, not to architectural choices.
+\noindent $^\dagger$These two rows jointly flip pooling \emph{and} Adapter status relative to the immediately preceding row, so the adjacent-row delta in the table is confounded. All deltas quoted below are instead computed from clean single-variable pairs (verified against raw per-seed logs), not from adjacent table rows.
+
+Three findings emerge from clean single-variable comparisons. First, the largest contributor on C-BESD is the pooling upgrade from mean to self-attention (E6-01 vs.\ E6-03: +11.0pp, Adapter off at both endpoints), while on FAU no module provides meaningful improvement. Second, the Adapter module is neutral to slightly harmful in every clean comparison (E6-02 vs.\ E6-01: +0.28pp; E6-07 vs.\ E6-06: +0.18pp; E6-05 vs.\ E6-04, both self-attention+weighted-fusion: $-$0.84pp). Third, layer fusion contributes negligibly (E6-04 vs.\ E6-03, both self-attention without Adapter: +0.05pp; E6-09 vs.\ E6-08: $-$1.39pp). The C-BESD ceiling of $\sim$92\% and FAU ceiling of $\sim$68\% are inherent to the corpora, not to architectural choices.
 
 \subsection{Transfer Learning: Target Domain Dominates (B7)}
 

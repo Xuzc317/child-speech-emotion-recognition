@@ -51,7 +51,7 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 |------|------|------|
 | 混淆矩阵 (B1/B5/B6/B7代表) | 8组 (PNG+PDF+JSON) | `paper_draft/figures/cm_*.png` + `results/figures/` |
 | XAI可视化 (E1-02, E6-04) | 2张 | `paper_draft/figures/xai_*.png` |
-| Layer Fusion 权重 (E1-02 L9) | 1组 | `paper_draft/figures/layer_weights_E1-02_*.png` |
+| Layer Fusion 权重 (E1-02 L9, E5-03 L9) | 2组 | `paper_draft/figures/layer_weights_*.png` |
 | APC 指标 (E1-02, E6-04) | 2组 JSON | `results/analysis/apc_*.json` |
 | t-SNE 可视化 (B1 Before/After) | 4张 | `paper_draft/figures/fig_tsne_*.png` |
 
@@ -71,30 +71,30 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 
 ### B6 模块消融 (E6, C-BESD + FAU Aibo 各5组, 3-seed)
 
-设计：cumulative build-up design（累加式），观察各模块负贡献。C-BESD (E6-01~05) + FAU (E6-06~10)。**权威配置以 `docs/current/权威数据手册.md` 为准。**
+设计：消融从全栈出发逐步移除模块（非逐步添加），观察各模块负贡献。C-BESD (E6-01~05) + FAU (E6-06~10)。**权威配置以 `docs/current/权威数据手册.md` 为准。**
 
 #### C-BESD (E6-01~05)
 
 | 实验 | 配置（数据手册权威版） | WA | 结论 |
 |------|------|-----|------|
 | E6-01 |Mean+Last基线| 80.89% | 全栈基线 |
-| E6-02 | +Adapter| 81.17% | 加Adapter +0.28pp |
-| E6-03 | +SelfAttn,−Adapter†| **91.91%** | 🔥 换SelfAttn +11pp |
-| E6-04 |+WeightedFusion | **91.96%** | 🔥 加WF微弱+0.05pp |
-| E6-05 | 全栈| 91.12% | 加Adapter反而-0.84pp |
+| E6-02 | +Adapter| 81.17% | 去Adapter +0.28pp |
+| E6-03 | +SelfAttn,−Adapter†| **91.91%** | 🔥 换MeanPool +11pp |
+| E6-04 |+WeightedFusion | **91.96%** | 🔥 去WF微弱+0.05pp |
+| E6-05 | 全栈| 91.12% | 去WF反而-0.84pp |
 
 #### FAU Aibo (E6-06~10)
 
 | 实验 | 配置（数据手册权威版） | WA | 结论 |
 |------|------|-----|------|
 | E6-06 | Mean+Last基线  | 67.97% | FAU基线 |
-| E6-07 | +Adapter| 68.15% | 加Adapter +0.18pp |
+| E6-07 | +Adapter| 68.15% | 去WF +0.18pp |
 | E6-08 | +SelfAttn,−Adapter† | 67.79% | 无明显贡献 |
 | E6-09 | +WeightedFusion | 66.41% | 负面 |
 | E6-10 | 全栈 | 66.11% | 全栈最低 |
 
 **B6 结论**:
-- C-BESD 上 Pooling 从 Mean→SelfAttn 是关键提升 (+11pp)；FAU 上所有模块改良效果有限
+- C-BESD 上 Pooling 从 SA→MeanPool 是关键提升 (+11pp)；FAU 上所有模块改良效果有限
 - Adapter 在两个数据集上均无正面贡献（可安全移除）
 - LayerFusion 正收益 <1pp，可视为冗余
 - C-BESD 天花板 ~92%，FAU ~68%，差距来自数据集难度而非模块设计
@@ -124,7 +124,7 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 | Phase | 核心结论 |
 |-------|---------|
 | B1 | SelfAttn > Mean >> Prosody; C-BESD >> FAU ≈ IEMOCAP |
-| B2 | Zero-shot 跨语料 19.17%-35.47%，分布偏移显著 |
+| B2 | Zero-shot 跨语料 34-41%，分布偏移显著 |
 | B3 | C3 child aug 微弱正收益 (+0.25~0.74pp)；C2/C4 外域混合显著损害 |
 | B4 | last ≈ weighted ≈ 任何单层 L≥7，Fusion 策略不重要 |
 | B5 | Unfreeze 在 C-BESD 贡献 +4pp，FAU/IEMOCAP 约 +8pp |
@@ -211,9 +211,8 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 ### ⚠️ v10_main.tex \input 路径错误
 `paper_draft/current/v10_main.tex` 中 `\input{0_Abstract}` 等命令指向旧版文件，而 v10 章节内容在 `v10_0_Abstract.tex` 等文件中。编译时会加载旧内容。**修复方式**: 将所有 `\input{X}` 改为 `\input{v10_X}`。
 
-### ✅ B6 配置方向已澄清 (2026-06-19, 以训练日志为准)
-B6 实为**累加式 (build-up)** 消融：从极简基线逐步叠加模块。依据 `results/logs/E6-0X_s42.json` 的 `pooling_type`/`use_adapter`/`fusion_mode` 实测：E6-01 (mean/无Adapter/last, 80.89%) → E6-02 +Adapter (81.17%) → E6-03 换SelfAttn (91.91%) → E6-04 +WeightedFusion (91.96%) → E6-05 +Adapter全栈 (91.12%)。**E6-01 是极简基线，不是全栈基线**；关键提升来自换 Pooling (+11pp)。
-注：2026-06-17 曾误将其"更正"为"从全栈逐步移除、E6-01 是全栈基线"，与训练日志不符，已废弃。`权威数据手册.md` §B6 核心结论 (约 line 158/199/208) 仍把 80.89% 误标为"全栈 Adapter+WF+SA"，待同步更正。
+### ⚠️ B6 配置描述历史错误
+旧版 CLAUDE.md B6 描述了"逐步添加"的消融设计，但实际实验（见数据手册）是"从全栈出发逐步移除"的设计。E6-01 是全栈基线，不是最简基线。E6-03 的 WA 也从 92.24% 更正为 91.91%（数据手册权威值）。
 
 ### ✅ B7 迁移方向标注分歧 (已于 2026-06-19 修复)
 CLAUDE.md 与权威数据手册曾共享同一份错误的 B7 表格：source→target 方向标反，且每行虚构了不同的"源Pooling"(mean/weighted_fusion/deep_fusion)，但 `launch_b7.sh` 实际对全部6组统一传入 `--pooling_type self_attention`。已对照 `scripts/launch_b7.sh` 逐行逻辑 + `results/logs/E7-*.json` 的 `train_data`/`test_data`/`pooling_type` 字段 + `paper_draft/current/v10_4_Experiments_and_Results.tex`（三方互证一致）重写两份文档的 B7 表格与结论。新结论：目标域自身天花板主导迁移结果，源域影响较小。

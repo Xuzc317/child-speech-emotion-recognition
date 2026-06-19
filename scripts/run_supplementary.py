@@ -214,7 +214,7 @@ if __name__ == '__main__':
     print('2. XAI + APC')
     print('=' * 60)
     run_xai(f'{CKPT}/b1/E1-02_s42/best_model.pt', 'c-besd', 'E1-02_C-BESD')
-    run_xai(f'{CKPT}/b6/E6-04_s42/best_model.pt', 'fau-aibo', 'E6-04_FAU_MeanPool')
+    run_xai(f'{CKPT}/b6/E6-04_s42/best_model.pt', 'c-besd', 'E6-04_C-BESD_MeanPool')
 
     print(f'\n{"=" * 60}')
     print('3. LAYER FUSION WEIGHTS')
