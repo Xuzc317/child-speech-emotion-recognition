@@ -25,6 +25,11 @@ PHASE_SCRIPTS = {
 }
 
 INVALID_AGGREGATION = {"E1-08", "E4-04", "E4-10"}
+INVALID_SEEDS = {
+    "E1-08": {"42": "old protocol (aug/fusion/adapter=None)"},
+    "E4-04": {"42": "train_data differs (c-besd vs c-besd-4cl+iemocap)"},
+    "E4-10": {"456": "train_data differs (iemocap vs iemocap+fau-aibo)"},
+}
 
 def corpus_name(dl):
     if not dl: return "unknown"
@@ -96,7 +101,7 @@ for r in records:
 header = ['experiment_id','phase','e_series','corpus','pooling','fusion','adapter',
           'unfreeze','aug','aug_trusted','seeds','test_wa_per_seed','test_wa_mean+-std',
           'test_uar_per_seed','test_uar_mean+-std','launch_script','log_files',
-          'ckpt_exists_all_local','protocol','aggregation_valid']
+          'ckpt_exists_all_local','protocol','aggregation_valid','seed_validity']
 
 rows_out = [header]
 for base in sorted(groups):
@@ -132,10 +137,24 @@ for base in sorted(groups):
 
     agg_valid = 'FALSE' if base in INVALID_AGGREGATION else 'TRUE'
 
+    # seed_validity: per-seed INVALID annotation
+    if base in INVALID_SEEDS:
+        bad_info = INVALID_SEEDS[base]
+        notes = []
+        for s in seeds:
+            sk = str(s)
+            if sk in bad_info:
+                notes.append(f'seed={sk} INVALID ({bad_info[sk]})')
+            else:
+                notes.append(f'seed={sk} valid')
+        seed_validity = '; '.join(notes)
+    else:
+        seed_validity = 'all seeds valid'
+
     row = [base, phase, r0['e_series'], corpus, r0['pooling'], r0['fusion'],
            str(r0['adapter']), str(r0['unfreeze']), r0['aug'], aug_trusted,
            seeds_str, wa_per, wa_ms, uar_per, uar_ms,
-           scripts, log_files, str(ckpt_all), r0['protocol'], agg_valid]
+           scripts, log_files, str(ckpt_all), r0['protocol'], agg_valid, seed_validity]
     rows_out.append(row)
 
 with open(OUTPUT, 'w', encoding='utf-8', newline='') as f:
@@ -145,5 +164,5 @@ with open(OUTPUT, 'w', encoding='utf-8', newline='') as f:
 print(f"Manifest rebuilt: {OUTPUT}")
 print(f"Rows: {len(rows_out)-1} (+ header)")
 # Count invalid
-invalid_count = sum(1 for r in rows_out[1:] if r[-1] == 'FALSE')
+invalid_count = sum(1 for r in rows_out[1:] if r[-2] == 'FALSE')
 print(f"Invalid aggregation: {invalid_count} ({', '.join(INVALID_AGGREGATION)})")
