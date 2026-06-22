@@ -25,7 +25,7 @@
 ### 校验报告
 | 文件 | 内容 |
 |------|------|
-| `validation/VALIDATION_REPORT.md` | 可信度总表、修正清单、rerun 候选 |
+| `validation/audit_00_SUMMARY.md` | 可信度总表、修正清单、rerun 候选 |
 | `validation/CHANGELOG.md` | 完整修正史 + 审计轨迹 |
 | `validation/discrepancy_report.md` | 手册 vs 日志 136 字段逐格 diff |
 | `validation/reproducibility_report.md` | 跨 seed 一致性、配置可信度、B7 溯源 |

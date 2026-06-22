@@ -13,6 +13,7 @@ SCRIPTS = [
     ("regen_handbook.py", "Regenerate authoritative handbook"),
     ("check_metrics.py", "Check metric completeness"),
     ("phase4_audit.py", "Run reproducibility audit"),
+    ("gen_master_reference.py", "Generate master reference table"),
 ]
 
 def main():
