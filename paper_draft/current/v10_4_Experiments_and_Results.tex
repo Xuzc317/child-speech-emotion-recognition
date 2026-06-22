@@ -14,11 +14,11 @@ We first establish baselines by evaluating three pooling strategies---mean pooli
 \toprule
 \textbf{Exp} & \textbf{Corpus} & \textbf{Pooling} & \textbf{WA (mean$\pm$std)} & \textbf{Best Seed} \\
 \midrule
-E1-02 & C-BESD & Self-Attention & 92.92$\pm$2.15\% & 95.14\% \\
+E1-02 & C-BESD & Self-Attention & 91.87$\pm$1.56\% & 95.14\% \\
 E1-01 & C-BESD & Mean           & 79.56$\pm$1.14\% & 80.55\% \\
 E1-03 & C-BESD & Prosody        & 87.38$\pm$0.79\% & 88.15\% \\
 \addlinespace
-E1-05 & FAU Aibo & Self-Attention & 67.81$\pm$2.15\% & 69.34\% \\
+E1-05 & FAU Aibo & Self-Attention & 67.05$\pm$0.67\% & 69.34\% \\
 E1-04 & FAU Aibo & Mean           & 64.40$\pm$0.76\% & 65.27\% \\
 E1-06 & FAU Aibo & Prosody        & 65.38$\pm$1.23\% & 66.80\% \\
 \addlinespace
@@ -29,7 +29,7 @@ E1-09 & IEMOCAP & Prosody         & 56.22$\pm$0.66\% & 56.60\% \\
 \end{tabular}
 \end{table}
 
-Self-attention pooling consistently outperforms alternatives across all corpora, achieving 92.92\% on C-BESD (children's acted speech), 67.81\% on FAU Aibo (children's spontaneous speech), and 65.16\% on IEMOCAP (adult acted speech). The 25-percentage-point gap between C-BESD and FAU Aibo---both children's corpora---cannot be explained by pooling strategy alone. Mean pooling underperforms self-attention substantially on C-BESD ($-$13.4pp) but narrows on FAU and IEMOCAP.
+Self-attention pooling consistently outperforms alternatives across all corpora, achieving 91.87\% on C-BESD (children's acted speech), 67.05\% on FAU Aibo (children's spontaneous speech), and 65.16\% on IEMOCAP (adult acted speech). The 25-percentage-point gap between C-BESD and FAU Aibo---both children's corpora---cannot be explained by pooling strategy alone. Mean pooling underperforms self-attention substantially on C-BESD ($-$13.4pp) but narrows on FAU and IEMOCAP.
 
 \subsection{Cross-Corpus Zero-Shot Transfer Reveals Distribution Shift (B2)}
 
@@ -67,7 +67,7 @@ We tested four augmentation conditions on all three corpora: C1 (baseline, no au
 \toprule
 \textbf{Condition} & \textbf{WA (mean$\pm$std)} & \textbf{$\Delta$ vs C1} \\
 \midrule
-C1 (baseline)  & 67.81$\pm$2.15\% & --- \\
+C1 (baseline)  & 67.05$\pm$0.67\% & --- \\
 C3 (child aug) & 68.38$\pm$1.31\% & +0.57pp \\
 C2 (adult aug) & 61.00$\pm$0.79\% & $-$6.81pp \\
 C4 (mixed aug) & 58.57$\pm$0.33\% & $-$9.24pp \\
@@ -93,8 +93,8 @@ We compared frozen versus unfrozen WavLM across all three corpora (Table~\ref{ta
 \toprule
 \textbf{Exp} & \textbf{Corpus} & \textbf{WA (frozen)} & \textbf{WA (unfrozen)} \\
 \midrule
-E2-01 & C-BESD   & 92.92\% & \textbf{96.91$\pm$0.53\%} \\
-E2-02 & FAU Aibo & 67.81\% & \textbf{76.02$\pm$0.68\%} \\
+E2-01 & C-BESD   & 91.87\% & \textbf{96.91$\pm$0.53\%} \\
+E2-02 & FAU Aibo & 67.05\% & \textbf{76.02$\pm$0.68\%} \\
 E2-03 & IEMOCAP  & 65.16\% & \textbf{66.36$\pm$3.30\%} \\
 \bottomrule
 \end{tabular}
@@ -155,7 +155,7 @@ E7-04 & FAU(SelfAttn) $\rightarrow$ IEMOCAP    & 62.81$\pm$0.85\% \\
 \end{tabular}
 \end{table}
 
-The results reveal a striking asymmetry: transfers targeting C-BESD achieve 91\%+ regardless of the source domain (FAU or IEMOCAP), closely approaching the C-BESD in-domain ceiling of 92.92\%. In contrast, transfers targeting FAU or IEMOCAP stall at 62--67\%. This suggests that C-BESD, as a high-quality acted corpus with clear inter-class boundaries, is an ``easy target'' for transfer, while the high variability in spontaneous (FAU) and adult (IEMOCAP) speech makes them ``hard targets.'' The source domain matters less than the target domain.
+The results reveal a striking asymmetry: transfers targeting C-BESD achieve 91\%+ regardless of the source domain (FAU or IEMOCAP), closely approaching the C-BESD in-domain ceiling of 91.87\%. In contrast, transfers targeting FAU or IEMOCAP stall at 62--67\%. This suggests that C-BESD, as a high-quality acted corpus with clear inter-class boundaries, is an ``easy target'' for transfer, while the high variability in spontaneous (FAU) and adult (IEMOCAP) speech makes them ``hard targets.'' The source domain matters less than the target domain.
 
 \subsection{Confusion Matrix Analysis}
 

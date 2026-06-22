@@ -1,6 +1,6 @@
 # 新方案-分布驱动儿童SER
 
-> **协议**: `ac_suite_2026-06` | **最后更新**: 2026-06-18
+> **协议**: `ac_suite_2026-06-validated` | **最后更新**: 2026-06-22 | **校验**: Phase 0-4 通过
 > **权威设计文档**: `docs/current/实验设计方案_v3_含学习笔记.md`
 > **AI理解入口**: `docs/current/AI项目理解提示词.md`
 > **状态**: 🎉 **192/192 全部完成** | **补充实验完成** | 配图已整理 | AutoDL可关机
@@ -64,8 +64,8 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 | 实验 | 数据集 | 配置 | WA (3-seed) | 备注 |
 |------|--------|------|-------------|------|
 | E2-01 | C-BESD | self_attn + **unfreeze** | **96.91%** | 🔥 全局最高 |
-| E1-02 | C-BESD | self_attn + frozen | 92.92% | 冻结天花板 |
-| E1-05 | FAU | self_attn + frozen | 67.81% | FAU天花板 |
+| E1-02 | C-BESD | self_attn + frozen | 91.87% | 冻结天花板 (3-seed样本mean, ddof=1) |
+| E1-05 | FAU | self_attn + frozen | 67.05% | FAU天花板 (3-seed样本mean, ddof=1) |
 | E2-03 | IEMOCAP | prosody + unfreeze | 66.36% | IEMOCAP天花板 |
 | E3 best | IEMOCAP→C-BESD | self_attn zero-shot | 34.68% | 分布偏移上限 |
 
@@ -97,7 +97,7 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 - C-BESD 上 Pooling 从 Mean→SelfAttn 是关键提升 (+11pp)；FAU 上所有模块改良效果有限
 - Adapter 在两个数据集上均无正面贡献（可安全移除）
 - LayerFusion 正收益 <1pp，可视为冗余
-- C-BESD 天花板 ~92%，FAU ~68%，差距来自数据集难度而非模块设计
+- C-BESD 天花板 ~91.9%，FAU ~67.1%，差距来自数据集难度而非模块设计
 
 ### B7 模型迁移 (E7, 3-seed)
 
@@ -115,8 +115,8 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 | E7-06 | IEMOCAP→FAU | prosody_guided | 65.97±0.64% | 目标域仍是FAU，效果一般 |
 
 **B7 结论**:
-- **目标域自身天花板主导迁移结果，源域影响较小**：C-BESD 为目标 (E7-03/05) 收敛至91%+，接近 C-BESD 自身天花板 (92.92%)；FAU 为目标 (E7-01/06) 聚集在66-67%，接近 FAU 天花板 (67.81%)；IEMOCAP 为目标 (E7-02/04) 聚集在62-63%
-- FAU→C-BESD 迁移效果最佳 (91.57%)，与 C-BESD 域内 (92.92%) 差距仅 1.35pp
+- **目标域自身天花板主导迁移结果，源域影响较小**：C-BESD 为目标 (E7-03/05) 收敛至91%+，接近 C-BESD 自身天花板 (91.87%)；FAU 为目标 (E7-01/06) 聚集在66-67%，接近 FAU 天花板 (67.05%)；IEMOCAP 为目标 (E7-02/04) 聚集在62-63%
+- FAU→C-BESD 迁移效果最佳 (91.57%)，与 C-BESD 域内 (91.87%) 差距仅 0.30pp
 - 源域 (FAU vs IEMOCAP) 对同一目标的影响有限（C-BESD 目标: 91.57% vs 91.17%，仅差0.4pp），fine-tune 后模型很大程度回归目标域固有难度
 
 ### 各Phase关键结论汇总
@@ -217,6 +217,14 @@ B6 实为**累加式 (build-up)** 消融：从极简基线逐步叠加模块。�
 
 ### ✅ B7 迁移方向标注分歧 (已于 2026-06-19 修复)
 CLAUDE.md 与权威数据手册曾共享同一份错误的 B7 表格：source→target 方向标反，且每行虚构了不同的"源Pooling"(mean/weighted_fusion/deep_fusion)，但 `launch_b7.sh` 实际对全部6组统一传入 `--pooling_type self_attention`。已对照 `scripts/launch_b7.sh` 逐行逻辑 + `results/logs/E7-*.json` 的 `train_data`/`test_data`/`pooling_type` 字段 + `paper_draft/current/v10_4_Experiments_and_Results.tex`（三方互证一致）重写两份文档的 B7 表格与结论。新结论：目标域自身天花板主导迁移结果，源域影响较小。
+
+### ⚠️ 2026-06-22 校验修正 (Phase 0-4)
+- **天花板数字修正**: E1-02 92.92%→91.87%, E1-05 67.81%→67.05%（3-seed 样本 mean, ddof=1）
+- **标准差口径**: 统一 ddof=1 (样本标准差)
+- **3 个实验 3-seed 聚合无效**: E1-08/E4-04/E4-10 跨 seed 配置不一致，mean±std 不可用
+- **6 个配置字段不可信**: augment_condition/fusion_mode/use_adapter/unfreeze_ssl/reg_profile/fusion_best_layer 为代码默认值
+- **B7 源域无法独立确认**: 日志未记录源 checkpoint，依赖 launch_b7.sh 正确执行
+- 详见 `validation/reproducibility_report.md`
 
 ### ℹ️ 部分 JSON 协议字段为旧版
 `results/logs/` 下部分 JSON 文件含 `"protocol": "ac_suite_2026-05"`，这是协议迭代前生成的。数值本身有效，协议字段忽略即可。

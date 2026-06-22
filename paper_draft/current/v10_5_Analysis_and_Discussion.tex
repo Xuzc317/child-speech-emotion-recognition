@@ -2,7 +2,7 @@
 
 \subsection{Distribution Shift Is the Dominant Bottleneck}
 
-The 25-percentage-point gap between C-BESD (92.92\%) and FAU Aibo (67.81\%) under identical architecture and training protocol indicates that corpus-level distribution differences, not model design, are the primary performance constraint. This interpretation is reinforced by the zero-shot results: even the best transfer direction (IEMOCAP$\rightarrow$C-BESD) achieves only 34.68\%, confirming that models trained on one speech distribution do not generalize to another without adaptation.
+The 25-percentage-point gap between C-BESD (91.87\%) and FAU Aibo (67.05\%) under identical architecture and training protocol indicates that corpus-level distribution differences, not model design, are the primary performance constraint. This interpretation is reinforced by the zero-shot results: even the best transfer direction (IEMOCAP$\rightarrow$C-BESD) achieves only 34.68\%, confirming that models trained on one speech distribution do not generalize to another without adaptation.
 
 Quantitatively, the Fr\'{e}chet Distance between C-BESD and FAU Aibo is 8.50, compared to 7.20 for C-BESD versus IEMOCAP. The larger FD between the two children's corpora than between child and adult acted speech suggests that speaking style (acted vs.\ spontaneous) creates greater distribution divergence than speaker age (child vs.\ adult) in WavLM's representation space.
 

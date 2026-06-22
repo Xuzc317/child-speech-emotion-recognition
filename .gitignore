@@ -76,3 +76,9 @@ desktop.ini
 
 # ── 模型缓存 ──
 .cache/
+
+
+# ==== Phase0 supplement: model dirs / extra binaries / logs ====
+*.bin
+*.safetensors
+*.log

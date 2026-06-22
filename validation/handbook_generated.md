@@ -160,11 +160,11 @@ Source domain effect is limited (<0.5pp for same target).
 | Rank | Experiment | Dataset | Config | WA mean+-std |
 |------|-----------|--------|--------|-------------|
 | 1 | E2-01 | C-BESD | self_attention+unfreeze | 96.91+-0.19% |
-| 2 | E4-01 | C-BESD | self_attention+frozen | 91.96+-0.93% |
-| 3 | E5-03 | C-BESD | self_attention+frozen | 91.96+-0.93% |
+| 2 | E5-03 | C-BESD | self_attention+frozen | 91.96+-0.93% |
+| 3 | E4-01 | C-BESD | self_attention+frozen | 91.96+-0.93% |
 | 4 | E6-04 | C-BESD | self_attention+frozen | 91.96+-0.93% |
-| 5 | E5-01 | C-BESD | self_attention+frozen | 91.91+-0.94% |
-| 6 | E6-03 | C-BESD | self_attention+frozen | 91.91+-0.94% |
+| 5 | E6-03 | C-BESD | self_attention+frozen | 91.91+-0.94% |
+| 6 | E5-01 | C-BESD | self_attention+frozen | 91.91+-0.94% |
 | 7 | E1-02 | C-BESD | self_attention+frozen | 91.87+-1.56% |
 | 8 | E1-03 | C-BESD | prosody_guided+frozen | 91.86+-1.14% |
 | 9 | E4-03 | C-BESD | self_attention+frozen | 91.85+-1.29% |
