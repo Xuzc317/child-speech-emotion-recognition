@@ -20,6 +20,14 @@ DIFF_MD = PROJECT_ROOT / "validation" / "design_vs_actual_diff.md"
 OUTPUT_MD = PROJECT_ROOT / "docs" / "current" / "实验方案与数据_总表.md"
 NOW_STRING = "2026-06-22"
 
+# Hardcoded INVALID experiments (ac_suite_2026-06-validated, from reproducibility audit)
+# These have cross-seed config inconsistency → mean±std NOT reliable
+INVALID_EXPERIMENTS = {
+    "E1-08": "seed=42 INVALID (old protocol: aug/fusion/adapter=None); seed=123/456 valid",
+    "E4-04": "seed=42 INVALID (train_data differs: c-besd vs c-besd-4cl+iemocap); seed=123/456 valid",
+    "E4-10": "seed=456 INVALID (train_data differs: iemocap vs iemocap+fau-aibo); seed=42/123 valid",
+}
+
 # Phase descriptions
 PHASE_INFO = {
     "B1": {
@@ -112,18 +120,36 @@ def extract_divergence_items():
 
 
 def format_wa_uar(row):
-    """Format WA±std / UAR±std for display."""
-    wa = row.get("test_wa_mean+-std", "N/A")
-    uar = row.get("test_uar_mean+-std", "N/A")
+    """Format WA±std / UAR±std for display.
+
+    Note: CSV uses Unicode ± (U+00B1), not ASCII +-.
+    """
+    wa = row.get("test_wa_mean±std", "N/A")
+    uar = row.get("test_uar_mean±std", "N/A")
     return wa, uar
 
 
 def is_invalid(row):
-    """Check if experiment is marked INVALID."""
-    agg_valid = row.get("aggregation_valid", "TRUE").strip()
-    seed_valid = row.get("seed_validity", "").strip()
+    """Check if experiment is marked INVALID.
+
+    Two-layer check:
+    1. CSV columns (aggregation_valid / seed_validity) — survive if gen_manifest.py
+       is fixed to output them.
+    2. Hardcoded fallback — survives gen_manifest.py CSV regeneration that strips
+       those columns (3 known INVALID from ac_suite_2026-06-validated audit).
+    """
+    eid = row.get("experiment_id", "")
+
+    # Layer 1: CSV columns (if present and explicit)
+    agg_valid = row.get("aggregation_valid", "").strip()
     if agg_valid == "FALSE":
+        seed_valid = row.get("seed_validity", "").strip()
         return True, seed_valid
+
+    # Layer 2: Hardcoded authoritative list (survives CSV regeneration)
+    if eid in INVALID_EXPERIMENTS:
+        return True, INVALID_EXPERIMENTS[eid]
+
     return False, ""
 
 
