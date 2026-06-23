@@ -1,0 +1,18 @@
+{
+  "exp_name": "E4-10_s42",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6321361058601134,
+  "test_wa": 0.6360347322720694,
+  "test_uar": 0.589069425651285,
+  "best_epoch": 14,
+  "reg_profile": "default",
+  "augment_condition": "C2",
+  "fusion_mode": "weighted"
+}

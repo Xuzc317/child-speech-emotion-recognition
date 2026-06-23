@@ -17,12 +17,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 LOGS_DIR = PROJECT_ROOT / "results" / "logs"
 OUTPUT = PROJECT_ROOT / "docs" / "current" / "权威数据手册.md"
 
-INVALID_AGG = {"E1-08", "E4-04", "E4-10"}
-INVALID_REASONS = {
-    "E1-08": "s42 uses old protocol (aug/fusion/adapter=None), s123/s456 use new protocol",
-    "E4-04": "s42 train=['c-besd'], s123/s456 train=['c-besd-4cl','iemocap'] — different corpora",
-    "E4-10": "s42/s123 train=['iemocap'], s456 train=['iemocap','fau-aibo'] — different corpora",
-}
+INVALID_AGG = set()  # All experiments now valid after 2026-06-22 re-run
+INVALID_REASONS = {}  # E1-08/E4-04/E4-10 fixed via re-run on 2026-06-22
 
 def load_logs():
     logs = {}
@@ -109,7 +105,10 @@ def gen_b1(logs):
     lines.append(f"**B1 conclusion**: Self-Attention > Mean >> Prosody. ")
     lines.append(f"C-BESD ceiling: E1-02 = {fmt_ms(*sample_ms([wa(r)*100 for r in get_runs(logs,'E1-02') if wa(r)]))} (3-seed sample mean). ")
     lines.append(f"FAU ceiling: E1-05 = {fmt_ms(*sample_ms([wa(r)*100 for r in get_runs(logs,'E1-05') if wa(r)]))}. ")
-    lines.append(f"E1-08 excluded from aggregation (INVALID).\n")
+    if "E1-08" in INVALID_AGG:
+        lines.append(f"E1-08 excluded from aggregation (INVALID).\n")
+    else:
+        lines.append("")
     return lines
 
 def gen_b5(logs):
@@ -182,8 +181,11 @@ def gen_b3(logs):
     lines.append("")
     lines.append("**B3 conclusion**: C3 child augmentation shows weak positive benefit (+0.25-0.74pp). ")
     lines.append("C2/C4 domain mixing significantly hurts performance (-6.8 to -9.4pp). ")
-    lines.append(f"E4-04 excluded: {INVALID_REASONS['E4-04']}. ")
-    lines.append(f"E4-10 excluded: {INVALID_REASONS['E4-10']}.\n")
+    if "E4-04" in INVALID_AGG:
+        lines.append(f"E4-04 excluded: {INVALID_REASONS['E4-04']}. ")
+    if "E4-10" in INVALID_AGG:
+        lines.append(f"E4-10 excluded: {INVALID_REASONS['E4-10']}.")
+    lines.append("")
     return lines
 
 def gen_b6(logs):

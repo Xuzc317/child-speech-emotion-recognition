@@ -1,6 +1,6 @@
 # 新方案-分布驱动儿童SER
 
-> **协议**: `ac_suite_2026-06-validated` | **最后更新**: 2026-06-22 | **校验**: Phase 0-4 通过
+> **协议**: `ac_suite_2026-06-validated` | **最后更新**: 2026-06-23 | **校验**: Phase 0-4 通过, 0 INVALID
 > **权威设计文档**: `docs/current/实验设计方案_v3_含学习笔记.md`
 > **AI理解入口**: `docs/current/AI项目理解提示词.md`
 > **状态**: 🎉 **192/192 全部完成** | **补充实验完成** | 配图已整理 | AutoDL可关机
@@ -218,11 +218,15 @@ B6 实为**累加式 (build-up)** 消融：从极简基线逐步叠加模块。�
 ### ✅ B7 迁移方向标注分歧 (已于 2026-06-19 修复)
 CLAUDE.md 与权威数据手册曾共享同一份错误的 B7 表格：source→target 方向标反，且每行虚构了不同的"源Pooling"(mean/weighted_fusion/deep_fusion)，但 `launch_b7.sh` 实际对全部6组统一传入 `--pooling_type self_attention`。已对照 `scripts/launch_b7.sh` 逐行逻辑 + `results/logs/E7-*.json` 的 `train_data`/`test_data`/`pooling_type` 字段 + `paper_draft/current/v10_4_Experiments_and_Results.tex`（三方互证一致）重写两份文档的 B7 表格与结论。新结论：目标域自身天花板主导迁移结果，源域影响较小。
 
-### ⚠️ 2026-06-22 校验修正 (Phase 0-4)
-- **天花板数字修正**: E1-02 92.92%→91.87%, E1-05 67.81%→67.05%（3-seed 样本 mean, ddof=1）
+### ✅ 2026-06-22 校验修正 (Phase 0-4) — ALL CLEAN (2026-06-23 更新)
+- **天花板数字修正**: E1-02 91.87%, E1-05 67.05%（3-seed 样本 mean, ddof=1）
 - **标准差口径**: 统一 ddof=1 (样本标准差)
-- **3 个实验 3-seed 聚合无效**: E1-08/E4-04/E4-10 跨 seed 配置不一致，mean±std 不可用
-- **6 个配置字段不可信**: augment_condition/fusion_mode/use_adapter/unfreeze_ssl/reg_profile/fusion_best_layer 为代码默认值
+- **5 个实验重跑完成**: E1-08_s42, E4-04_s42, E4-10_s42, E4-10_s123, E4-12_s123 已修复，192/192 全量有效
+  - E1-08: mean=64.05±0.22% (3-seed) ✅
+  - E4-10: mean=65.44±0.26% (3-seed) ✅
+  - E4-12: mean=61.16±0.67% (3-seed) ✅
+- **0 INVALID experiments**
+- **6 个配置字段不可信**: augment_condition/fusion_mode/use_adapter/unfreeze_ssl/reg_profile/fusion_best_layer 为代码默认值（旧协议文件）
 - **B7 源域无法独立确认**: 日志未记录源 checkpoint，依赖 launch_b7.sh 正确执行
 - 详见 `validation/reproducibility_report.md`
 

@@ -22,11 +22,7 @@ NOW_STRING = "2026-06-22"
 
 # Hardcoded INVALID experiments (ac_suite_2026-06-validated, from reproducibility audit)
 # These have cross-seed config inconsistency → mean±std NOT reliable
-INVALID_EXPERIMENTS = {
-    "E1-08": "seed=42 INVALID (old protocol: aug/fusion/adapter=None); seed=123/456 valid",
-    "E4-04": "seed=42 INVALID (train_data differs: c-besd vs c-besd-4cl+iemocap); seed=123/456 valid",
-    "E4-10": "seed=456 INVALID (train_data differs: iemocap vs iemocap+fau-aibo); seed=42/123 valid",
-}
+INVALID_EXPERIMENTS = {}  # All experiments now valid after 2026-06-22 re-run
 
 # Phase descriptions
 PHASE_INFO = {
@@ -336,7 +332,7 @@ def main():
     w("- 使用 `c-besd-4cl` 数据集子集")
     w("")
     w("### B7 迁移")
-    w("- IEMOCAP 源 = E1-09 (prosody_guided) 而非 E1-08 (INVALID)")
+    w("- IEMOCAP 源 = E1-09 (prosody_guided); E1-08 (self_attention) 已修复为 ac_suite_2026-06")
     w("- Fine-tune 阶段统一 `--pooling_type self_attention`, 源池化头不参与迁移")
     w("- 微调 lr=3e-4 (代码默认) vs 设计建议 1e-4")
     w("")
@@ -352,7 +348,7 @@ def main():
     w("|------|--------|---------|------------------------------|")
     w("| E1-02 | C-BESD | self_attention | 91.87±1.56% |")
     w("| E1-05 | FAU Aibo | self_attention | 67.05±0.67% |")
-    w("| E1-08 | IEMOCAP | self_attention | 63.76±0.53% ⚠️ INVALID (seed=42 旧协议) |")
+    w("| E1-08 | IEMOCAP | self_attention | 64.05±0.22% |")
     w("| E1-09 | IEMOCAP | prosody_guided | 64.38±1.05% |")
     w("")
     w("### B5 Unfreeze 天花板")
@@ -390,12 +386,11 @@ def main():
     # --- Section 6: Known Boundaries ---
     w("## 6. 已知边界")
     w("")
-    w("### INVALID 实验 (3 个)")
+    w("### INVALID 实验 (0 个)")
     w("")
     w("| 实验 | 原因 | 影响 |")
     w("|------|------|------|")
-    for eid, reason in invalid_exps:
-        w(f"| {eid} | {reason} | mean±std 跨 seed 不可信, 排除自聚合分析 |")
+    w("| (无) | 所有 192 实验均有效 (2026-06-22 重跑修复) | — |")
     w("")
     w("### 配置字段可信度")
     w("")

@@ -24,12 +24,8 @@ PHASE_SCRIPTS = {
     "B6": ["launch_b6.sh", "launch_b6_fill.sh"], "B7": ["launch_b7.sh"],
 }
 
-INVALID_AGGREGATION = {"E1-08", "E4-04", "E4-10"}
-INVALID_SEEDS = {
-    "E1-08": {"42": "old protocol (aug/fusion/adapter=None)"},
-    "E4-04": {"42": "train_data differs (c-besd vs c-besd-4cl+iemocap)"},
-    "E4-10": {"456": "train_data differs (iemocap vs iemocap+fau-aibo)"},
-}
+INVALID_AGGREGATION = set()  # All experiments now valid after 2026-06-22 re-run
+INVALID_SEEDS = {}  # E1-08/E4-04/E4-10 fixed via re-run on 2026-06-22
 
 def corpus_name(dl):
     if not dl: return "unknown"

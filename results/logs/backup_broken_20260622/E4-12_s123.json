@@ -1,5 +1,5 @@
 {
-  "exp_name": "E4-10_s123",
+  "exp_name": "E4-12_s123",
   "pooling_type": "prosody_guided",
   "train_data": [
     "iemocap",
@@ -10,10 +10,10 @@
     "fau-aibo"
   ],
   "seed": 123,
-  "best_val_wa": 0.6347826086956522,
-  "test_wa": 0.6574028928977734,
-  "test_uar": 0.5895697736355796,
-  "best_epoch": 17,
+  "best_val_wa": 0.5920604914933837,
+  "test_wa": 0.5634649764342597,
+  "test_uar": 0.3980425007125116,
+  "best_epoch": 1,
   "reg_profile": "default",
   "weight_decay": 0.001,
   "label_smoothing": 0.1,
@@ -23,7 +23,7 @@
   "fusion_best_layer": null,
   "use_adapter": false,
   "unfreeze_ssl": false,
-  "augment_condition": "C2",
-  "output_dir": "checkpoints/b3/E4-10_s123",
+  "augment_condition": "C4",
+  "output_dir": "checkpoints/b3/E4-12_s123",
   "protocol": "ac_suite_2026-06"
 }
