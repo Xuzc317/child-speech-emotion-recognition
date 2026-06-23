@@ -419,7 +419,7 @@ def main():
     w("### 数据溯源")
     w("| 内容 | 来源 |")
     w("|------|------|")
-    w("| 实验条件 | `validation/provenance_manifest.csv` (gen_manifest.py 生成) |")
+    w("| 实验条件 | `validation/provenance_manifest.csv` (rebuild_manifest.py 生成) |")
     w("| WA/UAR 指标 | `results/logs/E*-*.json` (ddof=1 聚合) |")
     w("| INVALID 标记 | manifest `aggregation_valid` / `seed_validity` 字段 |")
     w("| 设计-执行分歧 | `validation/design_vs_actual_diff.md` (已按独立复核修正) |")

@@ -57,3 +57,30 @@
 | `validation/provenance_manifest.csv` | ddof=1, INVALID marks, aug_trusted column |
 | `paper_draft/current/v10_*.tex` | SAFE-SWAP only (ceiling 92.92→91.87, 67.81→67.05) |
 | `validation/manuscript_correction_ledger.md` | Full SAFE-SWAP / CLAIM-AFFECTED ledger |
+
+### 2026-06-23 — r2 Re-Seal: B3 4-seed Re-run + std ddof=1 + INVALID→0
+
+| # | Finding | Detail | Impact |
+|---|---------|--------|--------|
+| 21 | E4-04_s42 重跑 | 旧: single train_data=[c-besd], WA=68.02%, best_epoch=8 → 新: dual [c-besd,iemocap], WA=61.21%, best_epoch=29 | B3 C4 聚合由 INVALID 转正 |
+| 22 | E4-10_s42 重跑 | 旧: single train_data=[iemocap], WA=63.60% → 新: dual [iemocap,fau-aibo], WA=65.25%, best_epoch=14 | B3 C2 prosody 聚合由 INVALID 转正 |
+| 23 | E4-10_s123 重跑 | 旧: best_epoch=0, WA=56.87%, train_data=[iemocap] → 新: dual, WA=65.74%, best_epoch=17 | B3 C2 第二坏 seed 转正 |
+| 24 | E4-12_s123 重跑 | 旧: best_epoch=1, WA=56.35% → 新: dual [iemocap,fau-aibo], WA=60.96%, best_epoch=24 | B3 C4 第二坏 seed 转正 |
+| 25 | INVALID 归零 | INVALID_AGGREGATION 从 {E1-08,E4-04,E4-10} 清空为 set() | 0 INVALID, 192/192 全部有效 |
+| 26 | std: ddof=0→1 全链确认 | rebuild_manifest.py 使用 n-1；provenance_manifest.csv 使用 ASCII +- | 全链统一 ddof=1 |
+| 27 | gen_manifest.py 删除 | 旧版使用 ddof=0 且缺 aggregation_valid/aug_trusted/seed_validity 列 | 仓库仅剩一个权威 manifest 生成器 |
+| 28 | 确定性重生验证 | 连续两次全量重生 (manifest→handbook→总表) 产出零 diff | 脚本确定性成立 |
+| 29 | 说话人零泄漏独立验证 | scripts/verify_speaker_split.py 复现切分，三数据集三对交集全0 | 说话人独立性可复现证实 |
+
+### 数值变动对照 (E4-04 / E4-10 / E4-12 3-seed 聚合, ddof=1)
+
+| 实验 | 旧 WA (INVALID, 含坏 seed) | 新 WA (全 seed 有效) | 旧 UAR | 新 UAR |
+|------|---------------------------|---------------------|--------|--------|
+| E4-04 | 64.83±2.82% (旧 s42 WA=68.02%, 单元素 train_data) | 62.56±1.30% | 60.64±6.54% | 56.42±1.21% |
+| E4-10 | 61.93±4.46% (旧 s42=63.60%, s123=56.87%, 单元素) | 65.44±0.26% | 55.57±5.39% | 58.88±0.40% |
+| E4-12 | 59.62±2.91% (旧 s123 WA=56.35%, best_epoch=1) | 61.16±0.67% | 47.27±6.47% | 50.53±0.86% |
+
+### Tag
+
+- **新 tag**: `ac_suite_2026-06-validated-r2`
+- **上一 tag**: `ac_suite_2026-06-validated` (2026-06-22)
