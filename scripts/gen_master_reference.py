@@ -118,10 +118,10 @@ def extract_divergence_items():
 def format_wa_uar(row):
     """Format WA±std / UAR±std for display.
 
-    Note: CSV uses Unicode ± (U+00B1), not ASCII +-.
+    Note: CSV header uses ASCII +- (not Unicode ±).
     """
-    wa = row.get("test_wa_mean±std", "N/A")
-    uar = row.get("test_uar_mean±std", "N/A")
+    wa = row.get("test_wa_mean+-std", "N/A")
+    uar = row.get("test_uar_mean+-std", "N/A")
     return wa, uar
 
 

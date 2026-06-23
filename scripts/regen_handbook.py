@@ -370,7 +370,8 @@ def main():
     lines.append(f"> **Protocol**: `ac_suite_2026-06-validated`")
     lines.append(f"> **Generated**: 2026-06-22 by `scripts/regen_handbook.py`")
     lines.append("> **Std**: sample std (ddof=1)")
-    lines.append(f"> **INVALID experiments EXCLUDED from all aggregations**: {', '.join(sorted(INVALID_AGG))}")
+    invalid_list = ', '.join(sorted(INVALID_AGG)) if INVALID_AGG else '0 (none)'
+    lines.append(f"> **INVALID experiments EXCLUDED from all aggregations**: {invalid_list}")
     lines.append("")
     lines.append("This document is regenerated from raw experiment logs. Any paper, chart, or abstract ")
     lines.append("must reference values from this document. To regenerate: `python scripts/regen_handbook.py`")
