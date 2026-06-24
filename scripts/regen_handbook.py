@@ -291,11 +291,13 @@ def gen_wa_uar_table(logs):
         w = d.get('test_wa'); u = d.get('test_uar')
         if w is not None: td[c]['wa'].append(w*100)
         if u is not None: td[c]['uar'].append(u*100)
+    gaps_by_test = {}
     for c in ["C-BESD","FAU_Aibo","IEMOCAP"]:
         d = td[c]
         wm, ws = sample_ms(d['wa'])
         um, us = sample_ms(d['uar'])
         gap = wm-um if wm and um else 0
+        gaps_by_test[c] = gap
         lines.append(f"| {c} | {fmt_ms(wm,ws)} | {fmt_ms(um,us)} | {gap:.2f}pp | {len(d['wa'])} |")
     lines.append("")
     faU_uar_by_test = td["FAU_Aibo"]['uar']
@@ -342,8 +344,8 @@ def gen_wa_uar_table(logs):
     lines.append(f"- Note: the previously cited '41.67%' and '41.72%' refer to these two quantities computed under different aggregation conditions (with/without INVALID, different std). The canonical values under ac_suite_2026-06-validated protocol are as above.")
     lines.append("")
 
-    lines.append("FAU_Aibo WA-UAR gap reflects severe class imbalance (21pp by test_data). ")
-    lines.append("C-BESD WA~=UAR (0.3pp) due to near-perfect class balance.\n")
+    lines.append(f"FAU_Aibo WA-UAR gap reflects severe class imbalance ({gaps_by_test['FAU_Aibo']:.2f}pp by test_data). ")
+    lines.append(f"C-BESD WA~=UAR ({gaps_by_test['C-BESD']:.2f}pp) due to near-perfect class balance.\n")
     return lines
 
 def gen_invalid_notes():

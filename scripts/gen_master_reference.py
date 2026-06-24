@@ -1,23 +1,33 @@
 #!/usr/bin/env python3
 """
-生成 `docs/current/实验方案与数据_总表.md` — 合并条件(CSV) + 指标(logs, ddof=1) + 分歧(修正后diff) + 有效性(manifest)。
+本脚本不再是 `docs/current/实验方案与数据_总表.md` 的生成器。
+仅作为原始数据交叉核对工具：当数据变更时，运行本脚本输出到临时文件，
+与总表.md 手工比对差异，而非直接覆盖总表.md。
 
-AUTO-GENERATED — 一键重生: python scripts/gen_master_reference.py
+用法:
+  python scripts/gen_master_reference.py > /tmp/auto_check.md   # 默认输出到 stdout
+  python scripts/gen_master_reference.py -o /tmp/auto_check.md   # 输出到指定文件
+  diff /tmp/auto_check.md docs/current/实验方案与数据_总表.md    # 手工比对
+
+裸跑不会覆写任何文件。直接 --output 指向总表.md 会被拒绝，需加 --force。
+
 条件来源: validation/provenance_manifest.csv (以 launch 脚本为准)
 指标来源: results/logs/ (ddof=1 聚合)
 有效性: manifest 中 aggregation_valid + seed_validity 字段
 """
 
+import argparse
 import csv
 import os
 import re
+import sys
 from collections import defaultdict, OrderedDict
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_CSV = PROJECT_ROOT / "validation" / "provenance_manifest.csv"
 DIFF_MD = PROJECT_ROOT / "validation" / "design_vs_actual_diff.md"
-OUTPUT_MD = PROJECT_ROOT / "docs" / "current" / "实验方案与数据_总表.md"
+CURATED_OUTPUT_MD = PROJECT_ROOT / "docs" / "current" / "实验方案与数据_总表.md"
 NOW_STRING = "2026-06-22"
 
 # Hardcoded INVALID experiments (ac_suite_2026-06-validated, from reproducibility audit)
@@ -49,7 +59,7 @@ PHASE_INFO = {
     "B5": {
         "title": "B5 (E2) — WavLM Unfreeze 对比",
         "design": "3 datasets × best pooling from B1, differential LR (backbone 1e-5 / head 3e-4). 3×3=9 runs.",
-        "key_finding": "Unfreeze 在 C-BESD +4pp (91.87%→96.91%), FAU +8pp (67.05%→66.37%†), IEMOCAP +8pp.",
+        "key_finding": "Unfreeze 在 C-BESD +5.04pp (91.87%→96.91%), IEMOCAP +1.99pp (64.38%→66.37%); FAU −0.68pp (67.05%→66.37%，唯一未提升的数据集).",
     },
     "B6": {
         "title": "B6 (E6) — 模块消融 (累积式 build-up)",
@@ -149,9 +159,9 @@ def is_invalid(row):
     return False, ""
 
 
-def main():
+def main(args):
     rows = read_manifest()
-    print(f"Read {len(rows)} experiment rows from manifest")
+    print(f"Read {len(rows)} experiment rows from manifest", file=sys.stderr)
 
     # Group by phase
     by_phase = defaultdict(list)
@@ -164,7 +174,7 @@ def main():
 
     # Divergence items
     div_items = extract_divergence_items()
-    print(f"Extracted {len(div_items)} divergence items from diff")
+    print(f"Extracted {len(div_items)} divergence items from diff", file=sys.stderr)
 
     # Count INVALID
     invalid_exps = []
@@ -428,18 +438,55 @@ def main():
     w("")
 
     # Write output
-    os.makedirs(OUTPUT_MD.parent, exist_ok=True)
-    with open(OUTPUT_MD, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
+    output_text = "\n".join(lines) + "\n"
 
-    print(f"\n{'='*60}")
-    print(f"Master reference table written: {OUTPUT_MD}")
-    print(f"  Experiments: {len(rows)} rows")
-    print(f"  INVALID: {len(invalid_exps)} ({', '.join(eid for eid, _ in invalid_exps)})")
-    print(f"  Divergences: {len(div_items)} items")
-    print(f"  Phases: {', '.join(phase_order)}")
-    print(f"{'='*60}")
+    if args.output:
+        out_path = Path(args.output).resolve()
+        # Guard: refuse to overwrite curated 总表.md without --force
+        if out_path == CURATED_OUTPUT_MD.resolve() and not args.force:
+            print(
+                "错误: 目标文件为手工维护的 实验方案与数据_总表.md。\n"
+                "      本脚本不再是该文件的生成器。如需覆盖，请加 --force。\n"
+                "      日常核对用法: python scripts/gen_master_reference.py > /tmp/auto_check.md",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        os.makedirs(out_path.parent, exist_ok=True)
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(output_text)
+        print(f"\n{'='*60}")
+        print(f"输出已写入: {out_path}")
+        print(f"  Experiments: {len(rows)} rows")
+        print(f"  INVALID: {len(invalid_exps)} ({', '.join(eid for eid, _ in invalid_exps)})")
+        print(f"  Divergences: {len(div_items)} items")
+        print(f"  Phases: {', '.join(phase_order)}")
+        print(f"{'='*60}")
+    else:
+        # Write UTF-8 to stdout, falling back to reconfigure if available
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+            sys.stdout.write(output_text)
+        except (AttributeError, OSError):
+            sys.stdout.buffer.write(output_text.encode('utf-8'))
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description="交叉核对工具：从 CSV 生成实验总表的机器版本，与手工维护版比对差异"
+    )
+    parser.add_argument(
+        "--output", "-o",
+        type=str, default=None,
+        help="输出到指定文件（默认输出到 stdout）",
+    )
+    parser.add_argument(
+        "--force", "-f",
+        action="store_true",
+        help="允许覆盖手工维护的 实验方案与数据_总表.md（需与 --output 配合使用）",
+    )
+    # parse_known_args: ignore unknown args so the script is still friendly
+    # if invoked with legacy positional arguments
+    args, _ = parser.parse_known_args()
+    sys.exit(main(args))

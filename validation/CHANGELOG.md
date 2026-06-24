@@ -84,3 +84,20 @@
 
 - **新 tag**: `ac_suite_2026-06-validated-r2`
 - **上一 tag**: `ac_suite_2026-06-validated` (2026-06-22)
+
+### 2026-06-24 — r3 Re-Seal: gen_master_reference 改造为核对工具, 总表退出自动生成链
+
+| # | Finding | Detail | Impact |
+|---|---------|--------|--------|
+| 30 | gen_master_reference.py 改造 | 默认输出 stdout；`--output` 写文件；指向手工总表需 `--force`；B5 key_finding 硬编码旧值 (+4pp/+8pp) 修正为 +5.04pp/−0.68pp/+1.99pp | 裸跑脚本无副作用 |
+| 31 | verify_all.py 切除调用 | 删除 gen_master_reference.py 步骤，防未来全量重生覆写手工内容 | 总表.md 不再被自动覆盖 |
+| 32 | 权威数据手册 gap 不一致根除 | regen_handbook.py 新增 `gaps_by_test` 字典，正文从硬编码 "0.3pp" 改为 f-string 引用同源 gap 变量；两次重生 git diff 为零 | 表格与正文数字永不再漂 |
+| 33 | B4 概览表口径对齐 | "54 exps (18+36)" → "42 configs (54 total runs: 18 multi-seed + 36 grid single-seed)"，与同列其他行统一用配置数 | 实验矩阵语义一致 |
+| 34 | ⚠️ 近距离擦肩 — 手工总表曾意外覆写 | `gen_master_reference.py` 改造期间（旧 main() 仍直接覆写 OUTPUT_MD），`verify_all.py` 链式调用导致 `实验方案与数据_总表.md` 的 Phase 1+3 手工内容被纯自动版本全覆盖。凭 Claude Code 文件历史快照 (`7eba699d3451e153@v3`, mtime 2026-06-24 02:21:26) 逐字节恢复。教训：手工维护文档无独立备份机制，依赖工具内部缓存属侥幸。后续每个会话结束前手工文档变更应显式 `git add` + commit 保护 | 零数据损失，但暴露了单点风险 |
+| 35 | 总表头部去 AUTO-GENERATED | 改为手工维护说明，标注数据变更时需独立复核确认与 `results/logs/` 一致 | 维护语义清晰 |
+| 36 | 新增 C2/C4 val/test 混合边界说明 | 总表 §6 + 报告 §6 记录：`get_dataloaders()` 对 train/val/test 三 split 均用混合 dataset 构造，C2/C4 评估口径与 C1/C3 不完全一致 | 论文写作需明确此限制 |
+
+### Tag
+
+- **新 tag**: `ac_suite_2026-06-validated-r3`
+- **上一 tag**: `ac_suite_2026-06-validated-r2` (2026-06-23)

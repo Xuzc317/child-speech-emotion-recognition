@@ -13,7 +13,9 @@ SCRIPTS = [
     ("regen_handbook.py", "Regenerate authoritative handbook"),
     ("check_metrics.py", "Check metric completeness"),
     ("phase4_audit.py", "Run reproducibility audit"),
-    ("gen_master_reference.py", "Generate master reference table"),
+    # gen_master_reference.py REMOVED — 总表.md is now manually curated,
+    # not auto-generated. Running the script would overwrite hand-corrected content.
+    # See docs/current/实验方案与数据_总表.md header for maintenance instructions.
 ]
 
 def main():
