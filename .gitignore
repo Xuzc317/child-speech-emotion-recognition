@@ -27,6 +27,14 @@ _legacy/
 *.docx
 *.pdf
 !references/*.pdf
+# 论文配图 PDF（矢量格式，LaTeX 编译需要）
+!paper_draft/figures/*.pdf
+!paper_draft/figures/confusion_matrices/*.pdf
+!paper_draft/figures/xai/*.pdf
+!paper_draft/figures/layer_weights/*.pdf
+!paper_draft/figures/architecture/*.pdf
+!paper_draft/figures/paper_figures/*.pdf
+!results/figures/*.pdf
 
 # ── 密钥与凭证 ──
 *.pem

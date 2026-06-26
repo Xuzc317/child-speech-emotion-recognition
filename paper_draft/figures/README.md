@@ -1,31 +1,22 @@
 # paper_draft/figures/ — 论文配图
 
-投稿论文图片，PNG + PDF 双格式。
+按类型分目录整理，PNG + PDF 双格式。
 
-## 正文配图
+## 目录结构
 
-| 图号 | 文件前缀 | 内容 |
-|------|---------|------|
-| fig01 | `fig01_main_matrix_wa_uar` | 主结果矩阵 |
-| fig02 | `fig02_fau_prosody_vs_selfattn` | FAU 池化对比 |
-| fig03 | `fig03_fd_vs_accuracy` | FD-Accuracy 散点图 |
-| fig04 | `fig04_xai_saliency_triple` | XAI 三联图 |
-| fig05 | `fig05_cbesd_selfattn_vs_prosody` | C-BESD 池化对比 |
-| fig07 | `fig07_confusion_exp1_selfattn` | Exp1 CM (C-BESD) |
-| fig08 | `fig08_confusion_exp2_prosody` | Exp2 CM (C-BESD) |
+| 目录 | 内容 | 实验 |
+|------|------|------|
+| `confusion_matrices/` | 混淆矩阵 8组 | E1-02/05/09, E2-01/02/03, E6-04, E7-03 |
+| `tsne/` | t-SNE Before/After 4张 | E1-02/05/08 |
+| `bubbles/` | 声学气泡图 F0×RMS 8张 | 3数据集 + 合并 |
+| `xai/` | XAI 显著性图 3张 | E1-02, E6-04, 三联图 |
+| `layer_weights/` | Layer Fusion 权重 1组 | E1-02 |
+| `architecture/` | 系统架构图 1组 | — |
+| `paper_figures/` | 论文主图 fig01-05 | 全量 |
+| `archive/` | 历史版本 (旧协议68文件) | — |
 
-## 附录配图
+## 元数据
 
-| 图号 | 文件前缀 | 内容 |
-|------|---------|------|
-| figA1 | `figA1_confusion_exp3_iemocap` | IEMOCAP CM |
-| figA2 | `figA2_confusion_exp4_zero_shot` | Zero-shot CM |
-| figA3 | `figA3_confusion_exp5_fau_prosody` | FAU Prosody CM |
-| figA4 | `figA4_confusion_exp5b_fau_selfattn` | FAU Self-Attn CM |
-
-## 其他
-
-| 文件 | 内容 |
-|------|------|
-| `FIGURES_MANIFEST.json` | 配图生成清单 |
-| `archive/` | 历史版本 |
+- `FIGURES_MANIFEST.json` — 完整配图清单及数据来源
+- 混淆矩阵 JSON 数据: `results/figures/cm_*.json`
+- XAI 原始数据: `results/analysis/xai_chart_data.json`

@@ -21,7 +21,7 @@ E1-07_s123,E1-07_s123.json,present,present,present,missing,missing,missing,missi
 E1-07_s42,E1-07_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,4.93pp,none
 E1-07_s456,E1-07_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,8.08pp,none
 E1-08_s123,E1-08_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,4.96pp,none
-E1-08_s42,E1-08_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,3.20pp,none
+E1-08_s42,E1-08_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,4.90pp,none
 E1-08_s456,E1-08_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,2.97pp,none
 E1-09_s123,E1-09_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,5.43pp,none
 E1-09_s42,E1-09_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,4.23pp,none
@@ -63,7 +63,7 @@ E4-03_s123,E4-03_s123.json,present,present,present,missing,missing,missing,missi
 E4-03_s42,E4-03_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,0.05pp,none
 E4-03_s456,E4-03_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,0.05pp,none
 E4-04_s123,E4-04_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,6.03pp,none
-E4-04_s42,E4-04_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,-0.11pp,none
+E4-04_s42,E4-04_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,5.74pp,none
 E4-04_s456,E4-04_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,6.65pp,none
 E4-05_s123,E4-05_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,22.38pp,none
 E4-05_s42,E4-05_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,22.75pp,none
@@ -80,13 +80,13 @@ E4-08_s456,E4-08_s456.json,present,present,present,missing,missing,missing,missi
 E4-09_s123,E4-09_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,5.43pp,none
 E4-09_s42,E4-09_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,4.23pp,none
 E4-09_s456,E4-09_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,2.35pp,none
-E4-10_s123,E4-10_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,7.52pp,none
-E4-10_s42,E4-10_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,4.70pp,none
+E4-10_s123,E4-10_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,6.78pp,none
+E4-10_s42,E4-10_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,6.02pp,none
 E4-10_s456,E4-10_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,6.87pp,none
 E4-11_s123,E4-11_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,4.38pp,none
 E4-11_s42,E4-11_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,4.61pp,none
 E4-11_s456,E4-11_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,5.51pp,none
-E4-12_s123,E4-12_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,16.54pp,none
+E4-12_s123,E4-12_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,11.40pp,none
 E4-12_s42,E4-12_s42.json,present,present,present,missing,missing,missing,missing,missing,yes,9.37pp,none
 E4-12_s456,E4-12_s456.json,present,present,present,missing,missing,missing,missing,missing,yes,11.12pp,none
 E5-01_s123,E5-01_s123.json,present,present,present,missing,missing,missing,missing,missing,yes,0.04pp,none

@@ -1,0 +1,27 @@
+{
+  "exp_name": "E7-10_s42",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6274509803921569,
+  "test_wa": 0.668958031837916,
+  "test_uar": 0.6124395372284834,
+  "best_epoch": 22,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": true,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b7_ext/E7-10_s42",
+  "protocol": "ac_suite_2026-06"
+}

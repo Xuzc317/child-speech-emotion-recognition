@@ -4,7 +4,7 @@ Example:
   python scripts/plot_confusion_matrix.py \\
     --checkpoint checkpoints/autodl/best_model.pt \\
     --train_data c-besd --pooling_type prosody_guided \\
-    --output paper_draft/figures/fig06_confusion_exp2_prosody
+    --output paper_draft/figures/confusion_matrices/E1-09-s42_IEMOCAP_Prosody_frozen
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ def main() -> None:
     parser.add_argument("--train_data", nargs="+", default=["c-besd"])
     parser.add_argument("--test_data", nargs="+", default=None)
     parser.add_argument("--pooling_type", default=None, help="Override if not in checkpoint")
-    parser.add_argument("--output", default="paper_draft/figures/fig06_confusion")
+    parser.add_argument("--output", default="paper_draft/figures/confusion_matrices/E1-02_C-BESD_SelfAttn_frozen")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--batch_size", type=int, default=16)
     args = parser.parse_args()

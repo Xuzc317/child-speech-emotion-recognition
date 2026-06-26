@@ -5,14 +5,11 @@
 ## Part 0.1 — E4-04 Config Divergence
 
 E4-04 has 3 seed runs:
-  seed=42: train=['c-besd'] test=['c-besd-4cl'] pooling=self_attention aug=C4 fusion=None adapter=None unfreeze=None protocol=MISSING WA=68.02%
+  seed=42: train=['c-besd-4cl', 'iemocap'] test=['c-besd-4cl', 'iemocap'] pooling=self_attention aug=C4 fusion=weighted adapter=False unfreeze=False protocol=ac_suite_2026-06 WA=61.21%
   seed=123: train=['c-besd-4cl', 'iemocap'] test=['c-besd-4cl', 'iemocap'] pooling=self_attention aug=C4 fusion=weighted adapter=False unfreeze=False protocol=ac_suite_2026-06 WA=63.81%
   seed=456: train=['c-besd-4cl', 'iemocap'] test=['c-besd-4cl', 'iemocap'] pooling=self_attention aug=C4 fusion=weighted adapter=False unfreeze=False protocol=ac_suite_2026-06 WA=62.67%
 
-**FINDING**: E4-04 has 2 distinct configs across seeds — INVALID 3-seed aggregation.
-  s42: single-corpus C-BESD + C4 augmentation
-  s123/s456: dual-corpus C-BESD+IEMOCAP + C4 augmentation
-  **Action**: Mark E4-04 as 'invalid_aggregation' in manifest/ledger. Exclude mean+-std.
+All seeds consistent. OK.
 
 ## Part 0.2 — Standard Deviation: ddof=1 (sample std)
 
@@ -45,44 +42,27 @@ All other 'ceiling' references in CLAUDE.md now use 3-seed sample mean, sourced 
 
 | Corpus | WA mean+-std | UAR mean+-std | WA-UAR gap | N runs |
 |--------|-------------|--------------|-----------|--------|
-| C-BESD | 81.00+-19.50% | 80.68+-19.67% | 0.31pp | 69 |
+| C-BESD | 80.90+-19.59% | 80.50+-19.84% | 0.40pp | 69 |
 | FAU_Aibo | 62.82+-11.59% | 41.67+-5.71% | 21.15pp | 69 |
-| IEMOCAP | 59.47+-9.96% | 54.49+-8.61% | 4.98pp | 54 |
+| IEMOCAP | 59.77+-10.00% | 54.84+-8.37% | 4.92pp | 54 |
 
 **Interpretation**:
 - FAU_Aibo has the largest WA-UAR gap (21.15pp) due to severe class imbalance (4 classes, highly skewed)
-- C-BESD WA ~= UAR (0.31pp) — near-perfect class balance (6 classes)
-- IEMOCAP gap is moderate (4.98pp)
+- C-BESD WA ~= UAR (0.40pp) — near-perfect class balance (6 classes)
+- IEMOCAP gap is moderate (4.92pp)
 - The '30.8pp' figure refers to the MAXIMUM gap across individual FAU runs; the '9.11pp' is the global mean across all 192 runs
 
 ## Part 1.5 — Cross-seed Config Consistency Audit
 
 Multi-seed experiments checked: 46
-Config-consistent: 43
-Config-divergent: 3
+Config-consistent: 46
+Config-divergent: 0
 
-### Divergent experiments (INVALID 3-seed aggregation):
-
-**E1-08** (3 seeds, 2 distinct configs):
-  seed=42: train=['iemocap'] test=['iemocap'] pooling=self_attention aug=None fusion=None adapter=None unfreeze=None
-  seed=123: train=['iemocap'] test=['iemocap'] pooling=self_attention aug=C1 fusion=weighted adapter=False unfreeze=False
-  seed=456: train=['iemocap'] test=['iemocap'] pooling=self_attention aug=C1 fusion=weighted adapter=False unfreeze=False
-
-**E4-04** (3 seeds, 2 distinct configs):
-  seed=42: train=['c-besd'] test=['c-besd-4cl'] pooling=self_attention aug=C4 fusion=None adapter=None unfreeze=None
-  seed=123: train=['c-besd-4cl', 'iemocap'] test=['c-besd-4cl', 'iemocap'] pooling=self_attention aug=C4 fusion=weighted adapter=False unfreeze=False
-  seed=456: train=['c-besd-4cl', 'iemocap'] test=['c-besd-4cl', 'iemocap'] pooling=self_attention aug=C4 fusion=weighted adapter=False unfreeze=False
-
-**E4-10** (3 seeds, 2 distinct configs):
-  seed=42: train=['iemocap'] test=['iemocap'] pooling=prosody_guided aug=C2 fusion=weighted adapter=None unfreeze=None
-  seed=123: train=['iemocap'] test=['iemocap'] pooling=prosody_guided aug=C2 fusion=weighted adapter=None unfreeze=None
-  seed=456: train=['iemocap', 'fau-aibo'] test=['iemocap', 'fau-aibo'] pooling=prosody_guided aug=C2 fusion=weighted adapter=False unfreeze=False
-
+No config-divergent experiments found beyond E4-04 (already flagged).
 
 ### train_data/test_data divergence check:
 
-  E4-04: train_data variants=2, test_data variants=2
-  E4-10: train_data variants=2, test_data variants=2
+  All clear — no train/test divergence beyond already-flagged.
 
 ## Part 1.6 — Config Field Trustworthiness Audit
 
@@ -91,7 +71,7 @@ Config-divergent: 3
 **augment_condition**: 5 unique values: ['C1', 'C2', 'C3', 'C4', 'MISSING']
 **fusion_mode**: 4 unique values: ['MISSING', 'best_single', 'last', 'weighted']
 **pooling_type**: 3 unique values: ['mean', 'prosody_guided', 'self_attention']
-**protocol**: 3 unique values: ['MISSING', 'ac_suite_2026-05', 'ac_suite_2026-06']
+**protocol**: 2 unique values: ['ac_suite_2026-05', 'ac_suite_2026-06']
 **reg_profile**: 2 unique values: ['default', 'fau']
 **unfreeze_ssl**: 3 unique values: ['False', 'MISSING', 'True']
 **use_adapter**: 3 unique values: ['False', 'MISSING', 'True']

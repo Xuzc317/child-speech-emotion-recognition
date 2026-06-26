@@ -49,11 +49,11 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 
 | 项目 | 数量 | 位置 |
 |------|------|------|
-| 混淆矩阵 (B1/B5/B6/B7代表) | 8组 (PNG+PDF+JSON) | `paper_draft/figures/cm_*.png` + `results/figures/` |
-| XAI可视化 (E1-02, E6-04) | 2张 | `paper_draft/figures/xai_*.png` |
-| Layer Fusion 权重 (E1-02 L9) | 1组 | `paper_draft/figures/layer_weights_E1-02_*.png` |
+| 混淆矩阵 (B1/B5/B6/B7代表) | 8组 (PNG+PDF+JSON) | `paper_draft/figures/confusion_matrices/` + `results/figures/` |
+| XAI可视化 (E1-02, E6-04) | 2张 | `paper_draft/figures/xai/` |
+| Layer Fusion 权重 (E1-02 L9) | 1组 | `paper_draft/figures/layer_weights/` |
 | APC 指标 (E1-02, E6-04) | 2组 JSON | `results/analysis/apc_*.json` |
-| t-SNE 可视化 (B1 Before/After) | 4张 | `paper_draft/figures/fig_tsne_*.png` |
+| t-SNE 可视化 (B1 Before/After) | 4张 | `paper_draft/figures/tsne/` |
 
 **配图目录**: `paper_draft/figures/` 已清理 — 归档旧协议68文件，保留33有效文件。
 

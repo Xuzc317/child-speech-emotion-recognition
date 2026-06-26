@@ -56,7 +56,7 @@
 
 14. `results/logs/` — 192 个 JSON 文件（E1-01_s42.json 到 E7-06_s456.json），每个含 test_wa、test_uar、best_epoch。抽样读取 3-5 个不同 Phase 的文件理解 JSON 结构
 15. `results/analysis/` — FD/SMMD (canonical_fd_pairs.json)、XAI 原始数据 (xai_raw_data.npz)、层权重 (layer_weights.json)
-16. `paper_draft/figures/` — 论文配图（fig01-fig08, figA1-figA4）和 t-SNE 图（fig_tsne_*.png）。读取 FIGURES_MANIFEST.json 了解配图清单
+16. `paper_draft/figures/` — 论文配图，按类型分目录（confusion_matrices/, tsne/, bubbles/, xai/, layer_weights/, architecture/, paper_figures/）。读取 FIGURES_MANIFEST.json 了解配图清单
 
 ### 第六步：补充实验计划
 
