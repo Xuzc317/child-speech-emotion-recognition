@@ -1,0 +1,17 @@
+{
+  "exp_name": "E4-04_s42",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd-4cl"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.5651085141903172,
+  "test_wa": 0.6802030456852792,
+  "test_uar": 0.6812918660287082,
+  "best_epoch": 8,
+  "reg_profile": "default",
+  "augment_condition": "C4"
+}

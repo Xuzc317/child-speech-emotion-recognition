@@ -1,0 +1,40 @@
+{
+  "checkpoint": "/root/checkpoints/exp5/best_model.pt",
+  "dataset": [
+    "c-besd"
+  ],
+  "split": "test",
+  "confusion_matrix": [
+    [
+      6,
+      13,
+      96,
+      0
+    ],
+    [
+      12,
+      38,
+      90,
+      0
+    ],
+    [
+      9,
+      18,
+      113,
+      0
+    ],
+    [
+      29,
+      18,
+      98,
+      0
+    ]
+  ],
+  "classes": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "total": 540
+}

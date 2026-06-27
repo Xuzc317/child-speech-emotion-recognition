@@ -1,0 +1,29 @@
+{
+  "exp_name": "E4-08_s42",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "fau-aibo",
+    "iemocap"
+  ],
+  "test_data": [
+    "fau-aibo",
+    "iemocap"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.5877126654064272,
+  "test_wa": 0.6068584430359174,
+  "test_uar": 0.48305011081552335,
+  "best_epoch": 15,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C4",
+  "output_dir": "checkpoints/b3/E4-08_s42",
+  "protocol": "ac_suite_2026-06"
+}

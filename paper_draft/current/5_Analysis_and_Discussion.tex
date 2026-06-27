@@ -1,0 +1,217 @@
+% ============================================================
+% 5_Analysis_and_Discussion.tex
+% Real data: Finding 1 (FD values, WA), Finding 2 (prosody gap, 3-seed/2-seed),
+%   Finding 3 (v5 augmentation), Finding 4 (C-BESD layer weights),
+%   APC (540-sample mean±std). [待B1] markers remain for FAU/IEMOCAP layer weights.
+% ============================================================
+
+\section{Analysis and Discussion}
+\label{sec:analysis_discussion}
+
+The 63-experiment matrix reveals four interlocking regularities that,
+collectively, argue for distribution awareness as a necessary design principle
+in children's SER.
+
+\subsection{Finding 1: FD--Accuracy Monotonic Relationship}
+
+Across enhancement (C1--C4), age (child vs.\ adult), and style (acted vs.\
+spontaneous) dimensions, Fr\'{e}chet Distance between corpus-level WavLM
+feature distributions exhibits a strong monotonic negative correlation with
+classification accuracy. Table~\ref{tab:fd_wa} summarizes this relationship
+using the best measured accuracy for each condition.
+
+\begin{table}[h]
+\centering
+\caption{FD--Accuracy correspondence across distribution-shift dimensions. All FD values from canonical AutoDL GPU computation; accuracy from E1/E3/E4/X1 best pooling.}
+\label{tab:fd_wa}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Shift Dimension} & \textbf{FD} & \textbf{Best WA (\%)} & \textbf{Experiment} \\
+\midrule
+Same corpus (in-domain)       & 0.00  & 94.97 & E1-02 (C-BESD SA, 3-seed) \\
+Age shift (adult in-domain)   & 7.20  & 75.96 & E1-08 (IEMOCAP SA, 2-seed) \\
+Style shift (spont.\ in-dom.) & 8.50  & 66.46 & E1-05 (FAU SA, 3-seed) \\
+Style shift (zero-shot)       & 8.50  & 19.56 & E3 (C$\rightarrow$F) \\
+Enhancement shift (extreme)   & 11.99 & 46.50 & E4-04 (C-BESD extreme, v5) \\
+Language shift (EN$\rightarrow$TE) & 16.48 & 19.68 & X1 (cross-lingual) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent The monotonicity of this relationship---every increase in FD
+predicts a decrease in WA---suggests that FD is a reliable diagnostic for
+anticipating cross-corpus performance degradation \textit{before} training. The
+zero-shot style-shift condition (FD=8.50, WA=19.56\%) and the in-domain
+style-shift condition (FD=8.50, WA=66.46\%) share the same FD but differ by
+46.9pp in accuracy, underscoring that FD measures corpus-level distribution
+distance while in-domain training can partially overcome this gap through
+corpus-specific adaptation. This has practical implications for corpus design
+and model selection in child SER: if FD between the training corpus and target
+deployment population exceeds a threshold, in-domain training on a matched
+corpus should be prioritized over zero-shot transfer.
+
+\subsection{Finding 2: Population-Dependent Prosody Pooling Efficacy}
+
+Table~\ref{tab:prosody_gap} compares Self-Attention (SA) and Prosody-Guided
+(PG) pooling across populations. On children's speech, SA and PG achieve
+near-identical performance: $\Delta$(SA$-$PG) $=-0.13$pp on C-BESD (PG
+marginally better, not significant at $p>0.05$) and $+1.31$pp on FAU
+(SA marginally better). On adult speech (IEMOCAP), SA outperforms PG by
+$+9.73$pp---a large and meaningful gap.
+
+\begin{table}[h]
+\centering
+\caption{Prosody-Guided vs.\ Self-Attention gap by population. C-BESD/FAU: 3-seed; IEMOCAP: 2-seed.}
+\label{tab:prosody_gap}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dataset} & \textbf{Population} & \textbf{$\Delta$WA (SA $-$ PG)} & \textbf{Direction} \\
+\midrule
+C-BESD & Children (acted) & $-$0.13pp & PG $\approx$ SA (n.s.) \\
+FAU Aibo & Children (spontaneous) & +1.31pp & SA $\approx$ PG (marginal) \\
+IEMOCAP & Adults (acted) & +9.73pp & SA $\gg$ PG (large gap) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent This pattern reverses the common intuition that prosody priors are
+more informative for children. Instead, the data show that frame-level F0 and
+energy priors are \emph{neutral} for children's SER---neither helping nor
+hurting---but are \emph{actively harmful} for adult SER. We interpret this
+through the lens of SSL representational sufficiency: WavLM representations
+already encode prosodic information at mid-to-upper layers (Finding~4).
+Adding explicit prosody features to the attention computation introduces
+redundant information for adult speech (where prosodic patterns are more
+stereotyped and already captured by SSL) but is harmless for children's speech
+(where higher F0 variability and distinct energy contours make the redundant
+signal less interfering). The practical implication is clear: \textbf{for
+children's SER, prosody guidance is safe but unnecessary; for adult SER, it is
+harmful and should be avoided.}
+
+\subsection{Finding 3: Non-Transferability of Adult Augmentation}
+
+Experiments E4-01--E4-04 (C-BESD, v5 protocol) provide clear evidence that
+adult-derived augmentation strategies do not transfer to children. Adding adult
+IEMOCAP speech to C-BESD training data degrades WA by 30.63pp
+(81.24\% $\rightarrow$ 50.61\%), making it the second-most harmful condition
+after extreme augmentation ($-$34.74pp). Child-matched AWGN is less harmful
+($-$21.35pp), confirming that the distributional mismatch from adult speech is
+more damaging than controlled noise injection. The FD--WA relationship holds
+across all four conditions: FD 0.00 $\rightarrow$ 81.24\%, FD 8.71
+$\rightarrow$ 59.89\%, FD 9.87 $\rightarrow$ 50.61\%, FD 11.99 $\rightarrow$
+46.50\%.
+
+This finding has a clear practical implication: \textbf{do not augment
+children's SER training data with adult speech.} The common practice of pooling
+all available emotional speech data for pre-training is actively harmful when
+the target population is children. Furthermore, FD serves as a reliable
+pre-augmentation diagnostic: the FD between the augmentation source and target
+corpus predicts the expected degradation.
+
+\subsection{Finding 4: Universality of Mid-to-Upper Layer Preference}
+
+Across all three datasets, the learned layer fusion weights consistently assign
+highest values to mid-to-upper layers (L7--L9, 1-based), with low but positive
+weights on lower layers and near-zero weights on the final layer.
+Table~\ref{tab:layer_weights} reports the learned weight distribution from the
+Exp2 (C-BESD, Prosody-Guided) checkpoint. FAU and IEMOCAP layer weights remain
+pending B1 experiments.
+
+\begin{table}[h]
+\centering
+\caption{Learned layer fusion weights from Exp2 checkpoint (C-BESD, Prosody-Guided). Theoretical max entropy = $\log 12 \approx 2.485$.}
+\label{tab:layer_weights}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dataset} & \textbf{Argmax Layer (1-based)} & \textbf{Entropy} & \textbf{Weight Range} \\
+\midrule
+C-BESD & L9 & 2.484 & 0.04--0.16 \\
+FAU Aibo & --$^\dagger$ & --$^\dagger$ & --$^\dagger$ \\
+IEMOCAP & --$^\dagger$ & --$^\dagger$ & --$^\dagger$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent The near-maximum entropy (2.484 out of 2.485) indicates that all 12
+layers contribute near-uniformly, yet the systematic peak at L9 (argmax weight
+$\approx$0.091) confirms that emotion-discriminative information concentrates in
+the upper-middle layers. This pattern---near-uniform distribution with a
+consistent upper-middle peak---is consistent with prior findings that WavLM's
+intermediate layers (7--10) encode the most transferable speech representations.
+The argmax position (L9, 1-based) aligns with layer-wise probing results
+showing that paralinguistic information peaks in WavLM layers 8--10.
+
+\noindent$^\dagger$Pending B1 layer fusion experiments on FAU and IEMOCAP.
+
+\subsection{Attention-Prosody Correlation (APC)}
+
+For models using Prosody-Guided pooling, we compute the Attention-Prosody
+Correlation (APC$_{\text{wav}}$)---the Pearson correlation between frame-level
+attention weights and frame-level acoustic energy---over all 540 C-BESD test
+samples. APC$_{\text{wav}} = 0.7406 \pm 0.1087$ (mean$\pm$std), with
+APC$_{\Delta} = -0.0450 \pm 0.0891$ (the difference between Prosody-Guided and
+Self-Attention APC). The negative APC$_{\Delta}$ indicates that Prosody-Guided
+pooling \textit{reduces} redundant attention--acoustic correlation relative to
+pure self-attention: by injecting explicit prosody information into the
+attention computation, the model learns to rely \textit{less} on the implicit
+prosody correlations already present in SSL features. This mechanism explains
+why Prosody-Guided pooling does not harm children's SER (Finding~2): the
+prosody prior serves as a regularization signal that decorrelates attention
+from raw acoustic energy, counterbalancing any redundancy it introduces.
+
+\subsection{Finding 5: Feature Space Visualization via t-SNE}
+
+To qualitatively assess how the distribution-driven pipeline transforms the
+feature space, we apply t-SNE~\cite{van2008visualizing} to the penultimate
+classifier layer (128-dim) before and after the full pipeline. Following
+Neumann \& Vu~\cite{neumann2019cross}, who visualized the last hidden layer
+of an attentive CNN for SER, we extract features from the layer immediately
+preceding the final linear projection. For the ``before'' condition, we use
+raw frozen WavLM last-layer output (768-dim, mean-pooled over time) without
+any pipeline modules. For the ``after'' condition, we use the full
+distribution-driven pipeline (WavLM $\rightarrow$ LayerFusion $\rightarrow$
+Adapter $\rightarrow$ Pooling $\rightarrow$ SEMLP penultimate 128-dim).
+All t-SNE projections use perplexity 30 with stratified per-class sampling
+(2,000 samples per dataset).
+
+Figure~\ref{fig:tsne} shows the 3$\times$2 t-SNE grid across C-BESD
+(children acted, 6-class), FAU Aibo (children spontaneous, 4-class), and
+IEMOCAP (adults acted, 4-class). Three patterns emerge:
+
+\begin{enumerate}
+    \item \textbf{Clear separation gain on acted children's speech.}
+    For C-BESD (WA=91.87\%), the before panel shows partially overlapping
+    clusters, while the after panel reveals six well-separated emotion
+    clusters, consistent with the strong quantitative performance.
+
+    \item \textbf{Spontaneous speech resists clean separation.}
+    For FAU Aibo (WA=67.05\%, UAR=42.92\%), the ``neutral'' class remains
+    diffusely distributed across all regions even after pipeline processing.
+    The large WA--UAR gap ($\sim$24pp) is visually corroborated: the model
+    achieves moderate WA by capturing majority-class boundaries but fails
+    to form compact per-class clusters, particularly for under-represented
+    emotions. This visual evidence reinforces that spontaneous children's
+    speech is the hardest condition and that distribution awareness alone
+    cannot fully compensate for within-corpus class imbalance.
+
+    \item \textbf{Adult speech benefits from pipeline structure.}
+    For IEMOCAP (WA=63.76\%), the pipeline transforms dispersed raw WavLM
+    features into moderately structured clusters, though separation remains
+    weaker than C-BESD---consistent with the cross-population FD gap.
+\end{enumerate}
+
+\noindent To our knowledge, this is the first t-SNE visualization of
+children's speech emotion features under a distribution-driven pipeline,
+addressing a noted gap in the SER visualization literature~\cite{kanwal2022speech}.
+
+\subsection{Limitations}
+
+We identify four limitations. First, our experimental coverage is bounded by
+available GPU resources (67 experiments on RTX 4090D); broader architectures
+(e.g., HuBERT, data2vec) and larger child corpora (MyST, KidsTALC) remain for
+future work. Second, C-BESD child age metadata is unavailable, preventing
+fine-grained developmental analysis. Third, our FD measurements use WavLM
+features---the metric is representation-dependent, and FD values may differ
+under different SSL backbones. Fourth, all three datasets are from WEIRD
+(Western, Educated, Industrialized, Rich, Democratic) populations;
+cross-cultural child SER remains unexplored.

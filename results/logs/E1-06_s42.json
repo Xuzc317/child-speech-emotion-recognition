@@ -1,0 +1,22 @@
+{
+  "exp_name": "E1-06_s42",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6606153846153846,
+  "test_wa": 0.6618471525523754,
+  "test_uar": 0.44778058690549727,
+  "best_epoch": 5,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "output_dir": "checkpoints/b1/E1-06_s42",
+  "protocol": "ac_suite_2026-05"
+}

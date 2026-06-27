@@ -1,0 +1,8 @@
+{
+  "name": "A1_baseline",
+  "timestamp": "20260428_023048",
+  "duration_minutes": 5.6,
+  "total_epochs": 3,
+  "best_val_acc": 0.85684,
+  "test_acc": 0.783427
+}

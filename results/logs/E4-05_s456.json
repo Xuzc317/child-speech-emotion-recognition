@@ -1,0 +1,27 @@
+{
+  "exp_name": "E4-05_s456",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 456,
+  "best_val_wa": 0.6569230769230769,
+  "test_wa": 0.6721746827972853,
+  "test_uar": 0.3982214428262516,
+  "best_epoch": 0,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b3/E4-05_s456",
+  "protocol": "ac_suite_2026-06"
+}

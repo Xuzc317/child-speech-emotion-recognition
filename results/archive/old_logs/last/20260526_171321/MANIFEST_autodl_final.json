@@ -1,0 +1,44 @@
+{
+  "matrix_version": "autodl_final_2026-05-19",
+  "note": "Restored from user-approved AutoDL final matrix (paper_draft). Original results_remote/ sync was not retained locally. best_val_wa omitted unless recovered from remote re-sync (task B1).",
+  "files": [
+    "exp1_self_attention.json",
+    "exp2_prosody_guided.json",
+    "exp3_adult_iemocap.json",
+    "exp4_zero_shot_fau.json",
+    "exp5_fau_indomain.json",
+    "exp5b_self_attention_fau.json"
+  ],
+  "paper_percent_metrics": {
+    "exp1_self_attention.json": {
+      "WA": 92.78,
+      "UAR": 92.79,
+      "best_epoch": 30
+    },
+    "exp2_prosody_guided.json": {
+      "WA": 91.3,
+      "UAR": 91.35,
+      "best_epoch": 10
+    },
+    "exp3_adult_iemocap.json": {
+      "WA": 58.67,
+      "UAR": 59.11,
+      "best_epoch": 8
+    },
+    "exp4_zero_shot_fau.json": {
+      "WA": 18.7,
+      "UAR": 22.75,
+      "best_epoch": 10
+    },
+    "exp5_fau_indomain.json": {
+      "WA": 66.36,
+      "UAR": 56.35,
+      "best_epoch": 3
+    },
+    "exp5b_self_attention_fau.json": {
+      "WA": 66.18,
+      "UAR": 58.23,
+      "best_epoch": 2
+    }
+  }
+}

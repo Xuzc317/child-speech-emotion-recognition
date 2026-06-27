@@ -1,0 +1,17 @@
+\section{Related Work}
+
+\subsection{Self-Supervised Learning for SER}
+
+Self-supervised pre-trained models---including WavLM, HuBERT, wav2vec 2.0, and emotion2vec---have become the standard backbone for speech emotion recognition. WavLM, in particular, achieves strong performance on the SUPERB benchmark through its masked speech denoising pre-training objective, which encourages the model to capture both acoustic and semantic information. Prior work has shown that frozen SSL features followed by a lightweight classifier can match or exceed fine-tuned models on adult SER benchmarks. Our work extends this paradigm to children's speech and systematically ablates the design choices around these frozen backbones.
+
+\subsection{Children's Speech Processing}
+
+Children's speech presents unique challenges: higher and more variable F0, shorter vocal tract length, ongoing anatomical development, and greater within-speaker variability compared to adults. Studies on children's automatic speech recognition have demonstrated that models trained on adult speech degrade significantly on children's speech, and that fine-tuning on child data is necessary for acceptable performance. For SER specifically, the limited availability of labeled children's emotional speech corpora has constrained systematic investigation. Existing work has primarily evaluated individual corpora in isolation, making cross-corpus comparison difficult.
+
+\subsection{Distribution Shift in Speech}
+
+Distribution shift---the mismatch between training and test distributions---is a well-studied problem in machine learning. In speech processing, domain shift arises from differences in recording conditions, speaker demographics, language, and speaking style. Fr\'{e}chet Distance (FD) and related metrics have been used to quantify representation-level shift between speech corpora. Test-time adaptation and domain adversarial training have been proposed as mitigation strategies. Our work contributes a systematic diagnosis of how distribution shift specifically affects children's SER, using controlled ablation to separate shift effects from architectural factors.
+
+\subsection{Pooling and Adaptation for SER}
+
+Temporal pooling strategies---from simple mean pooling to learned attention and prosody-guided methods---have been extensively explored for aggregating frame-level SSL features into utterance-level representations. Adapter modules, originally developed for parameter-efficient transfer learning in NLP, have been applied to SER with mixed results. Our findings that self-attention pooling provides the largest benefit while adapter modules are dispensable contribute evidence to this ongoing design discussion.

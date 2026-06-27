@@ -1,0 +1,36 @@
+{
+  "checkpoint": "checkpoints/exp3_adult_iemocap/best_model.pt",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "pooling_type": "prosody_guided",
+  "confusion_matrix": [
+    [
+      521,
+      100,
+      136,
+      72
+    ],
+    [
+      123,
+      432,
+      123,
+      46
+    ],
+    [
+      106,
+      102,
+      208,
+      84
+    ],
+    [
+      42,
+      21,
+      25,
+      230
+    ]
+  ]
+}

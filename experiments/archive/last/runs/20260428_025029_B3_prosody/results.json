@@ -1,0 +1,8 @@
+{
+  "name": "B3_prosody",
+  "timestamp": "20260428_025029",
+  "duration_minutes": 3.6,
+  "total_epochs": 3,
+  "best_val_acc": 0.885218,
+  "test_acc": 0.812429
+}

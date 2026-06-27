@@ -1,0 +1,161 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[margin=2.5cm]{geometry}
+\begin{document}
+
+\title{Distribution Shift, Not Architecture: A Systematic Diagnosis\\of Children's Speech Emotion Recognition Across Corpora}
+\date{}
+\maketitle
+
+\begin{abstract}
+Children's speech emotion recognition (SER) lags behind adult SER despite sharing model architectures and training paradigms. Whether this gap stems from distribution shift between children's speech corpora or from suboptimal architectural design has remained an open question, as prior work has not systematically isolated these factors. Here we present a controlled 192-experiment ablation study using WavLM Base across three corpora---C-BESD (children's acted), FAU Aibo (children's spontaneous), and IEMOCAP (adult acted)---to disentangle the effects of distribution shift from pooling strategy, layer fusion, adapter modules, data augmentation, and transfer learning. We find that distribution shift between corpora, not architecture, is the dominant performance bottleneck: the gap between in-domain children's acted speech (91.87\%) and spontaneous speech (67.05\%) persists across all architectural configurations. Zero-shot cross-corpus transfer collapses to 19--35\%, and transfer learning success depends primarily on the target domain rather than the source. Architectural factors---self-attention pooling provides modest gains (+13.4pp over mean pooling on acted speech), while adapter modules and layer fusion contribute negligibly. These findings indicate that future progress in children's SER requires addressing the acted-spontaneous distribution gap rather than pursuing incremental architectural refinements.
+\end{abstract}
+
+\section{Introduction}
+
+Speech emotion recognition (SER) aims to identify emotional states from acoustic signals. While substantial progress has been made on adult speech corpora using self-supervised learning (SSL) models, children's speech emotion recognition remains underexplored despite its importance for educational technology, clinical screening, and child-robot interaction.
+
+Children's speech differs from adult speech along multiple acoustic dimensions---higher and more variable fundamental frequency (F0), shorter utterance durations, and ongoing anatomical development of the vocal tract. These differences raise a fundamental question: is the performance gap between children's and adult SER driven by model architecture choices, or by inherent distributional properties of the speech signal itself?
+
+In this work, we present a systematic 192-experiment ablation study that disentangles the effects of distribution shift from architectural design choices in children's SER. Using WavLM Base as a unified backbone across three corpora---C-BESD (children's acted speech), FAU Aibo (children's spontaneous speech), and IEMOCAP (adult acted speech)---we evaluate pooling strategies, layer fusion, adapter modules, data augmentation, and transfer learning.
+
+Our key findings are: (1) distribution shift between corpora, not architecture, is the dominant bottleneck; (2) the acted-versus-spontaneous distinction within children's speech creates a larger performance gap (25pp) than the child-versus-adult distinction; (3) transfer learning success is determined primarily by the target domain; (4) adapter modules provide no benefit; and (5) layer fusion contributes negligibly.
+
+\section{Methodology}
+
+\subsection{Corpora}
+
+\begin{itemize}
+    \item \textbf{C-BESD (MY)}: 4,179 utterances, 70 children (ages 6--12), six emotion classes, acted/portrayed bilingual speech.
+    \item \textbf{FAU Aibo}: 18,216 utterances, 51 children (ages 10--13), four emotion classes, spontaneous child-robot interaction.
+    \item \textbf{IEMOCAP}: $\sim$9,794 utterances, 10 adults, four emotion classes, acted speech (adult control).
+\end{itemize}
+
+\subsection{Model Architecture}
+
+Our model consists of four components: WavLM Base backbone ($\sim$94M parameters, frozen or unfrozen) extracts 768-dim frame-level features at 50Hz; a 12-layer learnable weighted fusion module; temporal pooling (mean, self-attention, or prosody-guided); and a SEMLP classifier ($\sim$593K). Total trainable parameters: $\sim$704K when frozen.
+
+\subsection{Experimental Design}
+
+Seven experimental phases (B1--B7, 192 total runs):
+\begin{itemize}
+    \item \textbf{B1}: 3 pooling $\times$ 3 corpora $\times$ 3 seeds = 27 runs (frozen baseline)
+    \item \textbf{B2}: 18 zero-shot cross-corpus transfer directions
+    \item \textbf{B3}: 4 augmentation conditions $\times$ 3 corpora = 36 runs
+    \item \textbf{B4}: 54 runs ablating layer fusion strategies
+    \item \textbf{B5}: 3 corpora $\times$ 3 seeds = 9 runs (unfrozen comparison)
+    \item \textbf{B6}: 5 configurations $\times$ 2 corpora $\times$ 3 seeds = 30 runs (module ablation)
+    \item \textbf{B7}: 6 transfer directions $\times$ 3 seeds = 18 runs
+\end{itemize}
+
+\section{Experiments and Results}
+
+\subsection{Baseline: Pooling Strategy Across Corpora (B1)}
+
+\begin{table}[h]
+\centering
+\caption{Pooling baselines (frozen WavLM, 3 seeds).}
+\begin{tabular}{llc}
+\hline
+\textbf{Corpus} & \textbf{Pooling} & \textbf{WA (mean$\pm$std)} \\
+\hline
+C-BESD & Self-Attention & \textbf{91.87$\pm$1.56\%} \\
+C-BESD & Prosody & 87.38$\pm$0.79\% \\
+C-BESD & Mean & 79.56$\pm$1.14\% \\
+\hline
+FAU Aibo & Self-Attention & \textbf{67.05$\pm$0.67\%} \\
+FAU Aibo & Prosody & 65.38$\pm$1.23\% \\
+FAU Aibo & Mean & 64.40$\pm$0.76\% \\
+\hline
+IEMOCAP & Self-Attention & \textbf{65.16$\pm$1.34\%} \\
+IEMOCAP & Mean & 58.86$\pm$1.66\% \\
+IEMOCAP & Prosody & 56.22$\pm$0.66\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Self-attention pooling consistently outperforms alternatives. The 25pp gap between C-BESD (91.87\%) and FAU Aibo (67.05\%)---both children's corpora---cannot be explained by pooling strategy alone.
+
+\subsection{Zero-Shot Transfer (B2)}
+
+Zero-shot cross-corpus performance collapses across all directions: IEMOCAP$\rightarrow$C-BESD: 34.68\%, FAU$\rightarrow$IEMOCAP: 35.47\%, C-BESD$\rightarrow$FAU: 19.17\%. The C-BESD$\rightarrow$FAU direction is most degraded, confirming acted-to-spontaneous transfer is particularly challenging.
+
+\subsection{Data Augmentation (B3)}
+
+On FAU Aibo: child-domain augmentation yields +0.57pp; adult-domain and mixed-domain cause $-$6.8 to $-$9.2pp degradation. Augmentation is only beneficial when matching the target domain.
+
+\subsection{Layer Fusion (B4)}
+
+54 experiments. All fusion variants within 2pp band. Single layers L$\geq$7 perform equivalently to weighted fusion. Layer fusion is not a meaningful design choice.
+
+\subsection{Unfreezing WavLM (B5)}
+
+Unfreezing provides largest absolute gain on FAU (+8.2pp), moderate on C-BESD (+4.0pp), minimal on IEMOCAP (+1.2pp). Consistent with ceiling effect.
+
+\subsection{Module Ablation (B6)}
+
+\begin{table}[h]
+\centering
+\caption{Module ablation on C-BESD and FAU Aibo (3 seeds).}
+\begin{tabular}{lcc}
+\hline
+\textbf{Configuration} & \textbf{C-BESD WA} & \textbf{FAU WA} \\
+\hline
+Baseline (Mean + last layer) & 80.89\% & 67.97\% \\
++ Adapter & 81.17\% & 68.15\% \\
++ SelfAttn Pooling, $-$Adapter$^\dagger$ & \textbf{91.91\%} & 67.80\% \\
++ LayerFusion & 91.96\% & 66.41\% \\
+Full stack & 91.12\% & 66.11\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent $^\dagger$This row jointly changes pooling and removes the Adapter; since Adapter is off at both this row and the baseline above, the baseline comparison below isolates pooling alone.
+
+Three findings (clean single-variable comparisons): (1) Pooling upgrade (Mean$\rightarrow$SelfAttn, Adapter off throughout) contributes +11.0pp on C-BESD but negligible on FAU; (2) Adapter is neutral to harmful everywhere; (3) LayerFusion contributes negligibly.
+
+\subsection{Transfer Learning (B7)}
+
+\begin{table}[h]
+\centering
+\caption{Transfer fine-tuning (3 seeds).}
+\begin{tabular}{lc}
+\hline
+\textbf{Source $\rightarrow$ Target} & \textbf{WA (mean$\pm$std)} \\
+\hline
+FAU $\rightarrow$ C-BESD & \textbf{91.57$\pm$0.36\%} \\
+IEMOCAP $\rightarrow$ C-BESD & \textbf{91.17$\pm$1.04\%} \\
+C-BESD $\rightarrow$ FAU & 66.82$\pm$0.69\% \\
+IEMOCAP $\rightarrow$ FAU & 65.97$\pm$0.52\% \\
+C-BESD $\rightarrow$ IEMOCAP & 63.25$\pm$0.40\% \\
+FAU $\rightarrow$ IEMOCAP & 62.81$\pm$0.85\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Transfers targeting C-BESD achieve 91\%+ regardless of source. Transfers targeting FAU or IEMOCAP stall at 62--67\%. Target domain, not source domain, determines transfer success.
+
+\subsection{Confusion Matrix Analysis}
+
+Per-class patterns are corpus-dependent. C-BESD: all 6 classes $>$87\%, \textit{sad} and \textit{fear} at 97--100\%. FAU Aibo: \textit{neutral} 84--86\%, \textit{sad} 1--13\%, \textit{happy} 16--34\%. IEMOCAP: \textit{angry} 78--81\%, \textit{neutral} 28--29\%.
+
+\section{Discussion}
+
+\textbf{Distribution shift is the dominant bottleneck.} The 25pp C-BESD--FAU gap under identical architecture confirms corpus-level differences are the primary constraint. Fr\'{e}chet Distance: C-BESD vs FAU = 8.50, C-BESD vs IEMOCAP = 7.20. Speaking style creates greater divergence than speaker age.
+
+\textbf{Architectural choices are secondary.} Variations affect performance within $\pm$2--5pp versus the $\sim$25pp corpus gap. Adapter is neutral to harmful everywhere. Layer fusion contributes negligibly.
+
+\textbf{Transfer target asymmetry.} C-BESD as target achieves 91\%+ from any source, likely reflecting its high-quality acted recordings with clear inter-class boundaries.
+
+\textbf{Limitations.} WavLM-based only; three corpora; 3-seed design insufficient for formal significance testing; 24 of 27 B1 checkpoints not preserved.
+
+\section{Conclusion}
+
+We presented a systematic 192-experiment ablation study diagnosing children's SER. Distribution shift between corpora---not architecture---is the dominant bottleneck. The 25pp acted-spontaneous gap persists across all configurations. Transfer success depends primarily on target domain, not source. These results indicate future advances require addressing the distribution gap through better data and domain adaptation, not incremental architectural refinements.
+
+\end{document}

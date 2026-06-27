@@ -1,0 +1,27 @@
+{
+  "exp_name": "E4-11_s456",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 456,
+  "best_val_wa": 0.615686274509804,
+  "test_wa": 0.6465267727930536,
+  "test_uar": 0.5913955029151837,
+  "best_epoch": 17,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C3",
+  "output_dir": "checkpoints/b3/E4-11_s456",
+  "protocol": "ac_suite_2026-06"
+}

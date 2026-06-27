@@ -1,0 +1,27 @@
+{
+  "exp_name": "E6-07_s42",
+  "pooling_type": "mean",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6587692307692308,
+  "test_wa": 0.6801416347005016,
+  "test_uar": 0.3927234558465418,
+  "best_epoch": 9,
+  "reg_profile": "fau",
+  "weight_decay": 0.005,
+  "label_smoothing": 0.15,
+  "pooling_dropout": 0.3,
+  "grad_clip": 1.0,
+  "fusion_mode": "last",
+  "fusion_best_layer": null,
+  "use_adapter": true,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b6/E6-07_s42",
+  "protocol": "ac_suite_2026-06"
+}

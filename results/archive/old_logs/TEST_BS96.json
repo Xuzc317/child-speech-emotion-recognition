@@ -1,0 +1,22 @@
+{
+  "exp_name": "TEST_BS96",
+  "pooling_type": "mean",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.5932835820895522,
+  "test_wa": 0.5733558178752108,
+  "test_uar": 0.57264221158958,
+  "best_epoch": 3,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/b1/TEST_BS96",
+  "protocol": "ac_suite_2026-05"
+}

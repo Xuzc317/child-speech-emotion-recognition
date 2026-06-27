@@ -1,0 +1,50 @@
+% ============================================================
+% 6_Conclusion.tex
+% ============================================================
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a comprehensive distribution-driven experimental study of child
+speech emotion recognition, spanning 63 controlled comparisons across three
+datasets, three pooling strategies, and seven experiment series. Rather than
+claiming a single universally superior architecture, our results establish
+\textit{when} and \textit{why} specific design choices matter for children's
+SER.
+
+\textbf{This work demonstrates} that the statistical distribution gap between
+children's and adults' emotional speech---measurable via Fr\'{e}chet Distance
+in WavLM feature space---is the dominant factor governing SER accuracy, more
+so than architectural details. The FD--WA monotonic relationship holds across
+age, style, and enhancement dimensions, providing a quantitative diagnostic for
+anticipating deployment performance.
+
+\textbf{The decisive evidence} comes from four converging findings:
+(1)~Prosody-Guided pooling shows \textbf{population-dependent} efficacy: neutral
+on children's speech (SA$-$PG: $-0.13$pp on C-BESD, $+1.31$pp on FAU, both
+n.s.) but substantially harmful on adult speech ($+9.73$pp on IEMOCAP);
+(2)~augmenting children's data with adult speech causes catastrophic degradation
+($-30.6$pp on C-BESD, v5 protocol);
+(3)~zero-shot cross-corpus transfer uniformly fails ($<$34\% WA, all six
+directions measured); and
+(4)~learnable 12-layer weighted fusion with argmax at L9 (entropy 2.484) provides
+consistent mid-to-upper layer preference, with clean ablation pending B1
+experiments\footnote{Preliminary v5 ablation suggests the combined LayerFusion +
+ProsodyPooling contribution is $\sim$2.2pp over a mean-pooling baseline.}.
+
+\textbf{The broader implication} is that child SER cannot be treated as
+``adult SER with higher pitch.'' It requires corpus design, augmentation
+strategies, and architectural priors that are explicitly matched to the target
+pediatric population. Distribution awareness must be elevated from a
+post-hoc diagnostic to a first-class design constraint.
+
+\textbf{Boundary conditions:} Our conclusions are drawn from three datasets
+with limited linguistic and cultural diversity (English+Telugu bilingual, German, English).
+Extension to tonal languages, non-WEIRD child populations, and clinical
+pediatric speech (e.g., autism, speech disorders) requires further validation.
+The FD diagnostic, while effective within our WavLM-based framework, may
+produce different absolute values under alternative SSL backbones.
+
+We release all experimental configurations, model checkpoints, and evaluation
+code to facilitate reproducible child SER research and encourage the community
+to adopt distribution-aware evaluation protocols.

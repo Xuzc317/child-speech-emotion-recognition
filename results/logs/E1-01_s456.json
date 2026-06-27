@@ -1,0 +1,22 @@
+{
+  "exp_name": "E1-01_s456",
+  "pooling_type": "mean",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "seed": 456,
+  "best_val_wa": 0.7907542579075426,
+  "test_wa": 0.802013422818792,
+  "test_uar": 0.801111111111111,
+  "best_epoch": 52,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/b1/E1-01_s456",
+  "protocol": "ac_suite_2026-05"
+}

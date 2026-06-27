@@ -1,0 +1,1 @@
+ERROR: Log directory not found: results_remote/results/logs

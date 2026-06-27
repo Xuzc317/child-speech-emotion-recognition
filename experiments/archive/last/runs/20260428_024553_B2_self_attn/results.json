@@ -1,0 +1,8 @@
+{
+  "name": "B2_self_attn",
+  "timestamp": "20260428_024553",
+  "duration_minutes": 4.6,
+  "total_epochs": 3,
+  "best_val_acc": 0.864041,
+  "test_acc": 0.795104
+}

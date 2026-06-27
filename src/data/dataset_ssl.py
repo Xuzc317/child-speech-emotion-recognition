@@ -1,0 +1,80 @@
+"""基于 SSL 特征的数据集。
+
+使用预提取特征模式：
+  - 为所有 WAV 提前跑 WavLM，将 (T, 768) 帧级特征存为 .npy
+  - 训练时直接从 .npy 加载，不需要实时跑 SSL backbone
+  - 支持可选的韵律特征 (F0 + energy)
+"""
+
+import os
+import numpy as np
+import torch
+from torch.utils.data import Dataset
+
+
+class SSLFeatureDataset(Dataset):
+    """模式 A：从预提取的 .npy 特征文件加载。
+
+    Args:
+        data_path: .npy 文件路径，形状 (N, T, 768) float32
+        label_path: .npy 文件路径，形状 (N,) int64
+        prosody_path: 可选 .npy，形状 (N, T, 2) float32 (F0 + energy)
+    """
+
+    def __init__(self, data_path, label_path, prosody_path=None):
+        self.datas = np.load(data_path).astype(np.float32)
+        self.labels = np.load(label_path)
+        if prosody_path and os.path.exists(prosody_path):
+            self.prosody = np.load(prosody_path).astype(np.float32)
+        else:
+            self.prosody = None
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        x = self.datas[idx]  # (T, 768)
+        label = torch.tensor(self.labels[idx], dtype=torch.int64)
+        if self.prosody is not None:
+            p = self.prosody[idx]  # (T, 2)
+            return torch.from_numpy(x), label, torch.from_numpy(p)
+        return torch.from_numpy(x), label
+
+
+def collate_fn_ssl_features(batch):
+    """SSL 特征序列的 collate 函数。
+
+    支持可选的韵律特征（3 元组模式）。
+    """
+    has_prosody = len(batch[0]) == 3
+    features = [item[0] for item in batch]
+    labels = torch.stack([item[1] for item in batch])
+    prosody = [item[2] for item in batch] if has_prosody else None
+
+    max_t = max(f.shape[0] for f in features)
+    feat_dim = features[0].shape[1]
+
+    padded, masks = [], []
+    for f in features:
+        t = f.shape[0]
+        if t < max_t:
+            pad = torch.zeros(max_t - t, feat_dim)
+            padded.append(torch.cat([f, pad], dim=0))
+            mask = torch.cat([torch.ones(t, dtype=torch.bool), torch.zeros(max_t - t, dtype=torch.bool)])
+        else:
+            padded.append(f)
+            mask = torch.ones(t)
+        masks.append(mask)
+
+    result = [torch.stack(padded), labels, torch.stack(masks)]
+    if has_prosody:
+        # Pad prosody to same max_t
+        prosody_padded = []
+        for p in prosody:
+            if p.shape[0] < max_t:
+                pad = torch.zeros(max_t - p.shape[0], p.shape[1])
+                prosody_padded.append(torch.cat([p, pad], dim=0))
+            else:
+                prosody_padded.append(p)
+        result.append(torch.stack(prosody_padded))  # (B, T, 2)
+    return tuple(result)

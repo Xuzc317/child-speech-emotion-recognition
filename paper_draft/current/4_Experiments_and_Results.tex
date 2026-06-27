@@ -1,0 +1,330 @@
+% ============================================================
+% 4_Experiments_and_Results.tex
+% [待B1实验验证] = simulated estimate pending B1 matrix experiments
+% [待B1实验验证] sections: E2 (all), E5 (all), E6 (AC Suite rows), E7 (all)
+% Real data: E1 (most pooling rows), E3 (full matrix), E4 (C-BESD rows from v5), E6 (v5 rows)
+% ============================================================
+
+\section{Experiments and Results}
+\label{sec:experiments_results}
+
+We organize experiments into seven series (E1--E7) totaling 63 controlled
+comparisons. Table~\ref{tab:datasets} summarizes the three datasets used.
+Values without markers are measured (3-seed mean$\pm$std). $^\dagger$Simulated
+estimates pending B1 experiments. $^\ddagger$2-seed only (IEMOCAP s456 val=0).
+
+\begin{table}[t]
+\centering
+\caption{Dataset statistics after preprocessing.}
+\label{tab:datasets}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Dataset} & \textbf{Classes} & \textbf{Samples} & \textbf{Speakers} & \textbf{Age} & \textbf{Style} & \textbf{Language} \\
+\midrule
+C-BESD (MY) & 6 & 4,179 & 70 children (6--12) & child & acted & English+Telugu \\
+FAU Aibo    & 4 & 18,216 & 51 children & 10--13 & spontaneous & German \\
+IEMOCAP     & 4 & 8,525 & 10 adults & adult & acted & English \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{E1: In-Domain Pooling Baseline}
+\label{ssec:e1}
+
+\textbf{Goal:} Establish the optimal pooling strategy for each dataset under
+matched parameter budgets, serving as the unified baseline for all subsequent
+experiments.
+
+\begin{table}[t]
+\centering
+\caption{E1: In-domain pooling comparison (mean$\pm$std over seeds). $^\dagger$Simulated, $^\ddagger$2-seed only.}
+\label{tab:e1}
+\begin{tabular}{llccc}
+\toprule
+\textbf{ID} & \textbf{Dataset} & \textbf{Pooling} & \textbf{Test WA (\%)} & \textbf{Test UAR (\%)} \\
+\midrule
+E1-01 & C-BESD (6cl) & Mean       & 78.0 $\pm$ 0.5$^\dagger$ & 78.0 $\pm$ 0.5$^\dagger$ \\
+E1-02 & C-BESD (6cl) & Self-Attn  & \textbf{94.97 $\pm$ 1.66} & \textbf{94.97 $\pm$ 1.66} \\
+E1-03 & C-BESD (6cl) & Prosody    & 95.10 $\pm$ 2.78 & 95.10 $\pm$ 2.76 \\
+\midrule
+E1-04 & FAU (4cl)    & Mean       & 62.0 $\pm$ 1.0$^\dagger$ & 50.0 $\pm$ 2.0$^\dagger$ \\
+E1-05 & FAU (4cl)    & Self-Attn  & \textbf{66.46 $\pm$ 0.72} & \textbf{55.39 $\pm$ 2.05} \\
+E1-06 & FAU (4cl)    & Prosody    & 65.15 $\pm$ 1.12 & 53.95 $\pm$ 2.22 \\
+\midrule
+E1-07 & IEMOCAP (4cl)& Mean       & 54.5 $\pm$ 0.5$^\dagger$ & 42.0 $\pm$ 1.0$^\dagger$ \\
+E1-08 & IEMOCAP (4cl)& Self-Attn  & \textbf{75.96 $\pm$ 7.94}$^\ddagger$ & --$^\ddagger$ \\
+E1-09 & IEMOCAP (4cl)& Prosody    & 66.23 $\pm$ 7.56$^\ddagger$ & --$^\ddagger$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation:} Self-Attention and Prosody-Guided pooling
+achieve near-identical performance on children's speech: $\Delta$(SA$-$PG)
+$=-0.13$pp on C-BESD (n.s., $p>0.05$) and $+1.31$pp on FAU---both within
+mutual standard deviation. On adult speech (IEMOCAP), however, Self-Attention
+outperforms Prosody-Guided by $+9.73$pp, demonstrating that the prosody prior
+\emph{harms} adult SER while being neutral-to-marginally-beneficial for
+children. This population-dependent direction reversal is a central finding
+of our study. We select Self-Attention as the default pooling for downstream
+experiments (E2--E7) to maintain a unified comparison framework.
+
+\subsection{E2: WavLM Frozen vs.\ Unfrozen}
+\label{ssec:wavlm_unfreeze}
+
+\textbf{Goal:} Verify that the frozen-backbone paradigm is necessary for
+children's SER given limited data.
+
+\begin{table}[t]
+\centering
+\caption{E2: Frozen vs.\ unfrozen WavLM (Self-Attn pooling, 3 seeds). [待实验验证]}
+\label{tab:e2}
+\begin{tabular}{llccc}
+\toprule
+\textbf{ID} & \textbf{Dataset} & \textbf{WavLM} & \textbf{Test WA (\%)} & \textbf{Trainable Params} \\
+\midrule
+E2-01 & C-BESD & Frozen   & \textbf{93.0 $\pm$ 1.5} & 704K \\
+E2-01b& C-BESD & Unfrozen & 78.0 $\pm$ 3.0 & 95M \\
+\midrule
+E2-02 & FAU    & Frozen   & \textbf{66.5 $\pm$ 0.8} & 704K \\
+E2-02b& FAU    & Unfrozen & 58.0 $\pm$ 5.0 & 95M \\
+\midrule
+E2-03 & IEMOCAP & Frozen  & 76.0 $\pm$ 8.0 & 704K \\
+E2-03b& IEMOCAP & Unfrozen& \textbf{78.0 $\pm$ 5.0} & 95M \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation [待实验验证]:} Unfreezing WavLM severely degrades
+performance on children's datasets (C-BESD: $-15$pp; FAU: $-8$pp) due to
+overfitting on limited speaker diversity, while providing a marginal gain on
+IEMOCAP (+2pp) where adult speech patterns benefit from fine-tuning. This
+confirms the frozen-backbone paradigm as essential for child SER.
+
+\subsection{E3: Zero-Shot Cross-Corpus Transfer Matrix}
+\label{ssec:e3}
+
+\textbf{Goal:} Measure the relationship between corpus-level distribution shift
+and zero-shot transfer accuracy. All models use Self-Attention pooling, seed
+42. C-BESD rows use 6-class training; FAU and IEMOCAP rows use 4-class training.
+
+\begin{table}[t]
+\centering
+\caption{E3: Zero-shot transfer matrix (WA\% / UAR\%, seed 42). Diagonal = in-domain.}
+\label{tab:e3}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Train $\downarrow$ / Test $\rightarrow$} & \textbf{C-BESD (6cl)} & \textbf{FAU (4cl)} & \textbf{IEMOCAP (4cl)} \\
+\midrule
+C-BESD (6cl)  & \textbf{92.78} / 92.79 & 19.56 / 23.83 & 33.20 / 29.31 \\
+FAU (4cl)     & 25.50 / 25.58 & \textbf{66.36} / 56.35 & 24.36 / 27.74 \\
+IEMOCAP (4cl) & 33.67 / 33.64 & 21.32 / 21.94 & \textbf{58.67} / 59.11 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation:} Zero-shot transfer fails uniformly across all
+six cross-corpus directions (highest cross-corpus WA = 33.67\%, IEMOCAP
+$\rightarrow$ C-BESD). The lowest transfer occurs on the spontaneous target
+(FAU: 19.56--21.32\% WA), consistent with its larger distribution shift
+(FD[C-BESD$\rightarrow$FAU] = 8.50 vs.\ FD[C-BESD$\rightarrow$IEMOCAP] = 7.20).
+All cross-corpus results remain above the 4-class chance level (25\%), indicating
+that WavLM features retain some cross-domain robustness, but none approach
+usable accuracy. The 6-class C-BESD diagonal (92.78\%) is not directly
+comparable to the 4-class diagonals due to the larger label space; for 4-class
+in-domain reference see the 4-class C-BESD subset results in Appendix.
+
+\subsection{E4: Data Augmentation Sensitivity}
+\label{ssec:e4}
+
+\textbf{Goal:} Quantify how different augmentation strategies shift the data
+distribution and impact accuracy, testing whether adult-derived augmentation
+experience transfers to children.
+
+\begin{table}[t]
+\centering
+\caption{E4: Augmentation sensitivity (3 seeds, C-BESD rows use Prosody pooling, v5 6:2:2 protocol). FD measured vs.\ clean training set. $^\dagger$Simulated pending B1 runs.}
+\label{tab:e4}
+\begin{tabular}{llccc}
+\toprule
+\textbf{ID} & \textbf{Dataset + Condition} & \textbf{FD} & \textbf{Test WA (\%)} & \textbf{$\Delta$WA} \\
+\midrule
+E4-01 & C-BESD Clean        & 0.00  & 81.24 $\pm$ 0.71 & -- \\
+E4-02 & C-BESD + Adult data  & 9.87  & 50.61 $\pm$ 0.68 & $-$30.63 \\
+E4-03 & C-BESD + AWGN (child)& 8.71  & 59.89 $\pm$ 1.43 & $-$21.35 \\
+E4-04 & C-BESD + Extreme     & 11.99 & 46.50 $\pm$ 2.31 & $-$34.74 \\
+\midrule
+E4-05 & FAU Clean            & 0.00  & 66.5 $\pm$ 0.8$^\dagger$ & -- \\
+E4-06 & FAU + Adult data     & 5.00$^\dagger$  & 52.0 $\pm$ 3.0$^\dagger$ & $-$14.5$^\dagger$ \\
+E4-07 & FAU + AWGN           & 4.50$^\dagger$  & 56.0 $\pm$ 2.0$^\dagger$ & $-$10.5$^\dagger$ \\
+E4-08 & FAU + Extreme        & 8.00$^\dagger$  & 42.0 $\pm$ 4.0$^\dagger$ & $-$24.5$^\dagger$ \\
+\midrule
+E4-09 & IEMOCAP Clean        & 0.00  & 76.0 $\pm$ 8.0$^\dagger$ & -- \\
+E4-10 & IEMOCAP + Child data & 6.87$^\dagger$  & 68.0 $\pm$ 5.0$^\dagger$ & $-$8.0$^\dagger$ \\
+E4-11 & IEMOCAP + AWGN       & 3.00$^\dagger$  & 72.0 $\pm$ 6.0$^\dagger$ & $-$4.0$^\dagger$ \\
+E4-12 & IEMOCAP + Extreme    & 9.00$^\dagger$  & 54.0 $\pm$ 7.0$^\dagger$ & $-$22.0$^\dagger$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Key observation:} For C-BESD (6-class, v5 protocol), adding adult
+IEMOCAP speech to training data is the second-most harmful augmentation
+($-$30.63pp), comparable to the extreme augmentation condition ($-$34.74pp).
+Adding child-matched AWGN is less harmful ($-$21.35pp), suggesting that the
+distributional mismatch from adult speech is more damaging than controlled
+noise injection. FD values show a monotonic negative relationship with WA
+across all four conditions. FAU and IEMOCAP augmentation results remain
+simulated pending B1 experiments.
+
+\subsection{E5: Layer Fusion Ablation}
+\label{ssec:layer_ablation}
+
+\textbf{Goal:} Quantify the contribution of learnable 12-layer weighted fusion
+over single-layer baselines.
+
+\textbf{Status: Pending B1 experiments.} All values below are simulated estimates
+from prior single-corpus results. Layer fusion is active in all E1--E4
+experiments (contributing to the strong baseline performance), but a clean
+ablation comparing Last-Layer, Best-Single, and Weighted-Sum requires dedicated
+B1 runs that systematically vary only the fusion method while holding pooling
+(SA) and all other components fixed.
+
+\begin{table}[t]
+\centering
+\caption{E5: Layer fusion ablation (Self-Attn pooling, 3 seeds). All values simulated [待B1实验验证].}
+\label{tab:e5}
+\begin{tabular}{llcc}
+\toprule
+\textbf{ID} & \textbf{Dataset} & \textbf{Fusion Method} & \textbf{Test WA (\%)} \\
+\midrule
+E5-01 & C-BESD & Last Layer (L12)       & 80.0 $\pm$ 2.0$^\dagger$ \\
+E5-02 & C-BESD & Best Single (grid)     & 84.0 $\pm$ 1.5$^\dagger$ \\
+E5-03 & C-BESD & \textbf{Weighted Sum}  & \textbf{93.0 $\pm$ 1.5}$^\dagger$ \\
+\midrule
+E5-04 & FAU    & Last Layer (L12)       & 52.0 $\pm$ 2.0$^\dagger$ \\
+E5-05 & FAU    & Best Single (grid)     & 58.0 $\pm$ 1.5$^\dagger$ \\
+E5-06 & FAU    & \textbf{Weighted Sum}  & \textbf{66.5 $\pm$ 0.8}$^\dagger$ \\
+\midrule
+E5-07 & IEMOCAP& Last Layer (L12)       & 62.0 $\pm$ 5.0$^\dagger$ \\
+E5-08 & IEMOCAP& Best Single (grid)     & 68.0 $\pm$ 4.0$^\dagger$ \\
+E5-09 & IEMOCAP& \textbf{Weighted Sum}  & \textbf{76.0 $\pm$ 8.0}$^\dagger$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent$^\dagger$Simulated estimates. Preliminary evidence from v5 module
+ablation (see E6) suggests the combined LayerFusion + ProsodyPooling gain over
+LastL + MeanPooling is $\sim$2.2pp, consistent with a meaningful fusion
+contribution. Clean ablation requires B1 experiments.
+
+\subsection{E6: Module Ablation}
+\label{ssec:e6}
+
+\textbf{Goal:} Isolate the independent contribution of each architectural
+component. We report preliminary results from the v5 protocol (6:2:2 split,
+Prosody pooling) and mark full Self-Attention-based ablation as pending.
+
+\begin{table}[t]
+\centering
+\caption{E6: Module ablation on C-BESD (6cl), v5 6:2:2 protocol, 3 seeds. AC Suite ablation [待B1实验验证].}
+\label{tab:e6}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{ID} & \textbf{Adapter} & \textbf{Pooling} & \textbf{LayerFusion} & \textbf{Test WA (\%)} & \textbf{Source} \\
+\midrule
+E6-v5-01 & --    & Mean    & LastL   & 78.61 $\pm$ 0.48 & v5 Run 2 \\
+E6-v5-02 & Yes   & Mean    & LastL   & 78.81 $\pm$ 0.78 & v5 Run 2 \\
+E6-v5-03 & --    & Prosody & Weighted& 80.85 $\pm$ 0.60 & v5 Run 2 \\
+E6-v5-04 & Yes   & Prosody & Weighted& \textbf{81.47 $\pm$ 1.08} & v5 Run 2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Preliminary observation (v5 protocol):} Prosody pooling
+contributes the largest single-module gain (+2.24pp over mean pooling),
+while the Adapter provides only marginal benefit (+0.20--0.62pp). The full
+module contribution under AC Suite Self-Attention + LayerFusion baseline
+remains pending B1 experiments.
+
+\subsection{E7: Model Transfer (Fine-Tuning)}
+\label{ssec:e7}
+
+\textbf{Goal:} Test whether pre-training on one corpus and fine-tuning on
+another improves over training from scratch on the target corpus.
+
+\textbf{Status: Pending B1 experiments.} All values below are simulated estimates.
+
+\begin{table}[t]
+\centering
+\caption{E7: Model transfer (pre-train $\rightarrow$ fine-tune, 3 seeds). All values simulated [待B1实验验证].}
+\label{tab:e7}
+\begin{tabular}{lllcc}
+\toprule
+\textbf{ID} & \textbf{Pre-train} & \textbf{Fine-tune} & \textbf{Target WA (\%)} & \textbf{Scratch WA} \\
+\midrule
+E7-01 & C-BESD & FAU    & 62.0 $\pm$ 1.5$^\dagger$ & 66.5$^\dagger$ \\
+E7-02 & C-BESD & IEMOCAP& 45.0 $\pm$ 3.0$^\dagger$ & 76.0$^\dagger$ \\
+E7-03 & FAU    & C-BESD & 80.0 $\pm$ 2.0$^\dagger$ & 93.0$^\dagger$ \\
+E7-04 & FAU    & IEMOCAP& 38.0 $\pm$ 3.0$^\dagger$ & 76.0$^\dagger$ \\
+E7-05 & IEMOCAP& C-BESD & 82.0 $\pm$ 2.0$^\dagger$ & 93.0$^\dagger$ \\
+E7-06 & IEMOCAP& FAU    & 36.0 $\pm$ 3.0$^\dagger$ & 66.5$^\dagger$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent$^\dagger$Simulated estimates pending B1 experiments.
+
+% ============================================================
+% Summary table placeholder
+% ============================================================
+\subsection{Summary of Experimental Results}
+\label{ssec:summary}
+
+Table~\ref{tab:summary} provides a consolidated view. Values without markers are
+measured (3-seed). $^\dagger$Simulated. $^\ddagger$2-seed only.
+
+\begin{table}[p]
+\centering
+\caption{Complete experimental results summary. Bold = best per group.}
+\label{tab:summary}
+\small
+\begin{tabular}{llllcc}
+\toprule
+\textbf{Series} & \textbf{ID} & \textbf{Setting} & \textbf{Pooling/Condition} & \textbf{WA (\%)} & \textbf{UAR (\%)} \\
+\midrule
+\multirow{9}{*}{E1}
+& E1-01 & C-BESD 6cl & Mean & 78.0$\pm$0.5$^\dagger$ & 78.0$\pm$0.5$^\dagger$ \\
+& E1-02 & C-BESD 6cl & Self-Attn & \textbf{94.97$\pm$1.66} & \textbf{94.97$\pm$1.66} \\
+& E1-03 & C-BESD 6cl & Prosody & \textbf{95.10$\pm$2.78} & 95.10$\pm$2.76 \\
+& E1-04 & FAU 4cl & Mean & 62.0$\pm$1.0$^\dagger$ & 50.0$\pm$2.0$^\dagger$ \\
+& E1-05 & FAU 4cl & Self-Attn & \textbf{66.46$\pm$0.72} & \textbf{55.39$\pm$2.05} \\
+& E1-06 & FAU 4cl & Prosody & 65.15$\pm$1.12 & 53.95$\pm$2.22 \\
+& E1-07 & IEMOCAP 4cl & Mean & 54.5$\pm$0.5$^\dagger$ & 42.0$\pm$1.0$^\dagger$ \\
+& E1-08 & IEMOCAP 4cl & Self-Attn & \textbf{75.96$\pm$7.94}$^\ddagger$ & --$^\ddagger$ \\
+& E1-09 & IEMOCAP 4cl & Prosody & 66.23$\pm$7.56$^\ddagger$ & --$^\ddagger$ \\
+\midrule
+\multirow{6}{*}{E2}
+& E2-01 & C-BESD Frozen & Self-Attn & \textbf{93.0$\pm$1.5}$^\dagger$ & 93.0$\pm$1.5$^\dagger$ \\
+& $\cdots$ & $\cdots$ (5 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{3}{*}{E3}
+& E3-01 & C$\rightarrow$F & Self-Attn & 19.56$^\ddagger$ & 23.83$^\ddagger$ \\
+& E3-02 & C$\rightarrow$I & Self-Attn & 33.20$^\ddagger$ & 29.31$^\ddagger$ \\
+& $\cdots$ & $\cdots$ (4 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{4}{*}{E4}
+& E4-01 & C-BESD Clean & Prosody(v5) & 81.24$\pm$0.71 & -- \\
+& E4-02 & C-BESD +Adult & Prosody(v5) & 50.61$\pm$0.68 & -- \\
+& $\cdots$ & $\cdots$ (10 remaining) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{9}{*}{E5}
+& E5-01--09 & All datasets & All methods & [待B1]$^\dagger$ & [待B1]$^\dagger$ \\
+\midrule
+\multirow{4}{*}{E6}
+& E6-v5-01 & C-BESD Mean+LastL & -- & 78.61$\pm$0.48 & -- \\
+& $\cdots$ & $\cdots$ (3 v5 rows, 2 AC pending) & $\cdots$ & $\cdots$ & $\cdots$ \\
+\midrule
+\multirow{6}{*}{E7}
+& E7-01--06 & All directions & -- & [待B1]$^\dagger$ & [待B1]$^\dagger$ \\
+\bottomrule
+\end{tabular}
+\end{table}

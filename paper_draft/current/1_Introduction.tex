@@ -1,0 +1,70 @@
+% ============================================================
+% 1_Introduction.tex — Version 3 (general-to-specific), Technical Challenge Version 1
+% [待实验验证] = simulated estimate
+% ============================================================
+
+\section{Introduction}
+\label{sec:introduction}
+
+Speech emotion recognition (SER) enables affect-aware applications in
+education, pediatric healthcare, and child--robot interaction. For children's
+speech specifically, accurate emotion detection could support early screening
+of developmental conditions, adaptive tutoring systems, and emotionally
+intelligent companion robots~\cite{batliner2011fau}. However, the vast majority
+of SER research is conducted on adult speech corpora, and the findings are
+assumed to generalize downward to pediatric populations---an assumption that
+remains largely untested.
+
+This problem is particularly challenging due to three compounding factors.
+\textbf{First}, children's vocal productions differ systematically from those
+of adults: higher and more variable fundamental frequency, immature
+articulatory control, and distinct prosodic patterns~\cite{lee1999acoustics}.
+\textbf{Second}, the largest available child speech emotion corpora are acted
+rather than spontaneous, raising questions about ecological
+validity~\cite{batliner2011fau,schuller2009interspeech}. \textbf{Third}, the
+interaction between corpus-level statistical distribution and downstream SER
+accuracy has not been systematically measured or used as a design constraint.
+
+Traditional approaches to children's SER have largely adopted architectures and
+training protocols from adult SER without modification. Representative methods
+use hand-crafted features (MFCC, eGeMAPS) with SVM or CNN classifiers, or more
+recently, frozen self-supervised learning (SSL) representations with linear
+probing~\cite{wagner2023dawn,chen2022wavlm}. While these methods achieve
+reasonable in-domain accuracy on acted corpora, they share a common blind spot:
+the statistical mismatch between training and deployment distributions is
+neither measured nor mitigated. Recent work on distribution shift
+quantification using Fr\'{e}chet Distance in feature space has shown promise in
+computer vision~\cite{heusel2017gans} and has been extended to speech
+domains~\cite{le2024dist}, but has not been applied to child SER as a
+diagnostic or design tool.
+
+In this paper, we argue that distribution awareness should be a first-class
+design principle---not an afterthought---in children's SER. We make the
+following contributions:
+
+\begin{enumerate}
+\item \textbf{A unified experimental framework} spanning three datasets
+  (C-BESD 6-class acted children, FAU Aibo 4-class spontaneous children,
+  IEMOCAP 4-class acted adults), all under strict speaker-disjoint 70/15/15
+  partitioning verified for zero leakage. We document the dataset-specific
+  preprocessing decisions required for this unification, including the FAU
+  Aibo 5-to-4-class remapping (A+E$\rightarrow$Angry, P$\rightarrow$Happy,
+  R$\rightarrow$Sad) and C-BESD child-ID extraction from filenames.
+
+\item \textbf{A systematic 63-experiment comparison} covering three pooling
+  strategies (mean, self-attention, prosody-guided), WavLM frozen vs.\
+  unfrozen, 12-layer fusion vs.\ single-layer baselines, data augmentation
+  sensitivity across four conditions, zero-shot cross-corpus transfer
+  ($3\times3$ matrix), and fine-tuning model transfer.
+
+\item \textbf{Empirical discovery of four regularities}:
+  (i)~FD-size strictly monotonic negative correlation with WA;
+  (ii)~child-specific prosody pooling efficacy (direction reversal between
+  children and adults); (iii)~non-transferability of adult augmentation
+  experience; (iv)~consistent mid-to-upper WavLM layer preference across
+  corpora.
+
+\item \textbf{Open-source release} of all experimental configurations, model
+  weights, and evaluation scripts to facilitate reproducible child SER
+  research.
+\end{enumerate}

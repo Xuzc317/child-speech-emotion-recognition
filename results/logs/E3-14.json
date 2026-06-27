@@ -1,0 +1,27 @@
+{
+  "exp_name": "E3-14",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "c-besd-4cl"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6044117647058823,
+  "test_wa": 0.34676258992805753,
+  "test_uar": 0.3465854360727985,
+  "best_epoch": 12,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b2/E3-14",
+  "protocol": "ac_suite_2026-06"
+}

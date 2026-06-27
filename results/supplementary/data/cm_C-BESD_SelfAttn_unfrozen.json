@@ -1,0 +1,73 @@
+{
+  "experiment": "E2-01_s456",
+  "phase": "B5",
+  "label": "C-BESD_SelfAttn_unfrozen",
+  "n_classes": 6,
+  "classes": [
+    "angry",
+    "disgust",
+    "fear",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "confusion_matrix": [
+    [
+      96,
+      2,
+      0,
+      1,
+      1,
+      0
+    ],
+    [
+      2,
+      96,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      97,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      1,
+      90,
+      3
+    ],
+    [
+      0,
+      2,
+      0,
+      0,
+      1,
+      97
+    ]
+  ],
+  "per_class_accuracy": {
+    "angry": 0.96,
+    "disgust": 0.9696969696969697,
+    "fear": 1.0,
+    "happy": 0.9797979797979798,
+    "neutral": 0.9473684210526315,
+    "sad": 0.97
+  },
+  "overall_wa": 0.9713322091062394
+}

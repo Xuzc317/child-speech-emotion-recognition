@@ -1,0 +1,36 @@
+{
+  "checkpoint": "checkpoints/exp4_zero_shot_fau/best_model.pt",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "fau-aibo"
+  ],
+  "pooling_type": "prosody_guided",
+  "confusion_matrix": [
+    [
+      1695,
+      703,
+      174,
+      187
+    ],
+    [
+      2973,
+      1058,
+      295,
+      164
+    ],
+    [
+      6263,
+      3363,
+      664,
+      677
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "wavlm_A1_mean": {
+    "best_val_wa": 0.8163,
+    "best_val_uar": 0.8161,
+    "test_wa": 0.7850,
+    "test_uar": 0.7856
+  },
+  "wavlm_A3_prosody": {
+    "best_val_wa": 0.8465,
+    "best_val_uar": 0.8465,
+    "test_wa": 0.8026,
+    "test_uar": 0.8028
+  },
+  "wav2vec2_A1_mean": {
+    "best_val_wa": 0.5616,
+    "best_val_uar": 0.5620,
+    "test_wa": 0.5605,
+    "test_uar": 0.5608
+  },
+  "wav2vec2_A3_prosody": {
+    "best_val_wa": 0.5581,
+    "best_val_uar": 0.5582,
+    "test_wa": 0.5558,
+    "test_uar": 0.5558
+  }
+}

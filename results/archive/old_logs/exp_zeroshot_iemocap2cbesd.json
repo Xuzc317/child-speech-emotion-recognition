@@ -1,0 +1,14 @@
+{
+  "checkpoint": "/root/checkpoints/exp3/best_model.pt",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "seed": 42,
+  "test_wa": 0.3366906474820144,
+  "test_uar": 0.33642386066923313,
+  "test_n": 2780,
+  "type": "zero_shot"
+}

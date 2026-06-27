@@ -1,0 +1,40 @@
+{
+  "checkpoint": "/root/checkpoints/exp2/best_model.pt",
+  "dataset": [
+    "iemocap"
+  ],
+  "split": "test",
+  "confusion_matrix": [
+    [
+      435,
+      204,
+      118,
+      72
+    ],
+    [
+      262,
+      258,
+      72,
+      132
+    ],
+    [
+      210,
+      121,
+      91,
+      78
+    ],
+    [
+      79,
+      50,
+      122,
+      67
+    ]
+  ],
+  "classes": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "total": 2371
+}

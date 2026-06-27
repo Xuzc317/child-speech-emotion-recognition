@@ -1,0 +1,27 @@
+{
+  "exp_name": "E6-02_s123",
+  "pooling_type": "mean",
+  "train_data": [
+    "c-besd"
+  ],
+  "test_data": [
+    "c-besd"
+  ],
+  "seed": 123,
+  "best_val_wa": 0.8824626865671642,
+  "test_wa": 0.8263069139966274,
+  "test_uar": 0.8261651603756867,
+  "best_epoch": 55,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "last",
+  "fusion_best_layer": null,
+  "use_adapter": true,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b6/E6-02_s123",
+  "protocol": "ac_suite_2026-06"
+}

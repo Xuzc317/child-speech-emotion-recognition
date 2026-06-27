@@ -1,0 +1,46 @@
+{
+  "protocol": "ac_suite_2026-05",
+  "seeds_target": [
+    42,
+    123,
+    456
+  ],
+  "exp5_fau_indomain": {
+    "n_seeds": 1,
+    "seeds": [
+      42
+    ],
+    "test_wa_mean": 0.6636175863086456,
+    "test_wa_std": 0.0,
+    "test_uar_mean": 0.5635103471463822,
+    "test_uar_std": 0.0,
+    "runs": [
+      {
+        "exp_name": "exp5_fau_indomain",
+        "seed": 42,
+        "test_wa": 0.6636175863086456,
+        "test_uar": 0.5635103471463822,
+        "best_epoch": 3
+      }
+    ]
+  },
+  "exp5b_self_attention_fau": {
+    "n_seeds": 1,
+    "seeds": [
+      42
+    ],
+    "test_wa_mean": 0.6618471525523754,
+    "test_wa_std": 0.0,
+    "test_uar_mean": 0.5823169398212319,
+    "test_uar_std": 0.0,
+    "runs": [
+      {
+        "exp_name": "exp5b_self_attention_fau",
+        "seed": 42,
+        "test_wa": 0.6618471525523754,
+        "test_uar": 0.5823169398212319,
+        "best_epoch": 2
+      }
+    ]
+  }
+}

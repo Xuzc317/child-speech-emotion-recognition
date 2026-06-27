@@ -1,0 +1,11 @@
+{
+  "experiment": "A2b_rand_init",
+  "use_adapter": true,
+  "use_prosody": false,
+  "stat_prior": false,
+  "finetune": false,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "name": "A2b_rand_init",
+  "timestamp": "20260428_024112"
+}

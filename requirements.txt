@@ -1,0 +1,24 @@
+# Core
+torch>=2.0
+torchaudio>=2.0
+numpy
+scipy
+scikit-learn
+matplotlib
+pandas
+seaborn
+tqdm
+
+# Audio
+librosa
+parselmouth
+soundfile
+
+# SSL Models (WavLM / HuBERT / wav2vec2)
+transformers>=4.30
+
+# Cloud (AutoDL SSH)
+paramiko
+
+# Optional: emotion2vec via FunASR
+# funasr

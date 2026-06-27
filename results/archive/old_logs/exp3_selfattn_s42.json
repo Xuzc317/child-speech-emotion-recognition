@@ -1,0 +1,22 @@
+{
+  "exp_name": "exp3_selfattn_s42",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.5714285714285714,
+  "test_wa": 0.6802346041055718,
+  "test_uar": 0.670723731325501,
+  "best_epoch": 6,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/exp3_selfattn_s42",
+  "protocol": "ac_suite_2026-05"
+}

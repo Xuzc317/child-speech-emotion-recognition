@@ -1,0 +1,11 @@
+{
+  "experiment": "B2_self_attn",
+  "use_adapter": true,
+  "use_prosody": false,
+  "stat_prior": false,
+  "finetune": false,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "name": "B2_self_attn",
+  "timestamp": "20260428_024553"
+}

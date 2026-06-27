@@ -1,0 +1,142 @@
+# conditions_of_record.csv — 实验条件权威溯源
+# Protocol: ac_suite_2026-06-validated | Generated: 2026-06-22
+# Sources: launch_b1.sh ~ launch_b7.sh + src/train.py argparse defaults
+#
+# RULE: 6 fields confirmed as CODE DEFAULTS in logs → must extract from launch script.
+#   If launch script passes the flag → use script value (authoritative).
+#   If launch script does NOT pass → code default applies (from src/train.py, verified 2026-06-22).
+#   NEVER trust log/manifest values for these 6 fields.
+#
+# Code defaults (src/train.py, verified 2026-06-22):
+#   augment_condition   = 'C1'        (L308, choices: C1/C2/C3/C4)
+#   fusion_mode         = 'weighted'  (L282, choices: last/best_single/weighted)
+#   use_adapter         = False       (L287, action='store_true')
+#   unfreeze_ssl        = False       (L289, action='store_true')
+#   reg_profile         = 'default'   (L303, choices: default/fau)
+#   fusion_best_layer   = 8           (L285)
+#
+# Reliable fields (can use logs/manifest):
+#   corpus, pooling, seeds — verified consistent across launch scripts & manifest
+#
+# B7 special: source domain from --load_checkpoint path, NOT from --train_data.
+#   Source marked "仅脚本可证" (only provable via script).
+#
+experiment_id,phase,train_corpus,test_corpus,pooling,fusion_mode,use_adapter,unfreeze_ssl,augment_condition,reg_profile,fusion_best_layer,seeds,source_field,notes
+# ===== B1: E1 Pooling × Dataset Baseline (frozen) — launch_b1.sh =====
+# Script passes: pool, reg. Does NOT pass: fusion, adapter, unfreeze, aug, fusion_layer.
+E1-01,B1,c-besd,c-besd,mean,weighted,False,False,C1,default,8,42/123/456,launch_b1.sh:L57 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+E1-02,B1,c-besd,c-besd,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b1.sh:L58 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+E1-03,B1,c-besd,c-besd,prosody_guided,weighted,False,False,C1,default,8,42/123/456,launch_b1.sh:L59 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+E1-04,B1,fau-aibo,fau-aibo,mean,weighted,False,False,C1,fau,8,42/123/456,launch_b1.sh:L62 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+E1-05,B1,fau-aibo,fau-aibo,self_attention,weighted,False,False,C1,fau,8,42/123/456,launch_b1.sh:L63 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+E1-06,B1,fau-aibo,fau-aibo,prosody_guided,weighted,False,False,C1,fau,8,42/123/456,launch_b1.sh:L64 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+E1-07,B1,iemocap,iemocap,mean,weighted,False,False,C1,default,8,42/123/456,launch_b1.sh:L67 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+E1-08,B1,iemocap,iemocap,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b1.sh:L68 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,⚠ AGGREGATION INVALID (跨seed配置不一致; s42 old protocol)
+E1-09,B1,iemocap,iemocap,prosody_guided,weighted,False,False,C1,default,8,42/123/456,launch_b1.sh:L69 | explicit: pool/reg; default: fusion/adapter/unfreeze/aug/fusion_layer,
+# ===== B2: E3 Zero-shot Transfer — launch_b2.sh =====
+# Script passes: pool, seed=42. Does NOT pass: fusion, adapter, unfreeze, aug, reg, fusion_layer.
+# reg_profile: B2 NEVER passes --reg_profile → all use code default 'default'
+# (even FAU-target experiments, which normally use 'fau')
+E3-01,B2,c-besd-4cl,fau-aibo,mean,weighted,False,False,C1,default,8,42,launch_b2.sh:L34 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=C-BESD(4cl); ⚠ reg=default(非fau): run_zs()未传--reg_profile
+E3-02,B2,c-besd-4cl,fau-aibo,self_attention,weighted,False,False,C1,default,8,42,launch_b2.sh:L35 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=C-BESD(4cl); ⚠ reg=default(非fau): run_zs()未传--reg_profile
+E3-03,B2,c-besd-4cl,fau-aibo,prosody_guided,weighted,False,False,C1,default,8,42,launch_b2.sh:L36 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=C-BESD(4cl); ⚠ reg=default(非fau): run_zs()未传--reg_profile
+E3-04,B2,c-besd-4cl,iemocap,mean,weighted,False,False,C1,default,8,42,launch_b2.sh:L39 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=C-BESD(4cl)
+E3-05,B2,c-besd-4cl,iemocap,self_attention,weighted,False,False,C1,default,8,42,launch_b2.sh:L40 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=C-BESD(4cl)
+E3-06,B2,c-besd-4cl,iemocap,prosody_guided,weighted,False,False,C1,default,8,42,launch_b2.sh:L41 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=C-BESD(4cl)
+E3-07,B2,fau-aibo,c-besd-4cl,mean,weighted,False,False,C1,default,8,42,launch_b2.sh:L44 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=FAU
+E3-08,B2,fau-aibo,c-besd-4cl,self_attention,weighted,False,False,C1,default,8,42,launch_b2.sh:L45 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=FAU
+E3-09,B2,fau-aibo,c-besd-4cl,prosody_guided,weighted,False,False,C1,default,8,42,launch_b2.sh:L46 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=FAU
+E3-10,B2,fau-aibo,iemocap,mean,weighted,False,False,C1,default,8,42,launch_b2.sh:L49 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=FAU
+E3-11,B2,fau-aibo,iemocap,self_attention,weighted,False,False,C1,default,8,42,launch_b2.sh:L50 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=FAU
+E3-12,B2,fau-aibo,iemocap,prosody_guided,weighted,False,False,C1,default,8,42,launch_b2.sh:L51 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=FAU
+E3-13,B2,iemocap,c-besd-4cl,mean,weighted,False,False,C1,default,8,42,launch_b2.sh:L54 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=IEMOCAP
+E3-14,B2,iemocap,c-besd-4cl,self_attention,weighted,False,False,C1,default,8,42,launch_b2.sh:L55 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=IEMOCAP
+E3-15,B2,iemocap,c-besd-4cl,prosody_guided,weighted,False,False,C1,default,8,42,launch_b2.sh:L56 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=IEMOCAP
+E3-16,B2,iemocap,fau-aibo,mean,weighted,False,False,C1,default,8,42,launch_b2.sh:L59 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=IEMOCAP; ⚠ reg=default(非fau): run_zs()未传--reg_profile
+E3-17,B2,iemocap,fau-aibo,self_attention,weighted,False,False,C1,default,8,42,launch_b2.sh:L60 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=IEMOCAP; ⚠ reg=default(非fau): run_zs()未传--reg_profile
+E3-18,B2,iemocap,fau-aibo,prosody_guided,weighted,False,False,C1,default,8,42,launch_b2.sh:L61 | explicit: pool; default: reg/fusion/adapter/unfreeze/aug/fusion_layer,Zero-shot; src=IEMOCAP; ⚠ reg=default(非fau): run_zs()未传--reg_profile
+# ===== B3: E4 Data Augmentation Sensitivity — launch_b3.sh =====
+# Script passes: pool, aug, reg. Does NOT pass: fusion, adapter, unfreeze, fusion_layer.
+E4-01,B3,c-besd,c-besd,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b3.sh:L53 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-02,B3,c-besd,c-besd,self_attention,weighted,False,False,C2,default,8,42/123/456,launch_b3.sh:L54 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-03,B3,c-besd,c-besd,self_attention,weighted,False,False,C3,default,8,42/123/456,launch_b3.sh:L55 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-04,B3,c-besd,c-besd,self_attention,weighted,False,False,C4,default,8,42/123/456,launch_b3.sh:L56 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,⚠ AGGREGATION INVALID (跨seed配置不一致)
+E4-05,B3,fau-aibo,fau-aibo,self_attention,weighted,False,False,C1,fau,8,42/123/456,launch_b3.sh:L61 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-06,B3,fau-aibo,fau-aibo,self_attention,weighted,False,False,C2,fau,8,42/123/456,launch_b3.sh:L62 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-07,B3,fau-aibo,fau-aibo,self_attention,weighted,False,False,C3,fau,8,42/123/456,launch_b3.sh:L63 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-08,B3,fau-aibo,fau-aibo,self_attention,weighted,False,False,C4,fau,8,42/123/456,launch_b3.sh:L64 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-09,B3,iemocap,iemocap,prosody_guided,weighted,False,False,C1,default,8,42/123/456,launch_b3.sh:L70 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-10,B3,iemocap,iemocap,prosody_guided,weighted,False,False,C2,default,8,42/123/456,launch_b3.sh:L71 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,⚠ AGGREGATION INVALID (跨seed配置不一致)
+E4-11,B3,iemocap,iemocap,prosody_guided,weighted,False,False,C3,default,8,42/123/456,launch_b3.sh:L72 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+E4-12,B3,iemocap,iemocap,prosody_guided,weighted,False,False,C4,default,8,42/123/456,launch_b3.sh:L73 | explicit: pool/aug/reg; default: fusion/adapter/unfreeze/fusion_layer,
+# ===== B4: E5 LayerFusion Ablation — launch_b4.sh + launch_b4_resume.sh =====
+# Script passes: pool, fusion, fusion_layer, reg. Does NOT pass: aug, adapter, unfreeze.
+E5-01,B4,c-besd,c-besd,self_attention,last,False,False,C1,default,8,42/123/456,launch_b4.sh:L71 | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,
+E5-02_L1,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,1,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L2,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,2,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L3,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,3,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L4,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,4,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L5,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,5,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L6,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,6,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L7,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,7,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L8,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,8,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L9,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,9,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L10,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,10,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L11,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,11,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-02_L12,B4,c-besd,c-besd,self_attention,best_single,False,False,C1,default,12,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-03,B4,c-besd,c-besd,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b4.sh:L72 | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,
+E5-04,B4,fau-aibo,fau-aibo,self_attention,last,False,False,C1,fau,8,42/123/456,launch_b4.sh:L77 | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,
+E5-05_L1,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,1,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L2,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,2,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L3,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,3,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L4,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,4,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L5,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,5,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L6,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,6,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L7,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,7,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L8,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,8,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L9,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,9,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L10,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,10,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L11,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,11,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-05_L12,B4,fau-aibo,fau-aibo,self_attention,best_single,False,False,C1,fau,12,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-06,B4,fau-aibo,fau-aibo,self_attention,weighted,False,False,C1,fau,8,42/123/456,launch_b4.sh:L79 | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,
+E5-07,B4,iemocap,iemocap,prosody_guided,last,False,False,C1,default,8,42/123/456,launch_b4_resume.sh:L44-48 | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,
+E5-08_L1,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,1,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L2,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,2,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L3,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,3,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L4,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,4,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L5,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,5,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L6,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,6,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L7,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,7,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L8,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,8,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L9,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,9,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L10,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,10,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L11,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,11,42,launch_b4.sh:L53(layer_scan) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-08_L12,B4,iemocap,iemocap,prosody_guided,best_single,False,False,C1,default,12,42,launch_b4_resume.sh:L32 | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,Grid search seed=42
+E5-09,B4,iemocap,iemocap,prosody_guided,weighted,False,False,C1,default,8,42/123/456,launch_b4_resume.sh:L61-65 | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,
+# ===== B5: E2 WavLM Unfreeze — launch_b5.sh =====
+# Script passes: pool, reg, unfreeze. Does NOT pass: fusion, adapter, aug, fusion_layer.
+E2-01,B5,c-besd,c-besd,self_attention,weighted,False,True,C1,default,8,42/123/456,launch_b5.sh:L46 | explicit: pool/reg/unfreeze; default: fusion/adapter/aug/fusion_layer,
+E2-02,B5,fau-aibo,fau-aibo,self_attention,weighted,False,True,C1,fau,8,42/123/456,launch_b5.sh:L47 | explicit: pool/reg/unfreeze; default: fusion/adapter/aug/fusion_layer,
+E2-03,B5,iemocap,iemocap,prosody_guided,weighted,False,True,C1,default,8,42/123/456,launch_b5.sh:L48 | explicit: pool/reg/unfreeze; default: fusion/adapter/aug/fusion_layer,
+# ===== B6: E6 Module Ablation — launch_b6.sh + launch_b6_fill.sh =====
+# Script passes: pool, fusion, adapter (varies), reg. Does NOT pass: aug, unfreeze.
+E6-01,B6,c-besd,c-besd,mean,last,False,False,C1,default,8,42/123/456,launch_b6.sh:L129(run_minimal) | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,极简基线: Mean+Last
+E6-02,B6,c-besd,c-besd,mean,last,True,False,C1,default,8,42/123/456,launch_b6.sh:L130(run_adapter_only) | explicit: pool/fusion/adapter/reg; default: aug/unfreeze,+Adapter
+E6-03,B6,c-besd,c-besd,self_attention,last,False,False,C1,default,8,42/123/456,launch_b6.sh:L131(run_pooling_only) | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,+SelfAttn Pooling
+E6-04,B6,c-besd,c-besd,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b6.sh:L132(run_fusion_only) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,+WeightedFusion
+E6-05,B6,c-besd,c-besd,self_attention,weighted,True,False,C1,default,8,42/123/456,launch_b6.sh:L133(run_full) | explicit: pool/fusion/fusion_layer/adapter/reg; default: aug/unfreeze,全栈 +Adapter
+E6-06,B6,fau-aibo,fau-aibo,mean,last,False,False,C1,fau,8,42/123/456,launch_b6.sh:L138(run_minimal) | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,极简基线: Mean+Last
+E6-07,B6,fau-aibo,fau-aibo,mean,last,True,False,C1,fau,8,42/123/456,launch_b6.sh:L139(run_adapter_only) | explicit: pool/fusion/adapter/reg; default: aug/unfreeze,+Adapter
+E6-08,B6,fau-aibo,fau-aibo,self_attention,last,False,False,C1,fau,8,42/123/456,launch_b6.sh:L140(run_pooling_only) | explicit: pool/fusion/reg; default: aug/adapter/unfreeze,+SelfAttn Pooling
+E6-09,B6,fau-aibo,fau-aibo,self_attention,weighted,False,False,C1,fau,8,42/123/456,launch_b6.sh:L141(run_fusion_only) | explicit: pool/fusion/fusion_layer/reg; default: aug/adapter/unfreeze,+WeightedFusion
+E6-10,B6,fau-aibo,fau-aibo,self_attention,weighted,True,False,C1,fau,8,42/123/456,launch_b6.sh:L142(run_full)+launch_b6_fill.sh | explicit: pool/fusion/fusion_layer/adapter/reg; default: aug/unfreeze,全栈 +Adapter
+# ===== B7: E7 Model Transfer Fine-tune — launch_b7.sh =====
+# Script passes: pool(all self_attention), reg, load_checkpoint.
+# Does NOT pass: fusion, adapter, unfreeze, aug, fusion_layer.
+# Source domain: derived from --load_checkpoint path. 标注「仅脚本可证」.
+E7-01,B7,fau-aibo,fau-aibo,self_attention,weighted,False,False,C1,fau,8,42/123/456,launch_b7.sh:L51 | explicit: pool/reg/ckpt; default: fusion/adapter/unfreeze/aug/fusion_layer,源域=C-BESD (仅脚本可证: CBESD_CKPT=E1-02_s42)
+E7-02,B7,iemocap,iemocap,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b7.sh:L52 | explicit: pool/reg/ckpt; default: fusion/adapter/unfreeze/aug/fusion_layer,源域=C-BESD (仅脚本可证: CBESD_CKPT=E1-02_s42)
+E7-03,B7,c-besd,c-besd,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b7.sh:L57 | explicit: pool/reg/ckpt; default: fusion/adapter/unfreeze/aug/fusion_layer,源域=FAU (仅脚本可证: FAU_CKPT=E1-05_s42)
+E7-04,B7,iemocap,iemocap,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b7.sh:L58 | explicit: pool/reg/ckpt; default: fusion/adapter/unfreeze/aug/fusion_layer,源域=FAU (仅脚本可证: FAU_CKPT=E1-05_s42)
+E7-05,B7,c-besd,c-besd,self_attention,weighted,False,False,C1,default,8,42/123/456,launch_b7.sh:L63 | explicit: pool/reg/ckpt; default: fusion/adapter/unfreeze/aug/fusion_layer,源域=IEMOCAP (仅脚本可证: IEMO_CKPT=E1-09_s42)
+E7-06,B7,fau-aibo,fau-aibo,self_attention,weighted,False,False,C1,fau,8,42/123/456,launch_b7.sh:L64 | explicit: pool/reg/ckpt; default: fusion/adapter/unfreeze/aug/fusion_layer,源域=IEMOCAP (仅脚本可证: IEMO_CKPT=E1-09_s42)

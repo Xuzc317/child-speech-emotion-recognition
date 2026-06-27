@@ -1,0 +1,29 @@
+{
+  "exp_name": "E4-04_s123",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "c-besd-4cl",
+    "iemocap"
+  ],
+  "test_data": [
+    "c-besd-4cl",
+    "iemocap"
+  ],
+  "seed": 123,
+  "best_val_wa": 0.6143572621035058,
+  "test_wa": 0.6380620645978468,
+  "test_uar": 0.5778022248731836,
+  "best_epoch": 42,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C4",
+  "output_dir": "checkpoints/b3/E4-04_s123",
+  "protocol": "ac_suite_2026-06"
+}

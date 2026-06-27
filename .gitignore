@@ -1,0 +1,92 @@
+# ── 大文件：数据集、模型权重、特征数组 ──
+# .npy 特征文件（单个可达 1.7 GB）
+*.npy
+*.npz
+
+# PyTorch 模型权重（单个 ~363 MB）
+*.pt
+*.pth
+*.ckpt
+
+# 压缩数据集
+*.tar.gz
+*.tar
+*.zip
+*.7z
+*.rar
+
+# ── 云端/远程备份（README 除外） ──
+results_remote/*
+!results_remote/README.md
+
+# ── 历史/废弃内容 ──
+_legacy/
+
+# ── 大型文档与演示 ──
+*.pptx
+*.docx
+*.pdf
+!references/*.pdf
+# 论文配图 PDF（矢量格式，LaTeX 编译需要）
+!paper_draft/figures/*.pdf
+!paper_draft/figures/confusion_matrices/*.pdf
+!paper_draft/figures/xai/*.pdf
+!paper_draft/figures/layer_weights/*.pdf
+!paper_draft/figures/architecture/*.pdf
+!paper_draft/figures/paper_figures/*.pdf
+!results/figures/*.pdf
+
+# ── 密钥与凭证 ──
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+*.env
+credentials.json
+secrets.yaml
+**/api_keys.*
+**/credentials.*
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*.code-workspace
+
+# ── Conda/venv ──
+env/
+venv/
+.venv/
+conda/
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Jupyter ──
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Agent artifacts ──
+.claude/
+
+# ── 模型缓存 ──
+.cache/
+
+
+# ==== Phase0 supplement: model dirs / extra binaries / logs ====
+*.bin
+*.safetensors
+*.log

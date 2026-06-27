@@ -1,0 +1,45 @@
+# 补充实验方案 v1
+
+> 基于 B1-B7 192 runs 全量结果，补充论文所需的混淆矩阵、XAI 可视化、层权重分析。
+> 执行环境: AutoDL RTX 4090D (已开机)
+
+## 1. 混淆矩阵 + 每类准确率
+
+**选取实验**（各 Phase 代表，最优 seed）:
+
+| Phase | 实验 | 数据集 | 配置 | WA |
+|-------|------|--------|------|-----|
+| B1 | E1-02_s42 | C-BESD | SelfAttn frozen | 92.78% |
+| B1 | E1-05_s42 | FAU | SelfAttn frozen | 68.74% |
+| B1 | E1-08_s42 | IEMOCAP | SelfAttn frozen | 63.73% |
+| B5 | E2-01_s456 | C-BESD | SelfAttn unfrozen | 97.13% |
+| B5 | E2-02_s456 | FAU | SelfAttn unfrozen | 76.69% |
+| B5 | E2-03_s123 | IEMOCAP | Prosody unfrozen | 67.15% |
+| B6 | E6-04_s42 | C-BESD | SelfAtten+WeightedFusion | 92.92% |
+| B7 | E7-03_s42 | FAU→C-BESD | SA→SA transfer | 92.07% |
+
+**输出**: PNG + PDF + JSON → `paper_draft/figures/` + `results/figures/`
+
+## 2. XAI 可视化 + APC 指标
+
+**选取实验**: B6 E6-04_s42 (C-BESD SelfAtten+WeightedFusion 最优, 92.92%) + B1 E1-02_s42 (C-BESD 最优, 92.78%)
+
+**输出**: 
+- XAI 三联图 (波形+F0+注意力) → `paper_draft/figures/`
+- APC_wav / APC_delta 数值 → `results/analysis/`
+
+## 3. Layer Fusion 权重图
+
+**选取实验**: B1 E1-02_s42 (C-BESD) + B4 E5-01_s42 (FAU)
+
+**输出**: 12 层权重 bar chart → `paper_draft/figures/`
+- 权重 JSON → `results/analysis/`
+
+## 4. FD vs Accuracy 图
+
+**数据**: 已就绪 (`results/analysis/canonical_fd_pairs.json` + B1-B7 结果)
+**输出**: 散点图 → `paper_draft/figures/`
+
+## 5. t-SNE 可视化 ✅ 已完成
+
+B1 E1-02/E1-05/E1-08 checkpoint, Before/After 对比, 4 张图已归入 `paper_draft/figures/`

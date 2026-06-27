@@ -1,0 +1,74 @@
+{
+  "description": "论文配图清单 — 按类型分目录整理",
+  "last_updated": "2026-06-26",
+  "directories": {
+    "confusion_matrices": {
+      "description": "混淆矩阵, 8组 (B1/B5/B6/B7 代表实验)",
+      "files": [
+        "E1-02-s42_C-BESD_SelfAttn_frozen.{png,pdf}",
+        "E1-05-s42_FAU_SelfAttn_frozen.{png,pdf}",
+        "E1-09-s42_IEMOCAP_Prosody_frozen.{png,pdf}",
+        "E2-01-s456_C-BESD_SelfAttn_unfrozen.{png,pdf}",
+        "E2-02-s456_FAU_SelfAttn_unfrozen.{png,pdf}",
+        "E2-03-s123_IEMOCAP_Prosody_unfrozen.{png,pdf}",
+        "E6-04-s42_C-BESD_SelfAttn+WeightedFusion.{png,pdf}",
+        "E7-03-s42_FAU→C-BESD_transfer.{png,pdf}"
+      ]
+    },
+    "tsne": {
+      "description": "t-SNE 可视化 (B1 Before/After, E1-02/E1-05/E1-08 checkpoints)",
+      "files": [
+        "E1-02_C-BESD_before_after.png",
+        "E1-05_FAU_Aibo_before_after.png",
+        "E1-08_IEMOCAP_before_after.png",
+        "combined_3x2_before_after.png"
+      ]
+    },
+    "bubbles": {
+      "description": "声学气泡图 (F0 vs RMS energy, 3数据集)",
+      "files": [
+        "C-BESD.{png,svg}",
+        "FAU_Aibo.{png,svg}",
+        "IEMOCAP.{png,svg}",
+        "combined_3datasets.{png,svg}"
+      ]
+    },
+    "xai": {
+      "description": "XAI 显著性可视化 (E1-02 + E6-04)",
+      "files": [
+        "E1-02_C-BESD.png",
+        "E6-04_C-BESD.png",
+        "triple_E1-02+E6-04.{png,pdf}"
+      ]
+    },
+    "layer_weights": {
+      "description": "Layer Fusion 权重图 (E1-02)",
+      "files": [
+        "E1-02_C-BESD.{png,pdf}"
+      ]
+    },
+    "architecture": {
+      "description": "系统架构图",
+      "files": [
+        "v2_pipeline.{png,pdf}"
+      ]
+    },
+    "paper_figures": {
+      "description": "论文主图 (fig01-05)",
+      "files": [
+        "fig01_main_results_overview.{png,pdf}",
+        "fig02_fau_pooling_comparison.{png,pdf}",
+        "fig03_fd_vs_accuracy.{png,pdf}",
+        "fig05_cbesd_pooling_comparison.{png,pdf}"
+      ]
+    }
+  },
+  "archive": "archive/ — 历史配图 (旧协议68文件已归档)",
+  "data_sources": {
+    "confusion_matrices_json": "results/figures/cm_*.json",
+    "fd_data": "results/analysis/canonical_fd_pairs.json",
+    "xai_data": "results/analysis/xai_chart_data.json",
+    "apc_metrics": "results/analysis/apc_*.json",
+    "layer_weights_json": "results/analysis/layer_weights_E1-02_C-BESD.json"
+  }
+}

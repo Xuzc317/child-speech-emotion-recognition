@@ -1,0 +1,9 @@
+{
+  "prefix": "E6-04_C-BESD_MeanPool",
+  "pooling_type": "self_attention",
+  "n_samples": 50,
+  "apc_wav_mean": 0.5670451137423516,
+  "apc_wav_std": 0.12754974505438427,
+  "apc_delta_mean": -0.0836419066041708,
+  "apc_delta_std": 0.16292188950851494
+}

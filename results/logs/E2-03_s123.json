@@ -1,0 +1,27 @@
+{
+  "exp_name": "E2-03_s123",
+  "pooling_type": "prosody_guided",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 123,
+  "best_val_wa": 0.6426470588235295,
+  "test_wa": 0.6714905933429812,
+  "test_uar": 0.6203480240155109,
+  "best_epoch": 20,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": true,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b5/E2-03_s123",
+  "protocol": "ac_suite_2026-06"
+}

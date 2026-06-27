@@ -1,0 +1,13 @@
+\section{Introduction}
+
+Speech emotion recognition (SER) aims to identify emotional states from acoustic signals. While substantial progress has been made on adult speech corpora using self-supervised learning (SSL) models, children's speech emotion recognition remains underexplored despite its importance for educational technology, clinical screening, and child-robot interaction.
+
+Children's speech differs from adult speech along multiple acoustic dimensions---higher and more variable fundamental frequency (F0), shorter utterance durations, and ongoing anatomical development of the vocal tract. These differences raise a fundamental question: is the performance gap between children's and adult SER driven by model architecture choices, or by inherent distributional properties of the speech signal itself?
+
+Prior work has approached children's SER through two main routes: applying SSL models pre-trained on adult speech directly to children's data, and designing specialized pooling or adaptation modules. However, systematic diagnosis of \textit{why} performance varies across children's corpora has been lacking. In particular, the contribution of distribution shift---the statistical mismatch between training and testing distributions---has not been isolated from architectural factors in a controlled experimental framework.
+
+In this work, we present a systematic 192-experiment ablation study that disentangles the effects of distribution shift from architectural design choices in children's SER. Using WavLM Base as a unified backbone across three corpora---C-BESD (children's acted speech), FAU Aibo (children's spontaneous speech), and IEMOCAP (adult acted speech)---we evaluate pooling strategies, layer fusion, adapter modules, data augmentation, and transfer learning under both frozen and unfrozen conditions.
+
+Our key findings are: (1) distribution shift between corpora, not architecture, is the dominant bottleneck---zero-shot cross-corpus performance collapses to 19--35\% even with optimal pooling; (2) the acted-versus-spontaneous distinction within children's speech creates a larger performance gap (25pp) than the child-versus-adult distinction; (3) transfer learning success is determined primarily by the target domain, with C-BESD as a target achieving 91\%+ regardless of source; (4) adapter modules provide no benefit and can be safely removed; and (5) layer fusion contributes negligibly, as any single transformer layer L$\geq$7 performs equivalently to learned weighted fusion.
+
+We release all 192 experiment logs, model checkpoints, and evaluation code to facilitate reproducible research on children's SER.

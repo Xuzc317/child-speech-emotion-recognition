@@ -1,0 +1,27 @@
+{
+  "exp_name": "E3-08",
+  "pooling_type": "self_attention",
+  "train_data": [
+    "fau-aibo"
+  ],
+  "test_data": [
+    "c-besd-4cl"
+  ],
+  "seed": 42,
+  "best_val_wa": 0.6612307692307692,
+  "test_wa": 0.2514388489208633,
+  "test_uar": 0.25262172155780466,
+  "best_epoch": 2,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "fusion_mode": "weighted",
+  "fusion_best_layer": null,
+  "use_adapter": false,
+  "unfreeze_ssl": false,
+  "augment_condition": "C1",
+  "output_dir": "checkpoints/b2/E3-08",
+  "protocol": "ac_suite_2026-06"
+}

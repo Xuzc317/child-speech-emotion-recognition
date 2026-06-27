@@ -1,0 +1,18 @@
+{
+  "c-besd_vs_iemocap": {
+    "ref_corpus": "c-besd",
+    "tgt_corpus": "iemocap",
+    "fd": 7.200838903007361,
+    "smmd": 0.3153508676542259,
+    "protocol": "ac_suite_2026-05",
+    "method": "DistributionShiftProbe (online WavLM features, mean pooling, max_samples=500, seed=42)"
+  },
+  "c-besd_vs_fau-aibo": {
+    "ref_corpus": "c-besd",
+    "tgt_corpus": "fau-aibo",
+    "fd": 8.498780575507713,
+    "smmd": 0.3777604781158701,
+    "protocol": "ac_suite_2026-05",
+    "method": "DistributionShiftProbe (online WavLM features, mean pooling, max_samples=500, seed=42)"
+  }
+}

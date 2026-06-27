@@ -1,0 +1,11 @@
+{
+  "experiment": "A1_baseline",
+  "use_adapter": false,
+  "use_prosody": false,
+  "stat_prior": false,
+  "finetune": false,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "name": "A1_baseline",
+  "timestamp": "20260428_023048"
+}

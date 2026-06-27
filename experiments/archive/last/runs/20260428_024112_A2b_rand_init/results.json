@@ -1,0 +1,8 @@
+{
+  "name": "A2b_rand_init",
+  "timestamp": "20260428_024112",
+  "duration_minutes": 4.7,
+  "total_epochs": 3,
+  "best_val_acc": 0.864041,
+  "test_acc": 0.795104
+}

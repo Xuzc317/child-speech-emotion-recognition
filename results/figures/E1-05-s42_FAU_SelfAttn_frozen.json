@@ -1,0 +1,45 @@
+{
+  "experiment": "E1-05_s42",
+  "phase": "B1",
+  "label": "FAU_SelfAttn_frozen",
+  "n_classes": 4,
+  "classes": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "confusion_matrix": [
+    [
+      572,
+      4,
+      349,
+      2
+    ],
+    [
+      13,
+      50,
+      86,
+      0
+    ],
+    [
+      285,
+      40,
+      1672,
+      1
+    ],
+    [
+      86,
+      43,
+      182,
+      4
+    ]
+  ],
+  "per_class_accuracy": {
+    "angry": 0.6170442286947141,
+    "happy": 0.33557046979865773,
+    "neutral": 0.8368368368368369,
+    "sad": 0.012698412698412698
+  },
+  "overall_wa": 0.6780761286515197
+}

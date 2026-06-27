@@ -1,0 +1,22 @@
+{
+  "exp_name": "E1-07_s456",
+  "pooling_type": "mean",
+  "train_data": [
+    "iemocap"
+  ],
+  "test_data": [
+    "iemocap"
+  ],
+  "seed": 456,
+  "best_val_wa": 0.586764705882353,
+  "test_wa": 0.6190303907380608,
+  "test_uar": 0.5382197404920357,
+  "best_epoch": 31,
+  "reg_profile": "default",
+  "weight_decay": 0.001,
+  "label_smoothing": 0.1,
+  "pooling_dropout": 0.0,
+  "grad_clip": null,
+  "output_dir": "checkpoints/b1/E1-07_s456",
+  "protocol": "ac_suite_2026-05"
+}
