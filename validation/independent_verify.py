@@ -9,7 +9,8 @@ import math
 from pathlib import Path
 from collections import defaultdict
 
-LOGS_DIR = r"D:\大学\论文\儿童语音情绪识别\新方案-分布驱动儿童SER\results\logs"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+LOGS_DIR = PROJECT_ROOT / "results" / "logs"
 
 def load_all_logs():
     """Load all JSON log files, return dict keyed by filename."""
@@ -250,7 +251,7 @@ def verify_missing_in_logs(logs):
     print("=" * 70)
 
     # Read the ledger to find the 3 missing_in_logs entries
-    ledger_path = r"D:\大学\论文\儿童语音情绪识别\新方案-分布驱动儿童SER\validation\ledger_full.csv"
+    ledger_path = PROJECT_ROOT / "validation" / "ledger_full.csv"
     missing_items = []
     with open(ledger_path, 'r', encoding='utf-8') as f:
         header = f.readline().strip().split(',')
@@ -336,7 +337,7 @@ def verify_blind_spotcheck(logs):
 
     # Read ledger for comparison
     ledger = {}
-    ledger_path = r"D:\大学\论文\儿童语音情绪识别\新方案-分布驱动儿童SER\validation\ledger_full.csv"
+    ledger_path = PROJECT_ROOT / "validation" / "ledger_full.csv"
     with open(ledger_path, 'r', encoding='utf-8') as f:
         header = f.readline().strip().split(',')
         for line in f:
@@ -387,7 +388,7 @@ def verify_field_count_jump():
     print("=" * 70)
 
     # Count fields in ledger
-    ledger_path = r"D:\大学\论文\儿童语音情绪识别\新方案-分布驱动儿童SER\validation\ledger_full.csv"
+    ledger_path = PROJECT_ROOT / "validation" / "ledger_full.csv"
     total_lines = 0
     statuses = defaultdict(int)
     with open(ledger_path, 'r', encoding='utf-8') as f:

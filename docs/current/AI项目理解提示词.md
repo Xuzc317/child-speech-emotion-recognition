@@ -13,7 +13,7 @@
 
 三数据集：C-BESD (儿童演绎)、FAU Aibo (儿童自然)、IEMOCAP (成人对照)。
 主干模型：WavLM Base → 12层 LayerFusion → Pooling → SEMLP 分类器。
-实验矩阵：B1-B7 共 192 个实验，全部完成。
+实验矩阵：B1-B7 共 192 个实验全部完成，B7-ext (解冻迁移对比) 18 个实验全部完成，总计 210 runs。
 
 ## 阅读步骤
 
@@ -54,7 +54,7 @@
 
 遍历以下目录，确认有哪些数据和图可用：
 
-14. `results/logs/` — 192 个 JSON 文件（E1-01_s42.json 到 E7-06_s456.json），每个含 test_wa、test_uar、best_epoch。抽样读取 3-5 个不同 Phase 的文件理解 JSON 结构
+14. `results/logs/` — 210 个 JSON 文件（E1-01_s42.json 到 E7-12_s456.json），每个含 test_wa、test_uar、best_epoch。抽样读取 3-5 个不同 Phase 的文件理解 JSON 结构
 15. `results/analysis/` — FD/SMMD (canonical_fd_pairs.json)、XAI 原始数据 (xai_raw_data.npz)、层权重 (layer_weights.json)
 16. `paper_draft/figures/` — 论文配图，按类型分目录（confusion_matrices/, tsne/, bubbles/, xai/, layer_weights/, architecture/, paper_figures/）。读取 FIGURES_MANIFEST.json 了解配图清单
 

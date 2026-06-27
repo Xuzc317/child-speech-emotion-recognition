@@ -2,7 +2,7 @@
 
 从儿童语音的统计分布出发，构建分布偏移诊断框架 (FD-WA)，系统验证"分布偏移→性能下降"的因果关系。
 
-> **协议**: `ac_suite_2026-06` | **状态**: 🎉 **192/192 实验全部完成**
+> **协议**: `ac_suite_2026-06` | **状态**: 🎉 **210/210 实验全部完成**
 > **分支**: `research/interpretability-fd`
 
 ## 三数据集
@@ -23,16 +23,19 @@
 | B4 | E5 | LayerFusion 消融 | 54 | ✅ |
 | B5 | E2 | WavLM Unfreeze 对比 | 3×3=9 | ✅ |
 | B6 | E6 | 模块消融 (Adapter/Pooling/Fusion) | 10×3=30 | ✅ |
-| B7 | E7 | 模型迁移 Fine-tune | 6×3=18 | ✅ |
-| **总计** | | | **192** | ✅ |
+| B7 | E7 | 模型迁移 Fine-tune (frozen) | 6×3=18 | ✅ |
+| B7-ext | E7-ext | 解冻迁移对比 (unfrozen) | 6×3=18 | ✅ |
+| **总计** | | | **210** | ✅ |
 
 ### 核心结果速览
 
-| 数据集 | 最佳配置 | 最高 WA |
+| 数据集 | 最佳配置 | 最高 WA (3-seed) |
 |--------|---------|---------|
-| C-BESD | self_attn + unfreeze | **97.13%** |
-| FAU Aibo | MeanPool + WeightedFusion | **92.24%** |
-| IEMOCAP | prosody + unfreeze | **66.36%** |
+| C-BESD | transfer unfrozen (FAU→C-BESD) | **96.96%** |
+| FAU Aibo | MeanPool + Last | **67.97%** |
+| IEMOCAP | transfer unfrozen (FAU→IEMOCAP) | **67.19%** |
+
+> 注: C-BESD from-scratch 天花板 = 96.91% (E2-01)，E7-09 跨语料迁移微调解冻后略超；FAU 天花板 ~67-68%，IEMOCAP 天花板 ~66-67%。
 
 ## 项目结构
 

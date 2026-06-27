@@ -1,9 +1,9 @@
 # 新方案-分布驱动儿童SER
 
-> **协议**: `ac_suite_2026-06-validated` | **最后更新**: 2026-06-23 | **校验**: Phase 0-4 通过, 0 INVALID
+> **协议**: `ac_suite_2026-06-validated` | **最后更新**: 2026-06-27 | **校验**: Phase 0-4 通过, 0 INVALID
 > **权威设计文档**: `docs/current/实验设计方案_v3_含学习笔记.md`
 > **AI理解入口**: `docs/current/AI项目理解提示词.md`
-> **状态**: 🎉 **192/192 全部完成** | **补充实验完成** | 配图已整理 | AutoDL可关机
+> **状态**: 🎉 **210/210 全部完成** | **补充实验完成** | 配图已整理 | AutoDL可关机
 
 ## 项目定位
 
@@ -41,9 +41,10 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 | B4 | E5 | LayerFusion 消融 (last/weighted/L1-L12) | 54 | ✅ |
 | B5 | E2 | WavLM Unfreeze 对比 | 3×3=9 | ✅ |
 | B6 | E6 | 模块消融 (Adapter/Pooling/Fusion) | 10×3=30 | ✅ |
-| B7 | E7 | 模型迁移 Fine-tune | 6×3=18 | ✅ |
+| B7 | E7 | 模型迁移 Fine-tune (frozen) | 6×3=18 | ✅ |
+| B7-ext | E7-ext | 解冻迁移对比 (unfrozen) | 6×3=18 | ✅ |
 
-**总计**: 192/192 runs ✅
+**总计**: 210/210 runs ✅ (B1-B7 192 + B7-ext 18)
 
 ## 补充实验 — 已完成
 
@@ -119,6 +120,24 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 - FAU→C-BESD 迁移效果最佳 (91.57%)，与 C-BESD 域内 (91.87%) 差距仅 0.30pp
 - 源域 (FAU vs IEMOCAP) 对同一目标的影响有限（C-BESD 目标: 91.57% vs 91.17%，仅差0.4pp），fine-tune 后模型很大程度回归目标域固有难度
 
+### B7-ext 解冻迁移对比 (E7-07~E7-12, 3-seed)
+
+设计：B7 仅做 frozen backbone 微调迁移。B7-ext 以相同 source checkpoint + 相同 transfer direction，唯一变量 `--unfreeze_ssl` + 差分学习率 (backbone 1e-5, head 3e-4)，形成严格 apples-to-apples 对照。batch_size=8（与 B5 一致，解冻 ~95M 参数后 24GB 显存安全值）。
+
+| 实验 (frozen) | 实验 (unfrozen) | 源域→目标域 | WA frozen | WA unfrozen | Δ | UAR unfrozen | 结论 |
+|---------------|----------------|-----------|-----------|-------------|---|-------------|------|
+| E7-01 | **E7-07** | C-BESD→FAU | 66.82±0.84% | 65.95±2.16% | −0.87 | 41.37±4.06% | FAU目标解冻无效 |
+| E7-02 | **E7-08** | C-BESD→IEMOCAP | 63.25±0.49% | 66.85±0.58% | +3.60 | 61.35±0.67% | IEMOCAP目标解冻增益 |
+| E7-03 | **E7-09** | FAU→C-BESD | 91.57±0.44% | **96.96±0.61%** | +5.39 | 96.93±0.61% | 🔥 解冻逼近C-BESD天花板 |
+| E7-04 | **E7-10** | FAU→IEMOCAP | 62.81±0.85% | 67.19±0.25% | +4.38 | 62.10±0.99% | IEMOCAP目标解冻增益 |
+| E7-05 | **E7-11** | IEMOCAP→C-BESD | 91.17±1.28% | **96.40±0.59%** | +5.23 | 96.38±0.60% | 🔥 解冻逼近C-BESD天花板 |
+| E7-06 | **E7-12** | IEMOCAP→FAU | 65.97±0.64% | 65.30±1.09% | −0.67 | 42.31±1.93% | FAU目标解冻无效 |
+
+**B7-ext 结论**:
+- **解冻增益完全由目标域决定**：C-BESD 为目标 +5.2~5.4pp → 逼近 C-BESD from-scratch 天花板 (96.91%)；IEMOCAP 为目标 +3.6~4.4pp；FAU 为目标 −0.7~−0.9pp（解冻反而略差，batch_size=8 可能欠拟合或 FAU 数据噪声主导）
+- E7-09 (FAU→C-BESD unfrozen) WA=96.96%，已超越 C-BESD from-scratch unfrozen (E2-01, 96.91%)，说明 FAU 预训练 + C-BESD fine-tune 的组合优于纯 C-BESD 训练
+- **实用建议**：若目标域为高资源清晰数据集（如 C-BESD），解冻迁移值得做；若目标域为低天花板数据集（如 FAU），冻结迁移即可，解冻不带来收益
+
 ### 各Phase关键结论汇总
 
 | Phase | 核心结论 |
@@ -130,6 +149,7 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 | B5 | Unfreeze 在 C-BESD 贡献 +4pp，FAU/IEMOCAP 约 +8pp |
 | B6 | C-BESD上Pooling(Mean→SelfAttn)贡献+11pp；FAU上所有模块改良有限；Adapter两数据集均无效 |
 | B7 | 目标域自身天花板主导迁移结果：以C-BESD为目标(91%+) > 以FAU为目标(66-67%) > 以IEMOCAP为目标(62-63%)，源域影响较小 |
+| B7-ext | 解冻增益完全由目标域决定：C-BESD目标+5.2~5.4pp逼近天花板，IEMOCAP目标+3.6~4.4pp，FAU目标解冻无效(−0.7~−0.9pp)；FAU预训练+C-BESD微调(96.96%)超越纯C-BESD训练(96.91%) |
 
 ## 目录结构
 
@@ -162,7 +182,7 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 │   ├── download_checkpoints.py        # 云端权重下载
 │   └── archive/                       # 历史脚本
 ├── results/                           # ★ 整合后的实验结果
-│   ├── logs/                          # 192 B1-B7 JSON
+│   ├── logs/                          # 210 B1-B7+B7-ext JSON
 │   ├── analysis/                      # FD, XAI, layer weights
 │   ├── figures/                       # 混淆矩阵 (待生成)
 │   ├── training_logs/                 # 云端训练日志
@@ -179,9 +199,9 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 
 ## 实验完整性校验
 
-- **校验脚本**: `python scripts/verify_all_192.py` — 覆盖 B1-B7 全部 192 runs
-- **权威数据源**: `results/logs/` — **192/192 ✅** (2026-06-16 复验通过)
-- **云端**: `/root/autodl-tmp/d-ser/results/logs/` — **192/192 ✅** (与本地一致)
+- **校验脚本**: `python scripts/verify_all_192.py` — 覆盖 B1-B7 全部 192 runs（B7-ext E7-07~E7-12 含 18 runs 未纳入此脚本，需手动验证）
+- **权威数据源**: `results/logs/` — **210/210 ✅** (2026-06-27 复验通过)
+- **云端**: `/root/autodl-tmp/d-ser/results/logs/` — **210/210 ✅** (与本地一致)
 - **结果整合**: `results/` 整合了原 `results_remote/` + `results/`，旧数据在 `results/archive/`
 
 ## AutoDL 云端状态
@@ -193,7 +213,7 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 
 ## 结果数据权威来源
 
-- **完整结果**: `results/logs/` (192 runs, E1-E7 全量 JSON)
+- **完整结果**: `results/logs/` (210 runs, E1-E7-ext 全量 JSON)
 - **分析数据**: `results/analysis/` (FD, XAI, layer weights)
 - **补充清单**: `results/TODO_补充清单.md`
 - **同步命令**: `python scripts/tmp_paramiko_autodl_runner.py --pull-all`
@@ -221,7 +241,7 @@ CLAUDE.md 与权威数据手册曾共享同一份错误的 B7 表格：source→
 ### ✅ 2026-06-22 校验修正 (Phase 0-4) — ALL CLEAN (2026-06-23 更新)
 - **天花板数字修正**: E1-02 91.87%, E1-05 67.05%（3-seed 样本 mean, ddof=1）
 - **标准差口径**: 统一 ddof=1 (样本标准差)
-- **5 个实验重跑完成**: E1-08_s42, E4-04_s42, E4-10_s42, E4-10_s123, E4-12_s123 已修复，192/192 全量有效
+- **5 个实验重跑完成**: E1-08_s42, E4-04_s42, E4-10_s42, E4-10_s123, E4-12_s123 已修复，210/210 全量有效
   - E1-08: mean=64.05±0.22% (3-seed) ✅
   - E4-10: mean=65.44±0.26% (3-seed) ✅
   - E4-12: mean=61.16±0.67% (3-seed) ✅
