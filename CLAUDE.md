@@ -153,49 +153,7 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 
 ## 目录结构
 
-```
-├── docs/
-│   ├── current/                       # ⭐ 当前核心文档
-│   │   ├── 实验设计方案_v3_含学习笔记.md
-│   │   ├── 权威数据手册.md
-│   │   └── 模块文档 (1-6)
-│   ├── discussion/                    # 设计讨论
-│   ├── ops/                           # 运维操作手册 (2026-06更新)
-│   └── archive/                       # 已归档旧文档
-├── paper_draft/
-│   ├── current/                       # ⭐ v10 LaTeX (v10_main.tex + v10_*.tex)
-│   │   # ⚠️ v10_main.tex 的 \input 命令仍指向旧文件 (0_Abstract 等)
-│   │   # 应改为 \input{v10_0_Abstract} 等才能使用 v10 版章节内容
-│   ├── archive/                       # v9及更早
-│   ├── presentations/                 # PPT
-│   └── figures/                       # 论文配图
-├── src/                               # 核心代码
-│   ├── models/                        # ssl_backbone, pooling, semlp, layer_fusion
-│   ├── data/                          # 数据加载
-│   ├── evaluation/                    # FD, XAI
-│   ├── augmentation/                  # 数据增强
-│   └── training/                      # 训练入口
-├── scripts/                           # 脚本工具
-│   ├── launch_b1.sh ~ launch_b7.sh    # 云端启动脚本
-│   ├── tmp_paramiko_autodl_runner.py  # 云端同步
-│   ├── verify_all_192.py              # 192 run 全量校验
-│   ├── download_checkpoints.py        # 云端权重下载
-│   └── archive/                       # 历史脚本
-├── results/                           # ★ 整合后的实验结果
-│   ├── logs/                          # 210 B1-B7+B7-ext JSON
-│   ├── analysis/                      # FD, XAI, layer weights
-│   ├── figures/                       # 混淆矩阵 (待生成)
-│   ├── training_logs/                 # 云端训练日志
-│   ├── archive/                       # 旧实验数据
-│   └── TODO_补充清单.md                # 待补充分析项
-├── checkpoints/
-│   ├── autodl/b1~b7/                  # B1-B7 权重 (151个)
-│   └── archive/                       # 历史权重
-├── experiments/                       # 旧Protocol实验 (已归档)
-├── references/                        # 参考文献 PDF
-├── _legacy/                           # 已废弃的旧数据/工具
-└── CLAUDE.md
-```
+核心目录：`docs/current/` (设计文档+权威数据手册), `paper_draft/` (论文), `src/` (代码), `scripts/` (工具), `results/logs/` (210 JSON), `checkpoints/` (权重). 完整结构见 `ls` 或 `docs/current/权威数据手册.md`。
 
 ## 实验完整性校验
 
@@ -211,14 +169,6 @@ WavLM Base (frozen/unfrozen) → 12层 LayerFusion → Pooling → SEMLP 分类�
 - **下次需要时再开机**: 需补充实验、重新训练、或提取 checkpoint 时
 - **开机后同步命令**: `python scripts/tmp_paramiko_autodl_runner.py --pull-all`
 
-## 结果数据权威来源
-
-- **完整结果**: `results/logs/` (210 runs, E1-E7-ext 全量 JSON)
-- **分析数据**: `results/analysis/` (FD, XAI, layer weights)
-- **补充清单**: `results/TODO_补充清单.md`
-- **同步命令**: `python scripts/tmp_paramiko_autodl_runner.py --pull-all`
-- **下载权重**: `python scripts/download_checkpoints.py`
-- **完整校验**: `python scripts/verify_all_192.py`
 
 ## 关键约束
 
